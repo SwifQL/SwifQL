@@ -11,12 +11,19 @@ public struct Fn {}
 
 extension Fn {
     public enum Operator {
-        case select, `as`, from, join, `where`, groupBy, orderBy, insertInto, values, union
+        case select, `as`, from, join, `where`, having, groupBy, orderBy, insertInto, values, union
         case and, or, greaterThan, lessThan, greaterThanOrEqual, lessThanOrEqual
         case equal, notEqual, `in`, notIn, like, notLike, ilike, notILike, fulltext, isNull, isNotNull
+        case contains, containedBy
+        case on, `case`, when, then, `else`, end, null
+        case asc, desc
+        case limit, offset
+        case `for`
+        case array, doubleDollar
         case between, notBetween, not
         //just syntax
         case openBracket, closeBracket
+        case openSquareBracket, closeSquareBracket
         case comma, space, `_`
         //custom
         case custom(String)
@@ -28,6 +35,7 @@ extension Fn {
             case .from: return "FROM"
             case .join: return "JOIN"
             case .where: return "WHERE"
+            case .having: return "HAVING"
             case .groupBy: return "GROUP BY"
             case .orderBy: return "ORDER BY"
             case .insertInto: return "INSERT INTO"
@@ -50,11 +58,29 @@ extension Fn {
             case .fulltext: return "@@"
             case .isNull: return "IS NULL"
             case .isNotNull: return "IS NOT NULL"
+            case .contains: return "@>"
+            case .containedBy: return "<@"
+            case .on: return "ON"
+            case .case: return "CASE"
+            case .when: return "WHEN"
+            case .then: return "THEN"
+            case .else: return "ELSE"
+            case .end: return "END"
+            case .null: return "NULL"
+            case .asc: return "ASC"
+            case .desc: return "DESC"
+            case .limit: return "LIMIT"
+            case .offset: return "OFFSET"
+            case .for: return "FOR"
+            case .array: return "ARRAY"
+            case .doubleDollar: return "$$"
             case .between: return "BETWEEN"
             case .notBetween: return "NOT BETWEEN"
             case .not: return "NOT"
             case .openBracket: return "("
             case .closeBracket: return ")"
+            case .openSquareBracket: return "["
+            case .closeSquareBracket: return "]"
             case .comma: return ","
             case .space: fallthrough
             case ._: return " "
