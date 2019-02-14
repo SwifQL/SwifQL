@@ -7,12 +7,20 @@
 
 import Foundation
 
-private func buildPredicate(operator: Fn.Operator, lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+private func buildPredicate(operator: Fn.Operator, lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     var parts = lhs.parts
     parts.append(o: .space)
-    parts.append(o: `operator`)
-    parts.append(o: .space)
-    parts.append(contentsOf: rhs.parts)
+    if let rhs = rhs {
+        parts.append(o: `operator`)
+        parts.append(o: .space)
+        parts.append(contentsOf: rhs.parts)
+    } else {
+        switch `operator` {
+        case .equal: parts.append(o: .isNull)
+        case .notEqual: parts.append(o: .isNotNull)
+        default: parts.append(o: .null)
+        }
+    }
     return SwifQLableParts(parts: parts)
 }
 
@@ -32,7 +40,7 @@ public func <= (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return buildPredicate(operator: .lessThanOrEqual, lhs: lhs, rhs: rhs)
 }
 
-public func === (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+public func === (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     return buildPredicate(operator: .equal, lhs: lhs, rhs: rhs)
 }
 
