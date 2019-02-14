@@ -56,4 +56,19 @@ public func || (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return buildPredicate(operator: .or, lhs: lhs, rhs: rhs)
 }
 
+/// Originally: @>
+infix operator ||> : AdditionPrecedence
+public func ||> (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+    return buildPredicate(operator: .contains, lhs: lhs, rhs: rhs)
+}
+
+/// Originally: <@
+infix operator <|| : AdditionPrecedence
+public func <|| (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+    return buildPredicate(operator: .containedBy, lhs: lhs, rhs: rhs)
+}
+
+// TBD: Table 9.43. json and jsonb Operators (https://www.postgresql.org/docs/current/functions-json.html)
+// TBD: Table 9.44. Additional jsonb Operators (https://www.postgresql.org/docs/current/functions-json.html)
+
 //OR ||
