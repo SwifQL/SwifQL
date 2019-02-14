@@ -32,7 +32,7 @@ public func <= (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return buildPredicate(operator: .lessThanOrEqual, lhs: lhs, rhs: rhs)
 }
 
-public func == (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+public func === (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return buildPredicate(operator: .equal, lhs: lhs, rhs: rhs)
 }
 
