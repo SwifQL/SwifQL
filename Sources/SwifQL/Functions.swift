@@ -104,6 +104,28 @@ extension Fn {
         case abs, avg, ceil, ceiling, count, div, exp, floor
         case max, min, mod, power, random, round, setseed
         case sign, sqrt, sum
+        //Postgres JSON
+        case json_agg, to_json
+        case array_to_json, row_to_json
+        case json_build_array, json_build_object, json_object
+        case json_array_length, json_each
+        case json_each_text, json_extract_path, json_extract_path_text
+        case json_object_keys, json_populate_record, json_populate_recordset
+        case json_array_elements, json_array_elements_text, json_typeof
+        case json_to_record, json_to_recordset
+        case json_strip_nulls
+        //Postgres JSONB
+        case jsonb_agg, to_jsonb
+        case jsonb_build_array, jsonb_build_object, jsonb_object
+        case jsonb_array_length, jsonb_each
+        case jsonb_each_text, jsonb_extract_path, jsonb_extract_path_text
+        case jsonb_object_keys, jsonb_populate_record, jsonb_populate_recordset
+        case jsonb_array_elements, jsonb_array_elements_text, jsonb_typeof
+        case jsonb_to_record, jsonb_to_recordset
+        case jsonb_strip_nulls
+        case jsonb_set, jsonb_insert, jsonb_pretty
+        //Array
+        case array_agg
         //custom
         case custom(String)
         
@@ -155,6 +177,53 @@ extension Fn {
             case .sign: return "sign"
             case .sqrt: return "sqrt"
             case .sum: return "sum"
+            
+            case .json_agg: return "json_agg"
+            case .to_json: return "to_json"
+            case .array_to_json: return "array_to_json"
+            case .row_to_json: return "row_to_json"
+            case .json_build_array: return "json_build_array"
+            case .json_build_object: return "json_build_object"
+            case .json_object: return "json_object"
+            case .json_array_length: return "json_array_length"
+            case .json_each: return "json_each"
+            case .json_each_text: return "json_each_text"
+            case .json_extract_path: return "json_extract_path"
+            case .json_extract_path_text: return "json_extract_path_text"
+            case .json_object_keys: return "json_object_keys"
+            case .json_populate_record: return "json_populate_record"
+            case .json_populate_recordset: return "json_populate_recordset"
+            case .json_array_elements: return "json_array_elements"
+            case .json_array_elements_text: return "json_array_elements_text"
+            case .json_typeof: return "json_typeof"
+            case .json_to_record: return "json_to_record"
+            case .json_to_recordset: return "json_to_recordset"
+            case .json_strip_nulls: return "json_strip_nulls"
+                
+            case .jsonb_agg: return "jsonb_agg"
+            case .to_jsonb: return "to_jsonb"
+            case .jsonb_build_array: return "jsonb_build_array"
+            case .jsonb_build_object: return "jsonb_build_object"
+            case .jsonb_object: return "jsonb_object"
+            case .jsonb_array_length: return "jsonb_array_length"
+            case .jsonb_each: return "jsonb_each"
+            case .jsonb_each_text: return "jsonb_each_text"
+            case .jsonb_extract_path: return "jsonb_extract_path"
+            case .jsonb_extract_path_text: return "jsonb_extract_path_text"
+            case .jsonb_object_keys: return "jsonb_object_keys"
+            case .jsonb_populate_record: return "jsonb_populate_record"
+            case .jsonb_populate_recordset: return "jsonb_populate_recordset"
+            case .jsonb_array_elements: return "jsonb_array_elements"
+            case .jsonb_array_elements_text: return "jsonb_array_elements_text"
+            case .jsonb_typeof: return "jsonb_typeof"
+            case .jsonb_to_record: return "jsonb_to_record"
+            case .jsonb_to_recordset: return "jsonb_to_recordset"
+            case .jsonb_strip_nulls: return "jsonb_strip_nulls"
+            case .jsonb_set: return "jsonb_set"
+            case .jsonb_insert: return "jsonb_insert"
+            case .jsonb_pretty: return "jsonb_pretty"
+                
+            case .array_agg: return "array_agg"
             case .custom(let v): return v
             }
         }
@@ -166,32 +235,52 @@ extension Fn {
     
     public enum CastTypes {
         case uuid
+        case uuidArray
         case char
+        case charArray
         case varchar
+        case varcharArray
         case text
+        case textArray
         case integer
+        case integerArray
         case numeric
+        case numericArray
         case numeric2(Int, Int)
         case bigint
+        case bigintArray
         case float(Int)
         case real
+        case realArray
         case float8
+        case float8Array
         case bool
+        case boolArray
         
         var string: String {
             switch self {
             case .uuid: return "uuid"
+            case .uuidArray: return "uuid[]"
             case .char: return "char"
+            case .charArray: return "char[]"
             case .varchar: return "varchar"
+            case .varcharArray: return "varchar[]"
             case .text: return "text"
+            case .textArray: return "text[]"
             case .integer: return "integer"
+            case .integerArray: return "integer[]"
             case .numeric: return "numeric"
+            case .numericArray: return "numeric[]"
             case .numeric2(let p, let s): return "numeric(\(p), \(s))"
             case .bigint: return "bigint"
+            case .bigintArray: return "bigint[]"
             case .float(let v): return "float(\(v))"
             case .real: return "real"
+            case .realArray: return "real[]"
             case .float8: return "float8"
+            case .float8Array: return "float8[]"
             case .bool: return "bool"
+            case .boolArray: return "bool[]"
             }
         }
     }
@@ -411,7 +500,7 @@ extension Fn {
     public static func position(_ substring: SwifQLable, in string: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = substring.parts
         parts.append(o: .space)
-        parts.append(o: .custom("in"))
+        parts.append(o: .in)
         parts.append(o: .space)
         parts.append(contentsOf: string.parts)
         return buildFn(.position, body: parts)
@@ -492,13 +581,13 @@ extension Fn {
         var parts: [SwifQLPart] = string.parts
         if let startPosition = startPosition {
             parts.append(o: .space)
-            parts.append(o: .custom("from"))
+            parts.append(o: .from)
             parts.append(o: .space)
             parts.append(safe: startPosition)
         }
         if let length = length {
             parts.append(o: .space)
-            parts.append(o: .custom("for"))
+            parts.append(o: .for)
             parts.append(o: .space)
             parts.append(safe: length)
         }
@@ -539,7 +628,7 @@ extension Fn {
         parts.append(o: .space)
         parts.append(contentsOf: trimCharacter.parts)
         parts.append(o: .space)
-        parts.append(o: .custom("from"))
+        parts.append(o: .from)
         parts.append(o: .space)
         parts.append(contentsOf: string.parts)
         return buildFn(.upper, body: string.parts)
@@ -683,6 +772,352 @@ extension Fn {
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/sum.php)
     public static func sum(_ aggregateExpression: SwifQLable) -> SwifQLable {
         return buildFn(.sum, body: aggregateExpression.parts)
+    }
+    
+    // MARK: Postgres JSON
+    
+    ///
+    public static func json_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_agg, body: aggregateExpression.parts)
+    }
+    
+    /// Returns the value as json.
+    /// Arrays and composites are converted (recursively) to arrays and objects;
+    /// otherwise, if there is a cast from the type to json, the cast function will be used to perform the conversion;
+    /// otherwise, a scalar value is produced.
+    /// For any scalar type other than a number, a Boolean, or a null value,
+    /// the text representation will be used, in such a fashion that it is a valid json or jsonb value.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func to_json(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.to_json, body: aggregateExpression.parts)
+    }
+    
+    /// Returns the array as a JSON array.
+    /// A PostgreSQL multidimensional array becomes a JSON array of arrays.
+    /// Line feeds will be added between dimension-1 elements if pretty_bool is true
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func array_to_json(_ anyarray: SwifQLable, pretty: Bool? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = anyarray.parts
+        if let pretty = pretty {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(safe: pretty)
+        }
+        return buildFn(.array_to_json, body: parts)
+    }
+    
+    /// Returns the row as a JSON object.
+    /// Line feeds will be added between level-1 elements if pretty_bool is true
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func row_to_json(_ record: SwifQLable, pretty: Bool? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = record.parts
+        if let pretty = pretty {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(safe: pretty)
+        }
+        return buildFn(.row_to_json, body: parts)
+    }
+    
+    /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_build_array(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_build_array, body: aggregateExpression.parts)
+    }
+    
+    /// Builds a JSON object out of a variadic argument list.
+    /// By convention, the argument list consists of alternating keys and values
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_build_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_build_object, body: aggregateExpression.parts)
+    }
+    
+    /// Builds a JSON object out of a text array.
+    /// The array must have either exactly one dimension with an even number of members,
+    /// in which case they are taken as alternating key/value pairs,
+    /// or two dimensions such that each inner array has exactly two elements, which are taken as a key/value pair
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_object, body: aggregateExpression.parts)
+    }
+    
+    /// This form of json_object takes keys and values pairwise from two separate arrays.
+    /// In all other respects it is identical to the one-argument form.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_object(keys: SwifQLable, values: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = keys.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: values.parts)
+        return buildFn(.json_object, body: parts)
+    }
+    
+    /// Returns the number of elements in the outermost JSON array
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_array_length(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_array_length, body: aggregateExpression.parts)
+    }
+    
+    /// Expands the outermost JSON object into a set of key/value pairs
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_each(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_each, body: aggregateExpression.parts)
+    }
+    
+    /// Expands the outermost JSON object into a set of key/value pairs. The returned values will be of type text
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_each_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_each_text, body: aggregateExpression.parts)
+    }
+    
+    /// Returns JSON value pointed to by path_elems (equivalent to #> operator)
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+//    public static func json_extract_path(from_json : SwifQLable, path_elems: [String]) -> SwifQLable { // TBD
+//        return buildFn(.json_extract_path, body: aggregateExpression.parts)
+//    }
+    
+    /// Returns JSON value pointed to by path_elems as text (equivalent to #>> operator)
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+//    public static func json_extract_path_text(from_json : SwifQLable, path_elems: [String]) -> SwifQLable { // TBD
+//        return buildFn(.json_extract_path_text, body: aggregateExpression.parts)
+//    }
+    
+    /// Returns set of keys in the outermost JSON object.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_object_keys(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_object_keys, body: aggregateExpression.parts)
+    }
+    
+    /// Expands the object in from_json to a row whose columns match the record type defined by base (see note below).
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_populate_record(base: SwifQLable, from_json: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = base.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: from_json.parts)
+        return buildFn(.json_populate_record, body: parts)
+    }
+    
+    /// Expands the outermost array of objects in from_json to a set of rows whose columns match the record type defined by base (see note below).
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_populate_recordset(base: SwifQLable, from_json: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = base.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: from_json.parts)
+        return buildFn(.json_populate_recordset, body: parts)
+    }
+    
+    /// Expands a JSON array to a set of JSON values.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_array_elements(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_array_elements, body: aggregateExpression.parts)
+    }
+    
+    /// Expands a JSON array to a set of text values.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_array_elements_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_array_elements_text, body: aggregateExpression.parts)
+    }
+    
+    /// Returns the type of the outermost JSON value as a text string. Possible types are object, array, string, number, boolean, and null.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_typeof(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_typeof, body: aggregateExpression.parts)
+    }
+    
+    /// Builds an arbitrary record from a JSON object (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_to_record(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_to_record, body: aggregateExpression.parts)
+    }
+    
+    /// Builds an arbitrary set of records from a JSON array of objects (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_to_recordset(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_to_recordset, body: aggregateExpression.parts)
+    }
+    
+    /// Returns from_json with all object fields that have null values omitted. Other null values are untouched.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_strip_nulls(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.json_strip_nulls, body: aggregateExpression.parts)
+    }
+    
+    // MARK: Postgres JSONB
+    
+    ///
+    public static func jsonb_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_agg, body: aggregateExpression.parts)
+    }
+    
+    /// Returns the value as jsonb.
+    /// Arrays and composites are converted (recursively) to arrays and objects;
+    /// otherwise, if there is a cast from the type to json, the cast function will be used to perform the conversion;
+    /// otherwise, a scalar value is produced.
+    /// For any scalar type other than a number, a Boolean, or a null value,
+    /// the text representation will be used, in such a fashion that it is a valid json or jsonb value.
+    public static func to_jsonb(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.to_jsonb, body: aggregateExpression.parts)
+    }
+    
+    /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_build_array(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_build_array, body: aggregateExpression.parts)
+    }
+    
+    /// Builds a JSON object out of a variadic argument list.
+    /// By convention, the argument list consists of alternating keys and values
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_build_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_build_object, body: aggregateExpression.parts)
+    }
+    
+    /// Builds a JSON object out of a text array.
+    /// The array must have either exactly one dimension with an even number of members,
+    /// in which case they are taken as alternating key/value pairs,
+    /// or two dimensions such that each inner array has exactly two elements, which are taken as a key/value pair
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_object, body: aggregateExpression.parts)
+    }
+    
+    /// This form of json_object takes keys and values pairwise from two separate arrays.
+    /// In all other respects it is identical to the one-argument form.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_object(keys: SwifQLable, values: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = keys.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: values.parts)
+        return buildFn(.jsonb_object, body: parts)
+    }
+    
+    /// Returns the number of elements in the outermost JSON array
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_array_length(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_array_length, body: aggregateExpression.parts)
+    }
+    
+    /// Expands the outermost JSON object into a set of key/value pairs
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_each(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_each, body: aggregateExpression.parts)
+    }
+    
+    /// Expands the outermost JSON object into a set of key/value pairs. The returned values will be of type text
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_each_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_each_text, body: aggregateExpression.parts)
+    }
+    
+    /// Returns JSON value pointed to by path_elems (equivalent to #> operator)
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+//    public static func jsonb_extract_path(from_json : SwifQLable, path_elems: [String]) -> SwifQLable { // TBD
+//        return buildFn(.jsonb_extract_path, body: aggregateExpression.parts)
+//    }
+    
+    /// Returns JSON value pointed to by path_elems as text (equivalent to #>> operator)
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+//    public static func jsonb_extract_path_text(from_json : SwifQLable, path_elems: [String]) -> SwifQLable { // TBD
+//        return buildFn(.jsonb_extract_path_text, body: aggregateExpression.parts)
+//    }
+    
+    /// Returns set of keys in the outermost JSON object.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_object_keys(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_object_keys, body: aggregateExpression.parts)
+    }
+    
+    /// Expands the object in from_json to a row whose columns match the record type defined by base (see note below).
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_populate_record(base: SwifQLable, from_json: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = base.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: from_json.parts)
+        return buildFn(.jsonb_populate_record, body: parts)
+    }
+    
+    /// Expands the outermost array of objects in from_json to a set of rows whose columns match the record type defined by base (see note below).
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_populate_recordset(base: SwifQLable, from_json: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = base.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: from_json.parts)
+        return buildFn(.jsonb_populate_recordset, body: parts)
+    }
+    
+    /// Expands a JSON array to a set of JSON values.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_array_elements(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_array_elements, body: aggregateExpression.parts)
+    }
+    
+    /// Expands a JSON array to a set of text values.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_array_elements_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_array_elements_text, body: aggregateExpression.parts)
+    }
+    
+    /// Returns the type of the outermost JSON value as a text string. Possible types are object, array, string, number, boolean, and null.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_typeof(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_typeof, body: aggregateExpression.parts)
+    }
+    
+    /// Builds an arbitrary record from a JSON object (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_to_record(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_to_record, body: aggregateExpression.parts)
+    }
+    
+    /// Builds an arbitrary set of records from a JSON array of objects (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_to_recordset(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_to_recordset, body: aggregateExpression.parts)
+    }
+    
+    /// Returns from_json with all object fields that have null values omitted. Other null values are untouched.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_strip_nulls(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_strip_nulls, body: aggregateExpression.parts)
+    }
+    
+    /// Returns target with the section designated by path replaced by new_value,
+    /// or with new_value added if create_missing is true ( default is true)
+    /// and the item designated by path does not exist.
+    /// As with the path orientated operators, negative integers
+    /// that appear in path count from the end of JSON arrays.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+//    public static func jsonb_set(target: SwifQLable, path text: [String], new_value: SwifQLable, create_missing: Bool? = nil) -> SwifQLable { // TDB
+//        return buildFn(.jsonb_set, body: aggregateExpression.parts)
+//    }
+    
+    /// Returns target with new_value inserted.
+    /// If target section designated by path is in a JSONB array,
+    /// new_value will be inserted before target or after if insert_after is true (default is false).
+    /// If target section designated by path is in JSONB object, new_value will be inserted
+    /// only if target does not exist. As with the path orientated operators, negative integers
+    /// that appear in path count from the end of JSON arrays.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+//    public static func jsonb_insert(target: SwifQLable, path text: [String], new_value: SwifQLable, insert_after: Bool? = nil) -> SwifQLable { // TDB
+//        return buildFn(.jsonb_insert, body: aggregateExpression.parts)
+//    }
+    
+    /// Returns from_json as indented JSON text.
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_pretty(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.jsonb_pretty, body: aggregateExpression.parts)
+    }
+    
+    // MARK: Array
+    
+    ///
+    public static func array_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return buildFn(.array_agg, body: aggregateExpression.parts)
     }
 }
 
