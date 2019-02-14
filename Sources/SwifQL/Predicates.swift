@@ -44,7 +44,7 @@ public func === (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     return buildPredicate(operator: .equal, lhs: lhs, rhs: rhs)
 }
 
-public func != (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+public func != (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     return buildPredicate(operator: .notEqual, lhs: lhs, rhs: rhs)
 }
 
