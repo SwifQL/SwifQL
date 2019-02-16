@@ -821,8 +821,22 @@ extension Fn {
     
     /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-    public static func json_build_array(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return buildFn(.json_build_array, body: aggregateExpression.parts)
+    public static func json_build_array(_ items: SwifQLable...) -> SwifQLable {
+        return json_build_array(items)
+    }
+    
+    /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_build_array(_ items: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        for (i, v) in items.enumerated() {
+            if i > 0 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+            parts.append(contentsOf: v.parts)
+        }
+        return buildFn(.json_build_array, body: parts)
     }
     
     /// Builds a JSON object out of a variadic argument list.
@@ -963,8 +977,22 @@ extension Fn {
     
     /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-    public static func jsonb_build_array(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return buildFn(.jsonb_build_array, body: aggregateExpression.parts)
+    public static func jsonb_build_array(_ items: SwifQLable...) -> SwifQLable {
+        return jsonb_build_array(items)
+    }
+    
+    /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_build_array(_ items: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        for (i, v) in items.enumerated() {
+            if i > 0 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+            parts.append(contentsOf: v.parts)
+        }
+        return buildFn(.jsonb_build_array, body: parts)
     }
     
     /// Builds a JSON object out of a variadic argument list.
