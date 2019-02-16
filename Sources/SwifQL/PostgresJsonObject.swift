@@ -11,7 +11,11 @@ public typealias PgJsonObject = PostgresJsonObject
 
 public class PostgresJsonObject: SwifQLable {
     private struct Field {
-        let key: String
+        enum KeyMode {
+            case `default`, keyPath
+        }
+        let key: SwifQLable
+        let mode: KeyMode
         let value: SwifQLable
     }
     
@@ -26,7 +30,16 @@ public class PostgresJsonObject: SwifQLable {
                 body.append(o: .comma)
                 body.append(o: .space)
             }
-            body.append(o: .custom(v.key.singleQuotted))
+            switch v.mode {
+            case .default:
+                body.append(contentsOf: v.key.parts)
+            case .keyPath:
+                if let key = v.key as? FQUniversalKeyPathSimple {
+                    body.append(o: .custom(key.lastPath.singleQuotted))
+                } else {
+                    body.append(o: .custom(String(describing: v.key).singleQuotted))
+                }
+            }
             body.append(o: .comma)
             body.append(o: .space)
             body.append(contentsOf: v.value.parts)
@@ -37,13 +50,13 @@ public class PostgresJsonObject: SwifQLable {
     public init () {}
     
     public func field(key: SwifQLable, value: SwifQLable) -> PostgresJsonObject {
-        let k: String
-        if let key = key as? FQUniversalKeyPathSimple {
-            k = key.lastPath
-        } else {
-            k = String(describing: key)
-        }
-        let field = Field(key: k, value: value)
+        let field = Field(key: key, mode: .default, value: value)
+        fields.append(field)
+        return self
+    }
+    
+    public func field(keyPathAsKey: SwifQLable, value: SwifQLable) -> PostgresJsonObject {
+        let field = Field(key: keyPathAsKey, mode: .keyPath, value: value)
         fields.append(field)
         return self
     }
