@@ -10,6 +10,9 @@ import Foundation
 extension String: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
+extension UUID: SwifQLable {
+    public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
+}
 extension Bool: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
