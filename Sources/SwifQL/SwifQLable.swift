@@ -53,9 +53,17 @@ public struct SwifQLPartKeyPathLastPart: SwifQLPart {
 public struct SwifQLPartKeyPath: SwifQLKeyPathable {
     public var table: String
     public var paths: [String]
+    public init (table: String, paths: String...) {
+        self.init(table: table, paths: paths)
+    }
     public init (table: String, paths: [String]) {
         self.table = table
         self.paths = paths
+    }
+}
+extension SwifQLPartKeyPath: SwifQLable{
+    public var parts: [SwifQLPart] {
+        return SwifQLableParts(parts: self).parts
     }
 }
 public struct SwifQLPartAlias: SwifQLPart {
