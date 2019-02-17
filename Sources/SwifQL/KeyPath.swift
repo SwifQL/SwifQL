@@ -264,14 +264,13 @@ postfix public func ||||||(rhs: SwifQLable) -> SwifQLable {
     return SwifQLableParts(parts: parts)
 }
 
-//postfix operator *
-//postfix public func *(lhs: SwifQLable) -> SwifQLable {
-//    var parts = lhs.parts
-//    parts.append(o: .space)
-//    parts.append(o: .custom("*"))
-//    parts.append(o: .space)
-//    return SwifQLableParts(parts: parts)
-//}
+postfix operator .*
+postfix public func .*(lhs: SwifQLable) -> SwifQLable {
+    var parts = lhs.parts
+    parts.append(o: .custom(".*"))
+    parts.append(o: .space)
+    return SwifQLableParts(parts: parts)
+}
 
 extension SwifQLable {
 //    public func `_`(_ operator: Fn.SwifQLOperator) -> SwifQLable {
