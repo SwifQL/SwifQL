@@ -26,6 +26,17 @@ public struct SwifQLableParts: SwifQLable {
 }
 
 public protocol SwifQLPart {}
+struct SwifQLPartBool: SwifQLPart, SwifQLable {
+    var parts: [SwifQLPart] {
+        return [self]
+    }
+    
+    let value: Bool
+    
+    init (_ value: Bool) {
+        self.value = value
+    }
+}
 public struct SwifQLPartTable: SwifQLPart {
     public var table: String
     public init (_ table: String) {
@@ -138,6 +149,8 @@ extension SwifQLable {
         var formattedValues: [String] = []
         let query = parts.map { part in
             switch part {
+            case let v as SwifQLPartBool:
+                return v.value == true ? "TRUE" : "FALSE"
             case let v as SwifQLPartTable:
                 switch dialect {
                 case .mysql: return v.table

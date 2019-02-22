@@ -40,12 +40,28 @@ public func <= (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return buildPredicate(operator: .lessThanOrEqual, lhs: lhs, rhs: rhs)
 }
 
-public func === (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
+public func == (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     return buildPredicate(operator: .equal, lhs: lhs, rhs: rhs)
 }
 
 public func != (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     return buildPredicate(operator: .notEqual, lhs: lhs, rhs: rhs)
+}
+
+public func == (lhs: SwifQLable, rhs: Bool) -> SwifQLable {
+    return buildPredicate(operator: .equal, lhs: lhs, rhs: SwifQLPartBool(rhs))
+}
+
+public func != (lhs: SwifQLable, rhs: Bool) -> SwifQLable {
+    return buildPredicate(operator: .notEqual, lhs: lhs, rhs: SwifQLPartBool(rhs))
+}
+
+public func == (lhs: Bool, rhs: SwifQLable) -> SwifQLable {
+    return buildPredicate(operator: .equal, lhs: SwifQLPartBool(lhs), rhs: rhs)
+}
+
+public func != (lhs: Bool, rhs: SwifQLable) -> SwifQLable {
+    return buildPredicate(operator: .notEqual, lhs: SwifQLPartBool(lhs), rhs: rhs)
 }
 
 public func && (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
