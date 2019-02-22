@@ -13,9 +13,6 @@ extension String: SwifQLable {
 extension UUID: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
-extension Bool: SwifQLable {
-    public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
-}
 extension Decimal: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
@@ -54,4 +51,13 @@ extension Int32: SwifQLable {
 }
 extension Int64: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
+}
+public protocol SwifQLRawRepresentable: RawRepresentable, SwifQLable {}
+extension SwifQLRawRepresentable {
+    public var parts: [SwifQLPart] {
+        if let a = self.rawValue as? SwifQLable {
+            return a.parts
+        }
+        return []
+    }
 }
