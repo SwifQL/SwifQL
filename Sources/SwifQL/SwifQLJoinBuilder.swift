@@ -9,7 +9,9 @@ import Foundation
 
 public enum JoinMode: String {
     case left = "LEFT"
+    case leftOuter = "LEFT OUTER"
     case right = "RIGHT"
+    case rightOuter = "RIGHT OUTER"
     case inner = "INNER"
     case outer = "OUTER"
 }
