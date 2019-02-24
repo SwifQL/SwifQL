@@ -43,6 +43,19 @@ public func <= (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return SwifQLPredicate(operator: .lessThanOrEqual, lhs: lhs, rhs: rhs)
 }
 
+public func == <T>(lhs: T, rhs: T.AType) -> SwifQLable where T: FQUniversalKeyPath, T: SwifQLable, T.AType: RawRepresentable, T.AType: Encodable {
+    return SwifQLPredicate(operator: .equal, lhs: lhs, rhs: SwifQLableParts(parts: SwifQLPartSafeValue(rhs.rawValue)))
+}
+public func == <T>(lhs: T, rhs: T.AType.RawValue) -> SwifQLable where T: FQUniversalKeyPath, T: SwifQLable, T.AType: RawRepresentable, T.AType.RawValue: SwifQLable {
+    return SwifQLPredicate(operator: .equal, lhs: lhs, rhs: SwifQLableParts(parts: SwifQLPartSafeValue(rhs)))
+}
+public func != <T>(lhs: T, rhs: T.AType) -> SwifQLable where T: FQUniversalKeyPath, T: SwifQLable, T.AType: RawRepresentable, T.AType: Encodable {
+    return SwifQLPredicate(operator: .notEqual, lhs: lhs, rhs: SwifQLableParts(parts: SwifQLPartSafeValue(rhs.rawValue)))
+}
+public func != <T>(lhs: T, rhs: T.AType.RawValue) -> SwifQLable where T: FQUniversalKeyPath, T: SwifQLable, T.AType: RawRepresentable, T.AType.RawValue: SwifQLable {
+    return SwifQLPredicate(operator: .notEqual, lhs: lhs, rhs: SwifQLableParts(parts: SwifQLPartSafeValue(rhs)))
+}
+
 public func == (lhs: SwifQLable, rhs: SwifQLable?) -> SwifQLable {
     return SwifQLPredicate(operator: .equal, lhs: lhs, rhs: rhs)
 }
