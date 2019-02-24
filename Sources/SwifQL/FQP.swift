@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct FQP {
+struct FQP {
     static var key = "§§§"
     static func fKey(_ i: Int) -> String { return "$\(i)" }
 }
