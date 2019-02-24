@@ -140,8 +140,9 @@ public class SwifQLSelectBuilder {
         wheres.enumerated().forEach {
             if $0.offset == 0 {
                 query = query.where($0.element)
+            } else {
+                query = query && $0.element
             }
-            query = query && $0.element
         }
         if groupBy.count > 0 {
             query = query.groupBy(groupBy)
