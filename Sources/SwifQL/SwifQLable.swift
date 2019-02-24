@@ -89,7 +89,7 @@ public struct SwifQLPartOperator: SwifQLPart {
 }
 public struct SwifQLPartUnsafeValue: SwifQLPart {
     var unsafeValue: Encodable
-    init (_ value: Encodable) { unsafeValue = value }
+    public init (_ value: Encodable) { unsafeValue = value }
 }
 public struct SwifQLPartSafeValue: SwifQLPart {
     var safeValue: Any
