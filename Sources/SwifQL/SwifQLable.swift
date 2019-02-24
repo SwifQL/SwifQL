@@ -85,7 +85,7 @@ public struct SwifQLPartAlias: SwifQLPart {
 }
 public struct SwifQLPartOperator: SwifQLPart {
     var value: String
-    init (_ value: String) { self.value = value }
+    public init (_ value: String) { self.value = value }
 }
 public struct SwifQLPartUnsafeValue: SwifQLPart {
     var unsafeValue: Encodable
@@ -93,7 +93,7 @@ public struct SwifQLPartUnsafeValue: SwifQLPart {
 }
 public struct SwifQLPartSafeValue: SwifQLPart {
     var safeValue: Any
-    init (_ value: Any) { safeValue = value }
+    public init (_ value: Any) { safeValue = value }
 }
 
 public enum SQLDialect {
