@@ -7,6 +7,8 @@ This lib can work either stand alone, or with Vapor3.
 
 For now it supports PostgreSQL and MySQL.
 
+> Please feel free to ask me a questions regarding this lib, you could find me in [Discord app](https://discordapp.com) as `@iMike#3049`.
+
 ## Installation
 
 ```swift
@@ -306,7 +308,8 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 | `"User"` | `User.table` |
 | `"User".*` | `User.table.*` |
 | `"User"."email"` | `\User.email` |
-| `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` or `SwifQLPartKeyPath(table: "User", paths: "jsonObject", "jsonField")` |
+| `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` |
+| `"User"."jsonObject"->"jsonField"` | `SwifQLPartKeyPath(table: "User", paths: "jsonObject", "jsonField")` |
 
 ## Tests
 
