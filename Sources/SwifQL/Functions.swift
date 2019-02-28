@@ -256,6 +256,8 @@ extension Fn {
         case float8Array
         case bool
         case boolArray
+        case json
+        case jsonb
         
         var string: String {
             switch self {
@@ -281,6 +283,8 @@ extension Fn {
             case .float8Array: return "float8[]"
             case .bool: return "bool"
             case .boolArray: return "bool[]"
+            case .json: return "json"
+            case .jsonb: return "jsonb"
             }
         }
     }
