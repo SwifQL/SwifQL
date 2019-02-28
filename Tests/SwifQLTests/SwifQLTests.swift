@@ -131,7 +131,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectFnPosition() {
-        checkAllDialects(SwifQL.select(Fn.position("el", in: "hello")), pg: "SELECT position('el' in 'hello')", mySQL: "SELECT position('el' in 'hello')")
+        checkAllDialects(SwifQL.select(Fn.position("el", in: "hello")), pg: "SELECT position('el' IN 'hello')", mySQL: "SELECT position('el' IN 'hello')")
     }
     
     func testSelectFnRepeat() {
@@ -155,9 +155,9 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectFnSubstring() {
-        checkAllDialects(SwifQL.select(Fn.substring("hello", from: 1)), pg: "SELECT substring('hello' from 1)", mySQL: "SELECT substring('hello' from 1)")
-        checkAllDialects(SwifQL.select(Fn.substring("hello", for: 4)), pg: "SELECT substring('hello' for 4)", mySQL: "SELECT substring('hello' for 4)")
-        checkAllDialects(SwifQL.select(Fn.substring("hello", from: 1, for: 4)), pg: "SELECT substring('hello' from 1 for 4)", mySQL: "SELECT substring('hello' from 1 for 4)")
+        checkAllDialects(SwifQL.select(Fn.substring("hello", from: 1)), pg: "SELECT substring('hello' FROM 1)", mySQL: "SELECT substring('hello' FROM 1)")
+        checkAllDialects(SwifQL.select(Fn.substring("hello", for: 4)), pg: "SELECT substring('hello' FOR 4)", mySQL: "SELECT substring('hello' FOR 4)")
+        checkAllDialects(SwifQL.select(Fn.substring("hello", from: 1, for: 4)), pg: "SELECT substring('hello' FROM 1 FOR 4)", mySQL: "SELECT substring('hello' FROM 1 FOR 4)")
     }
     
     func testSelectFnTranslate() {
