@@ -1,7 +1,7 @@
 # SwifQL
 💎 Write type-safe SQL code with Swift
 
-I'd love to present you my way for executing SQL queries with Swift.
+I'd love to present you my way for building SQL queries with Swift.
 
 This lib can work either stand alone, or with Vapor3.
 
