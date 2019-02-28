@@ -11,7 +11,7 @@ Please feel free to ask me any questions regarding this lib, either in issues or
 ## Installation
 
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.6.0")
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.6.1")
 ```
 
 ### Stand alone
