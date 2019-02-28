@@ -31,7 +31,7 @@ In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this
 
 ## Philosophy
 
-This lib provides you with ability to build SQL query from little tiny pieces of it.
+This lib provides you with ability to build an SQL query from a little tiny pieces of it.
 
 For example if you'd like to execute
 ```sql
