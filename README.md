@@ -29,12 +29,12 @@ In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this
 
 This lib provides you with ability to build SQL query from little tiny pieces of it.
 
-For example you'd like to execute
+For example if you'd like to execute
 ```sql
 SELECT * FROM "User" WHERE "email" = 'john.smith@gmail.com'
 ```
 
-With SwifQL you can build that query like this
+then with SwifQL you can build it like this
 ```swift
 SwifQL.select(User.table.*).from(User.table).where(\User.email == "john.smith@gmail.com")
 ```
