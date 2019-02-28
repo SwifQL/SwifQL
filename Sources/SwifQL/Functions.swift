@@ -19,6 +19,7 @@ extension Fn {
         case asc, desc
         case limit, offset
         case `for`
+        case filter
         case array, doubleDollar
         case between, notBetween, not
         //just syntax
@@ -72,6 +73,7 @@ extension Fn {
             case .limit: return "LIMIT"
             case .offset: return "OFFSET"
             case .for: return "FOR"
+            case .filter: return "FILTER"
             case .array: return "ARRAY"
             case .doubleDollar: return "$$"
             case .between: return "BETWEEN"
