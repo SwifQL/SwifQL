@@ -307,3 +307,22 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 | `"User".*` | `User.table.*` |
 | `"User"."email"` | `\User.email` |
 | `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` or `SwifQLPartKeyPath(table: "User", paths: "jsonObject", "jsonField")` |
+
+## Tests
+
+For now tests coverage is maybe around 25%. If you have timt and interest please feel free to send pull requests with more tests.
+
+You could find tests in `Tests/SwifQLTests/SwifQLTests.swift`
+
+## Contributing
+
+Please feel free to contribute!
+
+## TODO
+
+I have a few todos in my list for PostgreSQL:
+
+- [Conditional Expressions](https://www.postgresql.org/docs/current/functions-conditional.html)
+- [Geometric Functions and Operators](https://www.postgresql.org/docs/current/functions-geometry.html)
+- [Range Functions and Operators](https://www.postgresql.org/docs/current/functions-range.html)
+- [Array Functions and Operators](https://www.postgresql.org/docs/current/functions-array.html)
