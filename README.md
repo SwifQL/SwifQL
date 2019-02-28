@@ -3,7 +3,7 @@
 
 I'd love to present you my way for executing SQL queries with Swift.
 
-This lib can work either stand alone, or with Vapor.
+This lib can work either stand alone, or with Vapor3.
 
 For now it supports PostgreSQL and MySQL.
 
