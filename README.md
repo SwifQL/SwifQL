@@ -205,9 +205,9 @@ So it will build query like: `SELECT "User".* FROM "User" WHERE "User"."id" = 1 
 
 As you can see you shouldn't worry about parts ordering, it will sort them the right way before building.
 
-> Let's use `SwifQLSelectBuilder` for some next examples below, cause it's really convenient especially for complex queries.
-
 ## More query examples
+
+*Let's use `SwifQLSelectBuilder` for some next examples below, cause it's really convenient especially for complex queries.*
 
 1. Let's imagine that you want to query count of users.
 
@@ -224,11 +224,13 @@ query.execute(on: req, as: .psql)
      .unwrap(or: Abort(.notFound)) // returns Future<CountResult>
 ```
 
-> Here you can see two interesting things: `Fn.count()` and `=> "count"`
-> `Fn` is a collection of function builders, so just call `Fn.` and take a look at the functions list on autocompletion.
-> `=>` uses for two things: 1) to write alias through `as` 2) to cast values to some other types
+Here you can see two interesting things: `Fn.count()` and `=> "count"`
 
-> `// TBD: Expand list of examples`
+`Fn` is a collection of function builders, so just call `Fn.` and take a look at the functions list on autocompletion.
+
+`=>` uses for two things: 1) to write alias through `as` 2) to cast values to some other types
+
+`// TBD: Expand list of examples`
 
 ## Aliasing
 Use `=>` operator for that, e.g.:
