@@ -159,6 +159,28 @@ func oneUser(_ req: Request) throws -> Future<User> {
 
 I believe that it looks good 😊
 
+## Insert Into
+
+### Single record
+SQL example
+```sql
+INSERT INTO "User" ("email", "name") VALUES ('john@gmail.com', 'John Doe'), ('sam@gmail.com', 'Samuel Jackson')
+```
+SwifQL representation
+```swift
+SwifQL.insertInto(User.table, fields: \User.email, \User.name).values("john@gmail.com", "John Doe")
+```
+
+### Batch
+SQL example
+```sql
+INSERT INTO "User" ("email", "name") VALUES ('john@gmail.com', 'John Doe'), ('sam@gmail.com', 'Samuel Jackson')
+```
+SwifQL representation
+```swift
+SwifQL.insertInto(User.table, fields: \User.email, \User.name).values(array: ["john@gmail.com", "John Doe"], ["sam@gmail.com", "Samuel Jackson"])
+```
+
 ## Builders
 
 For now I implemented only one builder
