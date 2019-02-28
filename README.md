@@ -7,7 +7,7 @@ This lib can work either stand alone, or with Vapor3.
 
 For now it supports PostgreSQL and MySQL.
 
-> Please feel free to ask me a questions regarding this lib, you could find me in [Discord app](https://discordapp.com) as `@iMike#3049`.
+> Please feel free to ask me any questions regarding this lib, you could find me in [Discord app](https://discordapp.com) as `@iMike#3049`.
 
 ## Installation
 
