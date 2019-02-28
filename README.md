@@ -235,6 +235,17 @@ Use `=>` operator for that, e.g.:
 
 If you want to write `SELECT "User"."email" as eml` then do it like this `SwifQL.select(\User.email => "eml")`
 
+Or if to speak about table name aliasing:
+
+If you want to reach `"User" as u` then do it like this `User.as("u")`
+
+And then keypaths will work like
+
+```swift
+let u = User.as("u")
+let emailKeypath = u~\.email
+```
+
 ## Type casting
 Use `=>` operator for that, e.g.:
 
@@ -330,8 +341,11 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 | SQL  | Swift |
 | ------- | -------------- |
 | `"User"` | `User.table` |
+| `"User" as u` | `User.as("u")` you could declare it as `let u = User.as("u")` |
 | `"User".*` | `User.table.*` |
+| `u.*` | `u.*` |
 | `"User"."email"` | `\User.email` |
+| `u."email"` | `u~\.email` |
 | `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` |
 | `"User"."jsonObject"->"jsonField"` | `SwifQLPartKeyPath(table: "User", paths: "jsonObject", "jsonField")` |
 
