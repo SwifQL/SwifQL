@@ -266,8 +266,8 @@ If you want to write `SELECT "User"."email"::text` then do it like this `SwifQL.
 | != nil | IS NOT NULL |
 | && | AND |
 | || | OR |
-| ||> | @> |
-| <|| | <@ |
+| `||>` | @> |
+| `<||` | <@ |
 
 > Please feel free to more predicates in `Predicates.swift` 😉
 
