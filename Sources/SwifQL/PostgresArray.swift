@@ -15,7 +15,7 @@ public struct PostgresArray: SwifQLable {
     }
     public var parts: [SwifQLPart] = []
     public init (_ items: SwifQLable..., emptyMode: EmptyMode = .simple) {
-        self.init(items)
+        self.init(items, emptyMode: emptyMode)
     }
     public init (_ items: [SwifQLable], emptyMode: EmptyMode = .simple) {
         if items.count == 0 && emptyMode == .dollar {
