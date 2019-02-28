@@ -5,7 +5,7 @@
 //  Created by Mihael Isaev on 12/12/2018.
 //
 
-import Vapor
+import Core
 import SQL
 
 /// a bridge to SQLQueryFetcher through Future
