@@ -17,7 +17,7 @@ Please feel free to ask me any questions regarding this lib, either in issues or
 ### Stand alone
 In your target's dependencies add `"SwifQL"` and `"SwifQLPure"`, e.g. like this:
 ```swift
-.target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLPure"]),
+.target(name: "App", dependencies: ["SwifQL", "SwifQLPure"]),
 ```
 
 ### With vapor 3
