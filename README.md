@@ -314,6 +314,15 @@ PgArray(1, 2, 3)
 PgArray(emptyMode: .dollar) => .uuidArray
 PgArray() => .textArray
 ```
+## FILTER
+SQL example
+```sql
+COUNT("User"."id") FILTER (WHERE \User.isAdmin = TRUE) as "admins"
+```
+SwifQL representation
+```swift
+Fn.count(\User.id).filter(where: \User.isAdmin == true) => "admins"
+```
 
 ## CASE ... WHEN ... THEN ... END
 SQL example
