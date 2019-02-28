@@ -275,7 +275,7 @@ And also
 
 `<||` is for `<@`
 
-> Please feel free to more predicates in `Predicates.swift` 😉
+> Please feel free to add more predicates in `Predicates.swift` 😉
 
 ## Operators
 Please feel free to take a look at `Fn.Operator` enum in `Functions.swift`
