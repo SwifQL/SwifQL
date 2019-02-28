@@ -73,7 +73,7 @@ First of all we should split query into the parts. Almost every word and punctua
 - ` ` is `Fn.Operator.space`
 - `'john.smith@gmail.com'` is `SwifQLPartUnsafeValue` (it means that this value should be passed as $1 to the database)
 
-That's crazy, but awesome, right? 😄 But it's is under the hood, so no worries! 😃 I just wanted to explain, that if you need something more than already provided then you'll be able to add needed operators/functions easily just by writing little extensions.
+That's crazy, but awesome, right? 😄 But it's under the hood, so no worries! 😃 I just wanted to explain, that if you need something more than already provided then you'll be able to add needed operators/functions easily just by writing little extensions.
 
 > And also there is no overhead, it works pretty fast, but I'd love to hear if you know how to make it faster.
 
