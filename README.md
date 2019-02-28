@@ -351,7 +351,7 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 
 ## Tests
 
-For now tests coverage is maybe around 25%. If you have timt and interest please feel free to send pull requests with more tests.
+For now tests coverage is maybe around 25%. If you have timе and interest please feel free to send pull requests with more tests.
 
 You could find tests in `Tests/SwifQLTests/SwifQLTests.swift`
 
