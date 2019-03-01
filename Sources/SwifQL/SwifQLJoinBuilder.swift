@@ -21,7 +21,7 @@ public struct SwifQLJoinBuilder: SwifQLable {
     let table: SwifQLable
     let predicates: SwifQLable
     
-    public init (_ mode: JoinMode, _ table: SwifQLable, _ predicates: SwifQLable) {
+    public init (_ mode: JoinMode, _ table: SwifQLable, on predicates: SwifQLable) {
         self.mode = mode
         self.table = table
         self.predicates = predicates

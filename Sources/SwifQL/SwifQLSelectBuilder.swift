@@ -49,8 +49,8 @@ public class SwifQLSelectBuilder {
     // MARK: Join
     
     @discardableResult
-    public func join(_ mode: JoinMode, _ table: SwifQLable, _ predicates: SwifQLable) -> SwifQLSelectBuilder {
-        return join(SwifQLJoinBuilder(mode, table, predicates))
+    public func join(_ mode: JoinMode, _ table: SwifQLable, on predicates: SwifQLable) -> SwifQLSelectBuilder {
+        return join(SwifQLJoinBuilder(mode, table, on: predicates))
     }
     
     @discardableResult
@@ -135,7 +135,7 @@ public class SwifQLSelectBuilder {
     public func build() -> SwifQLable {
         var query = SwifQL.select(select).from(froms)
         joins.forEach {
-            query = query.join($0.mode, $0.table, $0.predicates)
+            query = query.join($0.mode, $0.table, on: $0.predicates)
         }
         wheres.enumerated().forEach {
             if $0.offset == 0 {
