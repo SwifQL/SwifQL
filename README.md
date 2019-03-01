@@ -4,10 +4,8 @@
 
 ```swift
 struct PublicUser: Codable {
-    var name: String
-    var petName: String
-    var petType: String
-    var petToysQuantity: Int
+    let name, petName, petType: String
+    let petToysQuantity: Int
 }
 try SwifQL
     .select(User.table.*)
