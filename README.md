@@ -1,27 +1,5 @@
 # 💎SwifQL
 
-# Quick Intro
-
-```swift
-struct PublicUser: Codable {
-    let name, petName, petType: String
-    let petToysQuantity: Int
-}
-try SwifQL
-    .select(User.table.*)
-    .select(\Pet.name => "petName")
-    .select(\PetType.name => "petType")
-    .select(Fn.count(\PetToy.id) => "petToysQuantity")
-    .from(User.table)
-    .join(.left, Pet.self, on: \Pet.id == \User.idPet)
-    .join(.left, PetType.self, on: \PetType.id == \Pet.idType)
-    .join(.left, PetToy.self, on: \PetToy.idPet == \Pet.id)
-    .groupBy(\User.id, \Pet.id, \PetType.id, \PetToy.id)
-    .execute(on: req, as: .psql)
-    .all(decoding: PublicUser.self) // -> Future<[PublicUser]> 🔥🔥🔥
-```
-# Intro
-
 This lib can work either stand alone, or with Vapor3.
 
 For now it supports PostgreSQL and MySQL. But it's not so hard to add other dialects 🙂
