@@ -1,6 +1,6 @@
 //
-//  Alias.swift
-//  SwifQLCore
+//  SwifQLTableAlias.swift
+//  SwifQL
 //
 //  Created by Mihael Isaev on 11/11/2018.
 //
@@ -11,7 +11,7 @@ import Foundation
 import Fluent
 #endif
 
-public class FQAlias<M: Decodable>: SwifQLable {
+public class SwifQLTableAlias<M: Decodable>: SwifQLable {
     public typealias Model = M
     
     public var parts: [SwifQLPart] {
@@ -41,7 +41,7 @@ public class FQAlias<M: Decodable>: SwifQLable {
 }
 
 postfix operator *
-postfix public func *<T: Decodable>(table: FQAlias<T>) -> SwifQLable {
+postfix public func *<T: Decodable>(table: SwifQLTableAlias<T>) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartTable(table.alias))
     parts.append(o: .custom(".*"))
@@ -52,8 +52,8 @@ postfix public func *<T: Decodable>(table: FQAlias<T>) -> SwifQLable {
 //MARK: Decodable extension
 
 extension Decodable {
-    public static func `as`(_ alias: String) -> FQAlias<Self> {
-        return FQAlias(alias)
+    public static func `as`(_ alias: String) -> SwifQLTableAlias<Self> {
+        return SwifQLTableAlias(alias)
     }
 }
 

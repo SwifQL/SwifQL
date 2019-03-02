@@ -54,7 +54,7 @@ public func => (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
 /// e.g. you have `User` table with `email` field, and normally you can just write \User.email
 /// but in case of alias e.g. `let u = User.alias("u")` you should call it like `u+\.email`
 infix operator ~: AdditionPrecedence
-public func ~ <K, T, V>(lhs: FQAlias<T>, rhs: K) -> AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, K: Keypathable, T: Decodable {
+public func ~ <K, T, V>(lhs: SwifQLTableAlias<T>, rhs: K) -> AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, K: Keypathable, T: Decodable {
     return AliasedKeyPath(lhs.alias, rhs)
 }
 
