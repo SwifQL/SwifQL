@@ -11,7 +11,7 @@ public struct Fn {}
 
 extension Fn {
     public enum Operator {
-        case select, `as`, from, join, `where`, having, groupBy, orderBy, insertInto, values, union
+        case select, distinct, `as`, from, join, `where`, having, groupBy, orderBy, insertInto, values, union
         case and, or, greaterThan, lessThan, greaterThanOrEqual, lessThanOrEqual
         case equal, notEqual, `in`, notIn, like, notLike, ilike, notILike, fulltext, isNull, isNotNull
         case contains, containedBy
@@ -32,6 +32,7 @@ extension Fn {
         var rawValue: String {
             switch self {
             case .select: return "SELECT"
+            case .distinct: return "DISTINCT"
             case .as: return "as"
             case .from: return "FROM"
             case .join: return "JOIN"
