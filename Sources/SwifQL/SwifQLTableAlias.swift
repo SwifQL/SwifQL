@@ -11,11 +11,19 @@ import Foundation
 import Fluent
 #endif
 
-public class SwifQLTableAlias<M: Decodable>: SwifQLable {
+protocol SwifQLTableAliasable {
+    var alias: String { get }
+}
+
+public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
     public typealias Model = M
     
     public var parts: [SwifQLPart] {
-        return [SwifQLPartTableWithAlias(name, alias)]
+        return [SwifQLPartTable(alias)]
+    }
+    
+    public var table: SwifQLable {
+        return SwifQLableParts(parts: SwifQLPartTableWithAlias(name, alias))
     }
     
     var name: String {
