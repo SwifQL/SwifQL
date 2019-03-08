@@ -127,6 +127,12 @@ extension Fn {
         case jsonb_to_record, jsonb_to_recordset
         case jsonb_strip_nulls
         case jsonb_set, jsonb_insert, jsonb_pretty
+        //Postgres time
+        case age, clock_timestamp, current_date, current_time, current_timestamp, date_part
+        case date_trunc, extract, isfinite, justify_days, justify_hours, justify_interval
+        case localtime, localtimestamp, make_date, make_interval, make_time
+        case make_timestamp, make_timestamptz
+        case now, statement_timestamp, timeofday, transaction_timestamp, to_timestamp
         //Array
         case array_agg
         //custom
@@ -226,6 +232,31 @@ extension Fn {
             case .jsonb_insert: return "jsonb_insert"
             case .jsonb_pretty: return "jsonb_pretty"
                 
+            case .age: return "age"
+            case .clock_timestamp: return "clock_timestamp"
+            case .current_date: return "current_date"
+            case .current_time: return "current_time"
+            case .current_timestamp: return "current_timestamp"
+            case .date_part: return "date_part"
+            case .date_trunc: return "date_trunc"
+            case .extract: return "extract"
+            case .isfinite: return "isfinite"
+            case .justify_days: return "justify_days"
+            case .justify_hours: return "justify_hours"
+            case .justify_interval: return "justify_interval"
+            case .localtime: return "localtime"
+            case .localtimestamp: return "localtimestamp"
+            case .make_date: return "make_date"
+            case .make_interval: return "make_interval"
+            case .make_time: return "make_time"
+            case .make_timestamp: return "make_timestamp"
+            case .make_timestamptz: return "make_timestamptz"
+            case .now: return "now"
+            case .statement_timestamp: return "statement_timestamp"
+            case .timeofday: return "timeofday"
+            case .transaction_timestamp: return "transaction_timestamp"
+            case .to_timestamp: return "to_timestamp"
+                
             case .array_agg: return "array_agg"
             case .custom(let v): return v
             }
@@ -261,6 +292,11 @@ extension Fn {
         case boolArray
         case json
         case jsonb
+        case date
+        case time
+        case timestamp
+        case interval
+        case doublePrecision
         
         var string: String {
             switch self {
@@ -288,6 +324,11 @@ extension Fn {
             case .boolArray: return "bool[]"
             case .json: return "json"
             case .jsonb: return "jsonb"
+            case .date: return "date"
+            case .time: return "time"
+            case .timestamp: return "timestamp"
+            case .interval: return "interval"
+            case .doublePrecision: return "double precision"
             }
         }
     }
@@ -1154,6 +1195,488 @@ extension Fn {
     public static func array_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
         return buildFn(.array_agg, body: aggregateExpression.parts)
     }
+    
+    // MARK: Postgres Time Functions
+    
+    /// Subtract arguments, producing a “symbolic” result that uses years and months, rather than just days
+    /// # Example
+    /// ```swift
+    /// Fn.age("2001-04-10" => .timestamp, "1957-06-13" => .timestamp)
+    /// ```
+    /// # Result
+    /// ```
+    /// 43 years 9 mons 27 days
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func age(_ timestamp1: SwifQLable, _ timestamp2: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = timestamp1.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: timestamp2.parts)
+        return buildFn(.age, body: parts)
+    }
+    
+    /// Subtract from current_date (at midnight)
+    /// # Example
+    /// ```swift
+    /// Fn.age("2001-04-10" => .timestamp)
+    /// ```
+    /// # Result
+    /// ```
+    /// 43 years 8 mons 3 days
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func age(_ timestamp1: SwifQLable) -> SwifQLable {
+        return buildFn(.age, body: timestamp1.parts)
+    }
+    
+    /// Current date and time (changes during statement execution)
+    /// # Example
+    /// ```swift
+    /// Fn.clock_timestamp()
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
+    public static func clock_timestamp() -> SwifQLable {
+        return buildFn(.clock_timestamp, body: [])
+    }
+    
+    /// Current date
+    /// # Example
+    /// ```swift
+    /// Fn.current_date
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
+    public static var current_date: SwifQLable {
+        return SwifQLableParts(parts: Function.current_date.part)
+    }
+    
+    /// Current time of day
+    /// # Example
+    /// ```swift
+    /// Fn.current_time
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
+    public static func current_time(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return SwifQLableParts(parts: Function.current_time.part)
+    }
+    
+    /// Current date and time (start of current transaction)
+    /// # Example
+    /// ```swift
+    /// Fn.current_timestamp
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
+    public static func current_timestamp(_ aggregateExpression: SwifQLable) -> SwifQLable {
+        return SwifQLableParts(parts: Function.current_timestamp.part)
+    }
+    
+    /// Get subfield (equivalent to extract)
+    /// # Example with timestamp
+    /// ```swift
+    /// Fn.date_part("hour", "2001-02-16 20:38:40" => .timestamp)
+    /// ```
+    /// # Result
+    /// ```
+    /// 20
+    /// ```
+    /// # Example with interval
+    /// ```swift
+    /// Fn.date_part("month", "2 years 3 months" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 3
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT)
+    public static func date_part(_ text: SwifQLable, _ value: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = text.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: value.parts)
+        return buildFn(.date_part, body: parts)
+    }
+    
+    /// Truncate to specified precision
+    /// # Example with timestamp
+    /// ```swift
+    /// Fn.date_trunc("hour", "2001-02-16 20:38:40" => .timestamp)
+    /// ```
+    /// # Result
+    /// ```
+    /// 2001-02-16 20:00:00
+    /// ```
+    /// # Example with interval
+    /// ```swift
+    /// Fn.date_trunc("hour", "2 days 3 hours 40 minutes" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 2 days 03:00:00
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC)
+    public static func date_trunc(_ text: SwifQLable, _ value: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = text.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: value.parts)
+        return buildFn(.date_trunc, body: parts)
+    }
+    
+    /// Get subfield
+    /// # Example with timestamp
+    /// ```swift
+    /// Fn.extract("hour", "2001-02-16 20:38:40" => .timestamp)
+    /// ```
+    /// # Result
+    /// ```
+    /// 20
+    /// ```
+    /// # Example with interval
+    /// ```swift
+    /// Fn.extract("month", "2 years 3 months" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 3
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT)
+    public static func extract(_ field: SwifQLable, from value: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = field.parts
+        parts.append(o: .space)
+        parts.append(o: .from)
+        parts.append(o: .space)
+        parts.append(contentsOf: value.parts)
+        return buildFn(.extract, body: parts)
+    }
+    
+    /// Test for finite date (not +/-infinity)
+    /// # Example
+    /// ```swift
+    /// Fn.isfinite("4 hours" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// true
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func isfinite(_ interval: SwifQLable) -> SwifQLable {
+        return buildFn(.isfinite, body: interval.parts)
+    }
+    
+    /// Adjust interval so 30-day time periods are represented as months
+    /// # Example
+    /// ```swift
+    /// Fn.justify_days("35 days" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 1 mon 5 days
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func justify_days(_ interval: SwifQLable) -> SwifQLable {
+        return buildFn(.justify_days, body: interval.parts)
+    }
+    
+    /// Adjust interval so 24-hour time periods are represented as days
+    /// # Example
+    /// ```swift
+    /// Fn.justify_hours("27 hours" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 1 day 03:00:00
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func justify_hours(_ interval: SwifQLable) -> SwifQLable {
+        return buildFn(.justify_hours, body: interval.parts)
+    }
+    
+    /// Adjust interval using justify_days and justify_hours, with additional sign adjustments
+    /// # Example
+    /// ```swift
+    /// Fn.justify_interval("1 mon -1 hour" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 29 days 23:00:00
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func justify_interval(_ interval: SwifQLable) -> SwifQLable {
+        return buildFn(.justify_interval, body: interval.parts)
+    }
+    
+    /// Current time of day
+    /// # Example
+    /// ```swift
+    /// Fn.localtime
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static var localtime: SwifQLable {
+        return SwifQLableParts(parts: Function.localtime.part)
+    }
+    
+    /// Current date and time (start of current transaction)
+    /// # Example
+    /// ```swift
+    /// Fn.localtimestamp
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static var localtimestamp: SwifQLable {
+        return SwifQLableParts(parts: Function.localtimestamp.part)
+    }
+    
+    /// Create date from year, month and day fields
+    /// # Example
+    /// ```swift
+    /// Fn.make_date(2013, 7, 15)
+    /// ```
+    /// # Result
+    /// ```
+    /// 2013-07-15
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func make_date(_ year: SwifQLable, _ month: SwifQLable, _ day: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = year.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: month.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: day.parts)
+        return buildFn(.make_date, body: parts)
+    }
+    
+    /// Create interval from years, months, weeks, days, hours, minutes and seconds fields
+    /// # Example
+    /// ```swift
+    /// Fn.make_interval(days: 10)
+    /// ```
+    /// # Result
+    /// ```
+    /// 10 days
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func make_interval(years: SwifQLable? = nil,
+                                                   months: SwifQLable? = nil,
+                                                   weeks: SwifQLable? = nil,
+                                                   days: SwifQLable? = nil,
+                                                   hours: SwifQLable? = nil,
+                                                   mins: SwifQLable? = nil,
+                                                   secs: SwifQLable? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        if let years = years {
+            parts.append(o: .custom("years => "))
+            parts.append(contentsOf: years.parts)
+        }
+        if let months = months {
+            if parts.count > 0 { parts.append(o: .comma, .space) }
+            parts.append(o: .custom("months => "))
+            parts.append(contentsOf: months.parts)
+        }
+        if let weeks = weeks {
+            if parts.count > 0 { parts.append(o: .comma, .space) }
+            parts.append(o: .custom("weeks => "))
+            parts.append(contentsOf: weeks.parts)
+        }
+        if let days = days {
+            if parts.count > 0 { parts.append(o: .comma, .space) }
+            parts.append(o: .custom("days => "))
+            parts.append(contentsOf: days.parts)
+        }
+        if let hours = hours {
+            if parts.count > 0 { parts.append(o: .comma, .space) }
+            parts.append(o: .custom("hours => "))
+            parts.append(contentsOf: hours.parts)
+        }
+        if let mins = mins {
+            if parts.count > 0 { parts.append(o: .comma, .space) }
+            parts.append(o: .custom("mins => "))
+            parts.append(contentsOf: mins.parts)
+        }
+        if let secs = secs {
+            if parts.count > 0 { parts.append(o: .comma, .space) }
+            parts.append(o: .custom("secs => "))
+            parts.append(contentsOf: secs.parts)
+        }
+        return buildFn(.make_interval, body: parts)
+    }
+    
+    /// Create time from hour, minute and seconds fields
+    /// # Example
+    /// ```swift
+    /// Fn.make_time(8, 15, 23.5)
+    /// ```
+    /// # Result
+    /// ```
+    /// 08:15:23.5
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func make_time(_ hour: SwifQLable, _ min: SwifQLable, _ sec: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = hour.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: min.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: sec.parts)
+        return buildFn(.make_time, body: parts)
+    }
+    
+    /// Create timestamp from year, month, day, hour, minute and seconds fields
+    /// # Example
+    /// ```swift
+    /// Fn.make_timestamp(2013, 7, 15, 8, 15, 23.5)
+    /// ```
+    /// # Result
+    /// ```
+    /// 2013-07-15 08:15:23.5
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func make_timestamp(_ year: SwifQLable,
+                                                       _ month: SwifQLable,
+                                                       _ day: SwifQLable,
+                                                       _ hour: SwifQLable,
+                                                       _ min: SwifQLable,
+                                                       _ sec: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = year.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: month.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: day.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: hour.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: min.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: sec.parts)
+        return buildFn(.make_timestamptz, body: parts)
+    }
+    
+    /// Create timestamp with time zone from year, month, day, hour, minute and seconds fields;
+    /// if timezone is not specified, the current time zone is used
+    /// # Example
+    /// ```swift
+    /// Fn.make_timestamptz(2013, 7, 15, 8, 15, 23.5)
+    /// ```
+    /// # Result
+    /// ```
+    /// 2013-07-15 08:15:23.5+01
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func make_timestamptz(_ year: SwifQLable,
+                                                          _ month: SwifQLable,
+                                                          _ day: SwifQLable,
+                                                          _ hour: SwifQLable,
+                                                          _ min: SwifQLable,
+                                                          _ sec: SwifQLable,
+                                                          _ timezone: SwifQLable? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = year.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: month.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: day.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: hour.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: min.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: sec.parts)
+        if let timezone = timezone {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(contentsOf: timezone.parts)
+        }
+        return buildFn(.make_timestamptz, body: parts)
+    }
+    
+    /// Current date and time (start of current transaction)
+    /// # Example
+    /// ```swift
+    /// Fn.now()
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func now() -> SwifQLable {
+        return buildFn(.now, body: [])
+    }
+    
+    /// Current date and time (start of current statement)
+    /// # Example
+    /// ```swift
+    /// Fn.statement_timestamp()
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func statement_timestamp() -> SwifQLable {
+        return buildFn(.statement_timestamp, body: [])
+    }
+    
+    /// Current date and time (like clock_timestamp, but as a text string)
+    /// # Example
+    /// ```swift
+    /// Fn.timeofday()
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func timeofday() -> SwifQLable {
+        return buildFn(.timeofday, body: [])
+    }
+    
+    /// Current date and time (start of current transaction)
+    /// # Example
+    /// ```swift
+    /// Fn.transaction_timestamp()
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func transaction_timestamp() -> SwifQLable {
+        return buildFn(.transaction_timestamp, body: [])
+    }
+    
+    /// Convert Unix epoch (seconds since 1970-01-01 00:00:00+00) to timestamp
+    /// # Example
+    /// ```swift
+    /// Fn.to_timestamp(1284352323)
+    /// ```
+    /// # Result
+    /// ```
+    /// 2010-09-13 04:32:03+00
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func to_timestamp(_ value: SwifQLable) -> SwifQLable {
+        return buildFn(.to_timestamp, body: value.parts)
+    }
 }
 
 //MARK: [SwifQLPart] extension
@@ -1169,8 +1692,10 @@ extension Array where Element == SwifQLPart {
     public mutating func append(f: Fn.Function) {
         append(f.part)
     }
-    public mutating func append(o: Fn.Operator) {
-        append(o.part)
+    public mutating func append(o: Fn.Operator...) {
+        for o in o {
+            append(o.part)
+        }
     }
     public mutating func append(safe value: Any) {
         append(SwifQLPartSafeValue(value))

@@ -100,6 +100,12 @@ public func <|| (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return SwifQLPredicate(operator: .containedBy, lhs: lhs, rhs: rhs)
 }
 
+/// Originally: BETWEEN
+infix operator <> : AdditionPrecedence
+public func <> (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
+    return SwifQLPredicate(operator: .between, lhs: lhs, rhs: rhs)
+}
+
 // TBD: Table 9.43. json and jsonb Operators (https://www.postgresql.org/docs/current/functions-json.html)
 // TBD: Table 9.44. Additional jsonb Operators (https://www.postgresql.org/docs/current/functions-json.html)
 
