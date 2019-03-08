@@ -1,4 +1,15 @@
-# 💎SwifQL
+[![Mihael Isaev](https://user-images.githubusercontent.com/1272610/53677263-7ecbfe00-3cc6-11e9-9049-2d2b9a2d7947.png)](http://mihaelisaev.com)
+
+<p align="center">
+    <a href="LICENSE">
+        <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
+    </a>
+    <a href="https://swift.org">
+        <img src="https://img.shields.io/badge/swift-4.2-brightgreen.svg" alt="Swift 4.2">
+    </a>
+</p>
+
+<br>
 
 This lib can work either stand alone, or with Vapor3.
 
