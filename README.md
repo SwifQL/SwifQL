@@ -17,7 +17,7 @@ For now it supports PostgreSQL and MySQL. But it's not so hard to add other dial
 
 Please feel free to ask me any questions regarding this lib, either in issues or you could find me in the [Discord app](https://discordapp.com) as `@iMike#3049` to request some support (for free) 🙂
 
-### Don't forget to support the lib by giving a ⭐️
+### Support SwifQL development by giving a ⭐️
 
 ## Installation
 
