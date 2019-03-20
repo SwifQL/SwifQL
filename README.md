@@ -22,7 +22,7 @@ Please feel free to ask me any questions regarding this lib, either in issues or
 ## Installation
 
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.7.2")
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.8.1")
 ```
 
 ### Stand alone
