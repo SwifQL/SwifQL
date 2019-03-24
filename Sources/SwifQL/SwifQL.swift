@@ -14,16 +14,11 @@ public struct _SwifQL: SwifQLable {
     public init () {}
 }
 
-#if canImport(Fluent)
-import Fluent
-#endif
 extension Decodable {
     public static var table: SwifQLable {
-        #if canImport(Fluent)
-        if let model = Self.self as? AnyModel.Type {
-            return SwifQLableParts(parts: SwifQLPartTable(model.name))
+        if let model = Self.self as? Tableable.Type {
+            return SwifQLableParts(parts: SwifQLPartTable(model.entity))
         }
-        #endif
         return SwifQLableParts(parts: SwifQLPartTable(String(describing: Self.self)))
     }
 }

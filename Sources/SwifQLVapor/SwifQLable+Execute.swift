@@ -5,6 +5,7 @@
 //  Created by Mihael Isaev on 12/12/2018.
 //
 
+import SwifQL
 import SQL
 import DatabaseKit
 import PostgreSQL

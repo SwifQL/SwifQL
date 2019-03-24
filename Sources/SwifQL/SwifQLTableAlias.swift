@@ -27,11 +27,9 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
     }
     
     var name: String {
-        #if canImport(Fluent)
-        if let mmm = M.self as? AnyModel.Type {
+        if let mmm = M.self as? Tableable.Type {
             return mmm.entity
         }
-        #endif
         return String(describing: M.self)
     }
     
@@ -52,6 +50,13 @@ postfix operator *
 postfix public func *<T: Decodable>(table: SwifQLTableAlias<T>) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartTable(table.alias))
+    parts.append(o: .custom(".*"))
+    parts.append(o: .space)
+    return SwifQLableParts(parts: parts)
+}
+postfix public func *(table: Tableable.Type) -> SwifQLable {
+    var parts: [SwifQLPart] = []
+    parts.append(SwifQLPartTable(table.entity))
     parts.append(o: .custom(".*"))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)

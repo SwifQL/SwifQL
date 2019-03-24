@@ -9,10 +9,6 @@ import Foundation
 import SwifQL
 import Core
 
-#if canImport(Fluent)
-import Fluent
-#endif
-
 extension KeyPath: FQUniversalKeyPath, FQUniversalKeyPathSimple  where Root: Decodable & Reflectable {
     public typealias AType = Value
     public typealias AModel = Root
@@ -41,11 +37,9 @@ struct FormattedPath {
 }
 
 func formattedPath<T, V>(_ table: T.Type, _ kp: KeyPath<T, V>) -> FormattedKeyPath where T: Reflectable {
-    #if canImport(Fluent)
-    if let table = table as? AnyModel.Type {
-        return formattedPath(table.name, kp)
+    if let table = table as? Tableable.Type {
+        return formattedPath(table.entity, kp)
     }
-    #endif
     return formattedPath(String(describing: table), kp)
 }
 
@@ -54,11 +48,9 @@ func formattedPath<T, V>(_ table: String, _ kp: KeyPath<T, V>) -> FormattedKeyPa
 }
 
 func extractTable<T>(_ table: T.Type) -> String where T: Reflectable {
-    #if canImport(Fluent)
-    if let table = table as? AnyModel.Type {
-        return table.name
+    if let table = table as? Tableable.Type {
+        return table.entity
     }
-    #endif
     return String(describing: table)
 }
 
@@ -92,7 +84,7 @@ extension KeyPath: SwifQLable where Root: Reflectable {
 
 extension KeyPath: Keypathable where Root: Reflectable {
     public var shortPath: String { return FormattedKeyPath.flattenKeyPath(self.paths) }
-    public var lastPath: String { return self.paths.last ?? "nnnnnn" }
+    public var lastPath: String { return self.paths.last ?? "%{last_path_not_found}%" }
     
     public func fullPath(table: String) -> String {
         return formattedPath(table, self).pathWithTable
