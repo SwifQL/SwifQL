@@ -100,7 +100,7 @@ extension Fn {
         case substr, coalesce, octet_length, cast, ifnull, isnull, nvl, expression
         //string functions
         case bit_length, btrim, char_length, character_length, initcap
-        case length, lower, lpad, ltrim, position, `repeat`
+        case array_length, length, lower, lpad, ltrim, position, `repeat`
         case replace, rpad, rtrim, strpos, substring, translate
         case trim, upper
         //Numeric/Math Functions
@@ -154,6 +154,7 @@ extension Fn {
             case .char_length: return "char_length"
             case .character_length: return "character_length"
             case .initcap: return "initcap"
+            case .array_length: return "array_length"
             case .length: return "length"
             case .lower: return "lower"
             case .lpad: return "lpad"
@@ -478,7 +479,15 @@ extension Fn {
         parts.append(contentsOf: rhs.parts)
         return SwifQLableParts(parts: parts)
     }
-
+    
+    /// Returns the length of the requested array dimension
+    public static func array_length(_ anyArray: SwifQLable, _ dimension: Int = 1) -> SwifQLable {
+        var parts: [SwifQLPart] = anyArray.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(safe: dimension)
+        return buildFn(.array_length, body: parts)
+    }
     
     /// Removes all specified characters from both the beginning and the end of a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/btrim.php)
