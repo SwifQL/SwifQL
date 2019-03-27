@@ -291,8 +291,8 @@ extension Fn {
         case float8Array
         case bool
         case boolArray
-        case json
-        case jsonb
+        case json, jsonArray
+        case jsonb, jsonbArray
         case date
         case time
         case timestamp
@@ -324,7 +324,9 @@ extension Fn {
             case .bool: return "bool"
             case .boolArray: return "bool[]"
             case .json: return "json"
+            case .jsonArray: return "json[]"
             case .jsonb: return "jsonb"
+            case .jsonbArray: return "jsonb[]"
             case .date: return "date"
             case .time: return "time"
             case .timestamp: return "timestamp"
