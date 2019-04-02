@@ -64,12 +64,14 @@ public struct SwifQLPartKeyPathLastPart: SwifQLPart {
 public struct SwifQLPartKeyPath: SwifQLKeyPathable {
     public var table: String
     public var paths: [String]
-    public init (table: String, paths: String...) {
-        self.init(table: table, paths: paths)
+    public var asText: Bool
+    public init (table: String, paths: String..., asText: Bool = false) {
+        self.init(table: table, paths: paths, asText: asText)
     }
-    public init (table: String, paths: [String]) {
+    public init (table: String, paths: [String], asText: Bool = false) {
         self.table = table
         self.paths = paths
+        self.asText = asText
     }
 }
 extension SwifQLPartKeyPath: SwifQLable{
@@ -200,7 +202,11 @@ extension SwifQLable {
                     result.append(".")
                     result.append(v.doubleQuotted)
                 } else {
-                    result.append("->")
+                    if keyPath.asText, i == keyPath.paths.count - 1 {
+                        result.append("->>")
+                    } else {
+                        result.append("->")
+                    }
                     result.append(v.singleQuotted)
                 }
             }
