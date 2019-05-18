@@ -230,7 +230,7 @@ extension SwifQLable {
         switch value {
         case let v as String: return format(v, for: dialect)
         case let v as UUID: return format(v.uuidString, for: dialect)
-        case let v as Bool: return v ? "TRUE" : "FALSE"
+        case let v as Bool: return formatBool(v, for: dialect)
         case let v as UInt: return String(describing: v)
         case let v as UInt8: return String(describing: v)
         case let v as UInt16: return String(describing: v)
@@ -251,6 +251,11 @@ extension SwifQLable {
     func formatNull(for dialect: SQLDialect) -> String {
         return "NULL"
     }
+    
+    func formatBool(_ v: Bool, for dialect: SQLDialect) -> String {
+        return v ? "TRUE" : "FALSE"
+    }
+    
     func format(_ v: String, for dialect: SQLDialect) -> String {
         switch dialect {
         case .mysql: return v.singleQuotted
