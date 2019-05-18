@@ -94,8 +94,8 @@ public struct SwifQLPartUnsafeValue: SwifQLPart {
     public init (_ value: Encodable) { unsafeValue = value }
 }
 public struct SwifQLPartSafeValue: SwifQLPart {
-    var safeValue: Any
-    public init (_ value: Any) { safeValue = value }
+    var safeValue: Any?
+    public init (_ value: Any?) { safeValue = value }
 }
 
 public enum SQLDialect {
@@ -225,7 +225,8 @@ extension SwifQLable {
         return result
     }
     
-    func formatSafeValue(_ value: Any, for dialect: SQLDialect) -> String {
+    func formatSafeValue(_ value: Any?, for dialect: SQLDialect) -> String {
+        guard let value = value else { return formatNull(for: dialect) }
         switch value {
         case let v as String: return format(v, for: dialect)
         case let v as UUID: return format(v.uuidString, for: dialect)
@@ -247,6 +248,9 @@ extension SwifQLable {
         }
     }
     
+    func formatNull(for dialect: SQLDialect) -> String {
+        return "NULL"
+    }
     func format(_ v: String, for dialect: SQLDialect) -> String {
         switch dialect {
         case .mysql: return v.singleQuotted

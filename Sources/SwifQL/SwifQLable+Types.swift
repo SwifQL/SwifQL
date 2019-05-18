@@ -7,6 +7,15 @@
 
 import Foundation
 
+extension Optional: SwifQLable, CustomStringConvertible where Wrapped: Encodable {
+    public var parts: [SwifQLPart] {
+        if let s = self {
+            return [SwifQLPartUnsafeValue(s)]
+        } else {
+            return [SwifQLPartSafeValue(nil)]
+        }
+    }
+}
 extension String: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
