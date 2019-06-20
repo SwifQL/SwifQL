@@ -23,21 +23,6 @@ extension Decodable {
     }
 }
 
-//extension SwifQLable {
-//    public var SELECT: SwifQLable {
-//        var parts = self.parts
-//        parts.appendSpaceIfNeeded()
-//        parts.append(o: .select)
-//        return SwifQLableParts(parts: parts)
-//    }
-//    public var FROM: SwifQLable {
-//        var parts = self.parts
-//        parts.appendSpaceIfNeeded()
-//        parts.append(o: .from)
-//        return SwifQLableParts(parts: parts)
-//    }
-//}
-
 infix operator ~
 public func ~ (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     var parts = lhs.parts
@@ -78,4 +63,9 @@ extension Array where Element == SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
+}
+
+struct FQP {
+    static var key = "§§§"
+    static func fKey(_ i: Int) -> String { return "$\(i)" }
 }
