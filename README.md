@@ -17,6 +17,14 @@ For now it supports PostgreSQL and MySQL. But it's not so hard to add other dial
 
 Please feel free to ask me any questions regarding this lib, either in issues or you could find me in the [Discord app](https://discordapp.com) as `@iMike#3049` to request some support (for free) 🙂
 
+> NOTE:
+>
+> If you haven't found some functions available out-of-the-box
+> then please check files like `SwifQLable+Select` and others in `Sources/SwifQL` folder
+> to ensure how easy it is to extend SwifQL to support anything you need 🚀
+>
+> And feel free to send pull requests with your awesome new extensions ❤️
+
 ### Support SwifQL development by giving a ⭐️
 
 ## Installation
