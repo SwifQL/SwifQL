@@ -9,7 +9,7 @@ import Foundation
 
 extension SwifQLable {
     public func returning(_ items: SwifQLable...) -> SwifQLable {
-        return values(items)
+        return returning(items)
     }
     public func returning(_ items: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = self.parts
