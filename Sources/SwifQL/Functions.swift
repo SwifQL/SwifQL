@@ -12,6 +12,7 @@ public struct Fn {}
 extension Fn {
     public enum Operator {
         case select, distinct, `as`, from, join, `where`, having, groupBy, orderBy, insertInto, values, union
+        case returning
         case and, or, greaterThan, lessThan, greaterThanOrEqual, lessThanOrEqual
         case equal, notEqual, `in`, notIn, like, notLike, ilike, notILike, fulltext, isNull, isNotNull
         case contains, containedBy
@@ -43,6 +44,7 @@ extension Fn {
             case .insertInto: return "INSERT INTO"
             case .values: return "VALUES"
             case .union: return "UNION"
+            case .returning: return "RETURNING"
             case .and: return "AND"
             case .or: return "OR"
             case .greaterThan: return ">"
