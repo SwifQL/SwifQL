@@ -670,29 +670,39 @@ extension Fn {
     
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
-    public static func trim(leading trimCharacter: SwifQLable, from string: SwifQLable) -> SwifQLable {
+    public static func trim(_ string: SwifQLable) -> SwifQLable {
+        return buildFn(.trim, body: string.parts)
+    }
+    
+    /// Removes all specified characters either from the beginning or the end of a string.
+    /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
+    public static func trim(leading trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
         return _trim("leading", trimCharacter, from: string)
     }
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
-    public static func trim(trailing trimCharacter: SwifQLable, from string: SwifQLable) -> SwifQLable {
+    public static func trim(trailing trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
         return _trim("trailing", trimCharacter, from: string)
     }
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
-    public static func trim(both trimCharacter: SwifQLable, from string: SwifQLable) -> SwifQLable {
+    public static func trim(both trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
         return _trim("both", trimCharacter, from: string)
     }
-    private static func _trim(_ type: String, _ trimCharacter: SwifQLable, from string: SwifQLable) -> SwifQLable {
+    
+    /// Private `trim` builder method
+    private static func _trim(_ type: String, _ trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = []
         parts.append(o: .custom(type))
-        parts.append(o: .space)
-        parts.append(contentsOf: trimCharacter.parts)
+        if let trimCharacter = trimCharacter {
+            parts.append(o: .space)
+            parts.append(contentsOf: trimCharacter.parts)
+        }
         parts.append(o: .space)
         parts.append(o: .from)
         parts.append(o: .space)
         parts.append(contentsOf: string.parts)
-        return buildFn(.upper, body: string.parts)
+        return buildFn(.trim, body: string.parts)
     }
     
     /// Converts all characters in the specified string to uppercase
