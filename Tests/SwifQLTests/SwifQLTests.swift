@@ -292,7 +292,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testFromOneTableAlias() {
-        checkAllDialects(SwifQL.from(cb), pg: """
+        checkAllDialects(SwifQL.from(cb.table), pg: """
             FROM "CarBrands" AS "cb"
             """, mySQL: """
             FROM CarBrands AS cb
@@ -300,7 +300,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testFromTwoTableAliases() {
-        checkAllDialects(SwifQL.from(cb, cb), pg: """
+        checkAllDialects(SwifQL.from(cb.table, cb.table), pg: """
             FROM "CarBrands" AS "cb", "CarBrands" AS "cb"
             """, mySQL: """
             FROM CarBrands AS cb, CarBrands AS cb
@@ -308,7 +308,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testFromTableAndTableAlias() {
-        checkAllDialects(SwifQL.from(CarBrands.table, cb), pg: """
+        checkAllDialects(SwifQL.from(CarBrands.table, cb.table), pg: """
             FROM "CarBrands", "CarBrands" AS "cb"
             """, mySQL: """
             FROM CarBrands, CarBrands AS cb
@@ -336,17 +336,17 @@ final class SwifQLTests: XCTestCase {
         """, mySQL: """
         INSERT INTO CarBrands (id, name, createdAt)
         """)
-        checkAllDialects(SwifQL.insertInto(cb, fields: cb~\.id), pg: """
+        checkAllDialects(SwifQL.insertInto(cb.table, fields: cb~\.id), pg: """
         INSERT INTO "CarBrands" AS "cb" ("id")
         """, mySQL: """
         INSERT INTO CarBrands AS cb (id)
         """)
-        checkAllDialects(SwifQL.insertInto(cb, fields: cb~\.id, cb~\.name, cb~\.createdAt), pg: """
+        checkAllDialects(SwifQL.insertInto(cb.table, fields: cb~\.id, cb~\.name, cb~\.createdAt), pg: """
         INSERT INTO "CarBrands" AS "cb" ("id", "name", "createdAt")
         """, mySQL: """
         INSERT INTO CarBrands AS cb (id, name, createdAt)
         """)
-        checkAllDialects(SwifQL.insertInto(cb, fields: \CarBrands.id, cb~\.name, \CarBrands.createdAt), pg: """
+        checkAllDialects(SwifQL.insertInto(cb.table, fields: \CarBrands.id, cb~\.name, \CarBrands.createdAt), pg: """
         INSERT INTO "CarBrands" AS "cb" ("id", "name", "createdAt")
         """, mySQL: """
         INSERT INTO CarBrands AS cb (id, name, createdAt)
