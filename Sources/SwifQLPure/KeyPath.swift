@@ -57,7 +57,7 @@ extension AliasedKeyPath: SwifQLable {
 }
 
 extension AliasedKeyPath: Keypathable {
-    public var shortPath: String { return FormattedKeyPath.flattenKeyPath(self.paths) }
+    public var shortPath: String { return _FormattedKeyPath.flattenKeyPath(self.paths) }
     
     public func fullPath(table: String) -> String {
         return formattedPath(table, kp).pathWithTable
@@ -117,7 +117,7 @@ extension KeyPath: SwifQLable where Root: Reflectable {
 }
 
 extension KeyPath: Keypathable where Root: Reflectable {
-    public var shortPath: String { return FormattedKeyPath.flattenKeyPath(self.paths) }
+    public var shortPath: String { return _FormattedKeyPath.flattenKeyPath(self.paths) }
     public var lastPath: String { return self.paths.last ?? "nnnnnn" }
     
     public func fullPath(table: String) -> String {
@@ -127,10 +127,40 @@ extension KeyPath: Keypathable where Root: Reflectable {
 
 //MARK: - Helper methods
 
-func formattedPath<T, V>(_ table: T.Type, _ kp: KeyPath<T, V>) -> FormattedKeyPath where T: Reflectable {
+struct _FormattedKeyPath {
+    var pathWithTable: String = ""
+    var path: String = ""
+    var lastPath: String = ""
+    
+    init (table: String, paths: [String]) {
+        pathWithTable.append(table.doubleQuotted)
+        path = _FormattedKeyPath.flattenKeyPath(paths)
+        pathWithTable.append(".")
+        pathWithTable.append(path)
+        lastPath = paths.last ?? ""
+    }
+    
+    static func flattenKeyPath(_ paths: [String]) -> String {
+        var path = ""
+        for (index, p) in paths.enumerated() {
+            if index == 0 {
+                path.append(p.doubleQuotted)
+            } else {
+                path.append("->")
+                path.append(p.singleQuotted)
+            }
+        }
+        return path
+    }
+}
+
+func formattedPath<T, V>(_ table: T.Type, _ kp: KeyPath<T, V>) -> _FormattedKeyPath where T: Reflectable {
+    if let table = table as? Tableable.Type {
+        return formattedPath(table.entity, kp)
+    }
     return formattedPath(String(describing: table), kp)
 }
 
-func formattedPath<T, V>(_ table: String, _ kp: KeyPath<T, V>) -> FormattedKeyPath where T: Reflectable {
-    return FormattedKeyPath(table: table, paths: kp.paths)
+func formattedPath<T, V>(_ table: String, _ kp: KeyPath<T, V>) -> _FormattedKeyPath where T: Reflectable {
+    return _FormattedKeyPath(table: table, paths: kp.paths)
 }
