@@ -903,8 +903,23 @@ extension Fn {
     /// Builds a JSON object out of a variadic argument list.
     /// By convention, the argument list consists of alternating keys and values
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-    public static func json_build_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return buildFn(.json_build_object, body: aggregateExpression.parts)
+    public static func json_build_object(_ items: SwifQLable...) -> SwifQLable {
+        return json_build_object(items)
+    }
+    
+    /// Builds a JSON object out of a variadic argument list.
+    /// By convention, the argument list consists of alternating keys and values
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func json_build_object(_ items: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        for (i, v) in items.enumerated() {
+            if i > 0 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+            parts.append(contentsOf: v.parts)
+        }
+        return buildFn(.json_build_object, body: parts)
     }
     
     /// Builds a JSON object out of a text array.
@@ -1059,8 +1074,23 @@ extension Fn {
     /// Builds a JSON object out of a variadic argument list.
     /// By convention, the argument list consists of alternating keys and values
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-    public static func jsonb_build_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return buildFn(.jsonb_build_object, body: aggregateExpression.parts)
+    public static func jsonb_build_object(_ items: SwifQLable...) -> SwifQLable {
+        return jsonb_build_object(items)
+    }
+    
+    /// Builds a JSON object out of a variadic argument list.
+    /// By convention, the argument list consists of alternating keys and values
+    /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
+    public static func jsonb_build_object(_ items: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        for (i, v) in items.enumerated() {
+            if i > 0 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+            parts.append(contentsOf: v.parts)
+        }
+        return buildFn(.jsonb_build_object, body: parts)
     }
     
     /// Builds a JSON object out of a text array.
