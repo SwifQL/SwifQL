@@ -20,6 +20,21 @@ public class SwifQLSelectBuilder {
     
     public init() {}
     
+    public func copy() -> SwifQLSelectBuilder {
+        let copy = SwifQLSelectBuilder()
+        
+        copy.select = select
+        copy.froms = froms
+        copy.joins = joins
+        copy.wheres = wheres
+        copy.groupBy = groupBy
+        copy.havings = havings
+        copy.orderBy = orderBy
+        copy.offset = offset
+        copy.limit = limit
+        
+        return copy
+    }
     // MARK: Select
     
     @discardableResult
@@ -131,6 +146,12 @@ public class SwifQLSelectBuilder {
         limit = value
         return self
     }
+    @discardableResult
+    public func limit(_ offset: Int,_ limit: Int) -> SwifQLSelectBuilder {
+        self.limit = limit
+        self.offset = offset
+        return self
+    }
     
     public func build() -> SwifQLable {
         var query = SwifQL.select(select).from(froms)
@@ -156,11 +177,11 @@ public class SwifQLSelectBuilder {
         if orderBy.count > 0 {
             query = query.orderBy(orderBy)
         }
-        if let offset = offset {
-            query = query.offset(offset)
-        }
         if let limit = limit {
             query = query.limit(limit)
+        }
+        if let offset = offset {
+            query = query.offset(offset)
         }
         return query
     }

@@ -108,7 +108,7 @@ There is nothing to do.
 Just don't forget to `import SwifQLVapor` and `import SwifQL`. You have to import them together cause Swift won't export predicates from `SwifQL` through `SwifQLVapor`, unfortunately.
 
 #### With pure Swift or other frameworks
-Your database models like `User` should be conformed to `Table` protocol.
+Your database models like `User` should be conformed to `Tableable` protocol.
 
 Don't forget to `import SwifQLPure` and `import SwifQL`. You have to import them together cause Swift won't export predicates from `SwifQL` through `SwifQLPure`, unfortunately.
 
