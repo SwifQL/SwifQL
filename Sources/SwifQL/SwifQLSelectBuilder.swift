@@ -8,15 +8,15 @@
 import Foundation
 
 public class SwifQLSelectBuilder {
-    private var select: [SwifQLable] = []
-    private var froms: [SwifQLable] = []
-    private var joins: [SwifQLJoinBuilder] = []
-    private var wheres: [SwifQLable] = []
-    private var groupBy: [SwifQLable] = []
-    private var havings: [SwifQLable] = []
-    private var orderBy: [OrderByItem] = []
-    private var offset: Int?
-    private var limit: Int?
+    var select: [SwifQLable] = []
+    var froms: [SwifQLable] = []
+    var joins: [SwifQLJoinBuilder] = []
+    var wheres: [SwifQLable] = []
+    var groupBy: [SwifQLable] = []
+    var havings: [SwifQLable] = []
+    var orderBy: [OrderByItem] = []
+    var offset: Int?
+    var limit: Int?
     
     public init() {}
     
@@ -185,5 +185,4 @@ public class SwifQLSelectBuilder {
         }
         return query
     }
-    
 }
