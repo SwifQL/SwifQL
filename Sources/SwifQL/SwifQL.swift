@@ -64,8 +64,3 @@ extension Array where Element == SwifQLable {
         return SwifQLableParts(parts: parts)
     }
 }
-
-struct FQP {
-    static var key = "§§§"
-    static func fKey(_ i: Int) -> String { return "$\(i)" }
-}

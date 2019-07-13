@@ -111,37 +111,72 @@ public struct SwifQLSplittedQuery {
     }
 }
 
+struct SwifQLFormatter {
+    static var valueSymbol = "§§§"
+    
+    struct BindKeys {
+        // returns $1 $2 $3 binding keys for PostgreSQL
+        static func postgres(_ i: Int) -> String { return "$\(i)" }
+        // returns ? binding key for MySQL
+        static var mysql = "?"
+    }
+    
+    static func mysql(_ query: String) -> String {
+        var query = query
+        while let r = query.range(of: valueSymbol) {
+            query.replaceSubrange(r, with: BindKeys.mysql)
+        }
+        return query
+    }
+    
+    static func psql(_ query: String) -> String {
+        var query = query
+        var i = 1
+        while let r = query.range(of: valueSymbol) {
+            query.replaceSubrange(r, with: BindKeys.postgres(i))
+            i = i + 1
+        }
+        return query
+    }
+    
+    static func plain(query: String, with formattedValues: [String]) -> String {
+        var query = query
+        var i = 0
+        while let r = query.range(of: valueSymbol) {
+            query.replaceSubrange(r, with: formattedValues[i])
+            i = i + 1
+        }
+        return query
+    }
+}
+
 public struct SwifQLPrepared {
+    private var dialect: SQLDialect
     private var query: String
     private var values: [Encodable]
     private var formattedValues: [String]
-    init (query: String, values: [Encodable], formattedValues: [String]) {
+    init (dialect: SQLDialect, query: String, values: [Encodable], formattedValues: [String]) {
+        self.dialect = dialect
         self.query = query
         self.values = values
         self.formattedValues = formattedValues
     }
     
     public var plain: String {
-        var s = query
-        guard values.count > 0 else { return s }
-        var i = 0
-        while let r = s.range(of: FQP.key) {
-            s.replaceSubrange(r, with: formattedValues[i])
-            i = i + 1
-        }
-        return s
+        guard values.count > 0 else { return query }
+        return SwifQLFormatter.plain(query: query, with: formattedValues)
     }
     
     public var splitted: SwifQLSplittedQuery {
-        var s = query
-        if values.count > 0 {
-            var i = 1
-            while let r = s.range(of: FQP.key) {
-                s.replaceSubrange(r, with: FQP.fKey(i))
-                i = i + 1
-            }
+        guard values.count > 0 else { return .init(query: query, values: values) }
+        let result: String
+        switch dialect {
+        case .mysql:
+            result = SwifQLFormatter.mysql(query)
+        case .psql:
+            result = SwifQLFormatter.psql(query)
         }
-        return SwifQLSplittedQuery(query: s, values: values)
+        return .init(query: result, values: values)
     }
 }
 
@@ -179,11 +214,11 @@ extension SwifQLable {
             case let v as SwifQLPartUnsafeValue:
                 values.append(v.unsafeValue)
                 formattedValues.append(formatSafeValue(v.unsafeValue, for: dialect))
-                return FQP.key
+                return SwifQLFormatter.valueSymbol
             default: return ""
             }
         }.joined(separator: "")
-        return SwifQLPrepared(query: query, values: values, formattedValues: formattedValues)
+        return .init(dialect: dialect, query: query, values: values, formattedValues: formattedValues)
     }
     
     func format(keyPath: SwifQLPartKeyPath, for dialect: SQLDialect) -> String {

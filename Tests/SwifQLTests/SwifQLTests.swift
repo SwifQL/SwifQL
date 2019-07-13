@@ -394,6 +394,22 @@ final class SwifQLTests: XCTestCase {
         VALUES (1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')
         """)
     }
+    
+    // MARK: - BINDINGS
+    
+    func testBingingForPostgreSQL() {
+        let query = SwifQL.where(\CarBrands.name == "hello" || \CarBrands.name == "world").prepare(.psql).splitted.query
+        XCTAssertEqual(query, """
+        WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
+        """)
+    }
+    
+    func testBingingForMySQL() {
+        let query = SwifQL.where(\CarBrands.name == "hello" || \CarBrands.name == "world").prepare(.mysql).splitted.query
+        XCTAssertEqual(query, """
+        WHERE CarBrands.name = ? OR CarBrands.name = ?
+        """)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -450,7 +466,8 @@ final class SwifQLTests: XCTestCase {
         ("testFromTwoTableAliases", testFromTwoTableAliases),
         ("testFromTableAndTableAlias", testFromTableAndTableAlias),
         ("testSelectBuilderLimitShort", testSelectBuilderLimitShort),
-        ("testSelectBuilderCopy", testSelectBuilderCopy)
-        
+        ("testSelectBuilderCopy", testSelectBuilderCopy),
+        ("testBingingForPostgreSQL", testBingingForPostgreSQL),
+        ("testBingingForMySQL", testBingingForMySQL),
     ]
 }
