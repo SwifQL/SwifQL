@@ -449,5 +449,8 @@ final class SwifQLTests: XCTestCase {
         ("testFromOneTableAlias", testFromOneTableAlias),
         ("testFromTwoTableAliases", testFromTwoTableAliases),
         ("testFromTableAndTableAlias", testFromTableAndTableAlias),
+        ("testSelectBuilderLimitShort", testSelectBuilderLimitShort),
+        ("testSelectBuilderCopy", testSelectBuilderCopy)
+        
     ]
 }

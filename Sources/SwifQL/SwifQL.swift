@@ -67,5 +67,5 @@ extension Array where Element == SwifQLable {
 
 struct FQP {
     static var key = "§§§"
-    static func fKey(_ i: Int) -> String { return "?" }
+    static func fKey(_ i: Int) -> String { return "$\(i)" }
 }
