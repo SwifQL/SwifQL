@@ -8,18 +8,33 @@
 import Foundation
 
 public class SwifQLSelectBuilder {
-    var select: [SwifQLable] = []
-    var froms: [SwifQLable] = []
-    var joins: [SwifQLJoinBuilder] = []
-    var wheres: [SwifQLable] = []
-    var groupBy: [SwifQLable] = []
-    var havings: [SwifQLable] = []
-    var orderBy: [OrderByItem] = []
-    var offset: Int?
-    var limit: Int?
+    private var select: [SwifQLable] = []
+    private var froms: [SwifQLable] = []
+    private var joins: [SwifQLJoinBuilder] = []
+    private var wheres: [SwifQLable] = []
+    private var groupBy: [SwifQLable] = []
+    private var havings: [SwifQLable] = []
+    private var orderBy: [OrderByItem] = []
+    private var offset: Int?
+    private var limit: Int?
     
     public init() {}
     
+    public func copy() -> SwifQLSelectBuilder {
+        let copy = SwifQLSelectBuilder()
+        
+        copy.select = self.select
+        copy.froms = self.froms
+        copy.joins = self.joins
+        copy.wheres = self.wheres
+        copy.groupBy = self.groupBy
+        copy.havings = self.havings
+        copy.orderBy = self.orderBy
+        copy.offset = self.offset
+        copy.limit = self.limit
+        
+        return copy
+    }
     // MARK: Select
     
     @discardableResult
@@ -131,6 +146,12 @@ public class SwifQLSelectBuilder {
         limit = value
         return self
     }
+    @discardableResult
+    public func limit(_ offset: Int,_ limit: Int) -> SwifQLSelectBuilder {
+        self.limit = limit
+        self.offset = offset
+        return self
+    }
     
     public func build() -> SwifQLable {
         var query = SwifQL.select(select).from(froms)
@@ -156,12 +177,13 @@ public class SwifQLSelectBuilder {
         if orderBy.count > 0 {
             query = query.orderBy(orderBy)
         }
-        if let offset = offset {
-            query = query.offset(offset)
-        }
         if let limit = limit {
             query = query.limit(limit)
         }
+        if let offset = offset {
+            query = query.offset(offset)
+        }
         return query
     }
+    
 }
