@@ -23,15 +23,15 @@ public class SwifQLSelectBuilder {
     public func copy() -> SwifQLSelectBuilder {
         let copy = SwifQLSelectBuilder()
         
-        copy.select = self.select
-        copy.froms = self.froms
-        copy.joins = self.joins
-        copy.wheres = self.wheres
-        copy.groupBy = self.groupBy
-        copy.havings = self.havings
-        copy.orderBy = self.orderBy
-        copy.offset = self.offset
-        copy.limit = self.limit
+        copy.select = select
+        copy.froms = froms
+        copy.joins = joins
+        copy.wheres = wheres
+        copy.groupBy = groupBy
+        copy.havings = havings
+        copy.orderBy = orderBy
+        copy.offset = offset
+        copy.limit = limit
         
         return copy
     }
