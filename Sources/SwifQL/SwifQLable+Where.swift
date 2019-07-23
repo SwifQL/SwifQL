@@ -10,6 +10,12 @@ import Foundation
 //MARK: Where
 
 extension SwifQLable {
+    public var `where`: SwifQLable {
+        var parts: [SwifQLPart] = []
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .where)
+        return SwifQLableParts(parts: parts)
+    }
     public func `where`(_ predicates: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

@@ -18,6 +18,7 @@ final class SwifQLTests: XCTestCase {
     
     func testSelect() {
         checkAllDialects(SwifQL.select(), pg: "SELECT ", mySQL: "SELECT ")
+        checkAllDialects(SwifQL.select, pg: "SELECT", mySQL: "SELECT")
     }
     
     func testSelectString() {
@@ -346,6 +347,7 @@ final class SwifQLTests: XCTestCase {
     
     func testWhere() {
         checkAllDialects(SwifQL.where("" == 1), pg: "WHERE '' = 1", mySQL: "WHERE '' = 1")
+        checkAllDialects(SwifQL.where, pg: "WHERE", mySQL: "WHERE")
     }
     
     //MARK: - UNION

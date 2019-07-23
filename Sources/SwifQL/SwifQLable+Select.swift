@@ -10,6 +10,12 @@ import Foundation
 //MARK: Select
 
 extension SwifQLable {
+    public var select: SwifQLable {
+        var parts: [SwifQLPart] = []
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .select)
+        return SwifQLableParts(parts: parts)
+    }
     public func select(_ fields: SwifQLable...) -> SwifQLable {
         return select(fields)
     }
