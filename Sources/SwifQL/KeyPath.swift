@@ -9,7 +9,15 @@ import Foundation
 
 public protocol FQKeyPath: Decodable {}
 
-public protocol FQUniversalKeyPathSimple {
+public protocol KeyPathLastPath {
+    var lastPath: String { get }
+}
+
+extension String: KeyPathLastPath {
+    public var lastPath: String { return self }
+}
+
+public protocol FQUniversalKeyPathSimple: KeyPathLastPath {
     var queryValue: String { get }
     var path: String { get }
     var lastPath: String { get }

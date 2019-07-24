@@ -16,13 +16,12 @@ extension SwifQLable {
         parts.append(o: .constraint)
         return SwifQLableParts(parts: parts)
     }
-    // TODO: support constraints by keypath
-    public func constraint(_ key: String) -> SwifQLable {
+    public func constraint(_ value: KeyPathLastPath) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
         parts.append(o: .constraint)
         parts.append(o: .space)
-        parts.append(SwifQLPartAlias(key))
+        parts.append(SwifQLPartAlias(value.lastPath))
         return SwifQLableParts(parts: parts)
     }
 }

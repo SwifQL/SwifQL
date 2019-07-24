@@ -469,10 +469,10 @@ final class SwifQLTests: XCTestCase {
     func testOnConflict() {
         let query = SwifQL.on.conflict(\CarBrands.id, \CarBrands.name)
         let pg = """
-        ON CONFLICT ("CarBrands"."id", "CarBrands"."name")
+        ON CONFLICT ("id", "name")
         """
         let mySQL = """
-        ON CONFLICT (CarBrands.id, CarBrands.name)
+        ON CONFLICT (id, name)
         """
         checkAllDialects(query, pg: pg, mySQL: mySQL)
         let query2 = query.do.nothing
@@ -492,6 +492,14 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(query, pg: pg, mySQL: mySQL)
         let query2 = query.do.nothing
         checkAllDialects(query2, pg: pg + " DO NOTHING", mySQL: mySQL + " DO NOTHING")
+        let query3 = SwifQL.on.conflict.on.constraint(\CarBrands.name)
+        let pg3 = """
+        ON CONFLICT ON CONSTRAINT "name"
+        """
+        let mySQL3 = """
+        ON CONFLICT ON CONSTRAINT name
+        """
+        checkAllDialects(query3, pg: pg3, mySQL: mySQL3)
     }
     
     // MARK: - DO NOTHING

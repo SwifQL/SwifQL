@@ -38,3 +38,7 @@ public struct FormattedKeyPath {
 extension FormattedKeyPath: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartKeyPath(table: _table, paths: _paths)] }
 }
+
+extension FormattedKeyPath: KeyPathLastPath {
+    public var lastPath: String { return _paths.last ?? "" }
+}

@@ -66,7 +66,7 @@ extension AliasedKeyPath: Keypathable {
 
 //MARK: - KeyPath
 
-extension KeyPath: FQUniversalKeyPath, FQUniversalKeyPathSimple  where Root: Decodable & Reflectable {
+extension KeyPath: FQUniversalKeyPath, FQUniversalKeyPathSimple, KeyPathLastPath  where Root: Decodable & Reflectable {
     public typealias AType = Value
     public typealias AModel = Root
     public typealias ARoot = KeyPath
