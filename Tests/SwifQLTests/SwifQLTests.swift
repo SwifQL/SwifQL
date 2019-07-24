@@ -533,6 +533,41 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(query3, pg: pg3, mySQL: mySQL3)
         checkAllDialects(query4, pg: pg4, mySQL: mySQL4)
     }
+    
+    // MARK: - S?UBQUERY WITH ALIAS
+    
+    func testSubqueryWithAlias() {
+        let a = CarBrands.as("a")
+        let b = CarBrands.as("b")
+        // WRONG EXAMPLE because of `|` postfix operator near `alias1`
+//        let query = SwifQL.select(
+//            a~\.name,
+//            |SwifQL.select(Fn.json_agg(=>"alias1") => "test1" )
+//                .from(
+//                    |SwifQL.select(b~\.name => "someName")
+//                        .from(b.table)
+//                        .where(b~\.id == a~\.id)|
+//                ) => "alias1"|
+//            )
+//            .from(a.table)
+        // RIGHT EXAMPLE
+        // so use subquery inside brackets or even better move it into variable (it'd be more beautiful and easy to support)
+        let query = SwifQL.select(
+            a~\.name,
+            |(SwifQL.select(Fn.json_agg(=>"alias1") => "test1")
+                .from(
+                    |SwifQL.select(b~\.name => "someName")
+                        .from(b.table)
+                        .where(b~\.id == a~\.id)|
+                ) => "alias1")|
+            )
+            .from(a.table)
+        checkAllDialects(query, pg: """
+        SELECT "a"."name", (SELECT json_agg("alias1") as "test1" FROM (SELECT "b"."name" as "someName" FROM "CarBrands" AS "b" WHERE "b"."id" = "a"."id") as "alias1") FROM "CarBrands" AS "a"
+        """, mySQL: """
+        SELECT a.name, (SELECT json_agg(alias1) as test1 FROM (SELECT b.name as someName FROM CarBrands AS b WHERE b.id = a.id) as alias1) FROM CarBrands AS a
+        """)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -601,5 +636,6 @@ final class SwifQLTests: XCTestCase {
         ("testOnConflictOnConstraintDoNothing", testOnConflictOnConstraintDoNothing),
         ("testDoNothing", testDoNothing),
         ("testNotAndBetween", testNotAndBetween),
+        ("testSubqueryWithAlias", testSubqueryWithAlias),
     ]
 }
