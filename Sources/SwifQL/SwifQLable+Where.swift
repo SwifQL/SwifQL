@@ -11,7 +11,7 @@ import Foundation
 
 extension SwifQLable {
     public var `where`: SwifQLable {
-        var parts: [SwifQLPart] = []
+        var parts = self.parts
         parts.appendSpaceIfNeeded()
         parts.append(o: .where)
         return SwifQLableParts(parts: parts)

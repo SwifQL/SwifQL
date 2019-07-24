@@ -1,29 +1,30 @@
 //
-//  SwifQLable+Select.swift
-//  SwifQLCore
+//  SwifQLable+Conflict.swift
+//  SwifQL
 //
-//  Created by Mihael Isaev on 13/11/2018.
+//  Created by Mihael Isaev on 24/07/2019.
 //
 
 import Foundation
 
-//MARK: Select
+//MARK: Conflict
 
 extension SwifQLable {
-    public var select: SwifQLable {
+    public var conflict: SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .select)
+        parts.append(o: .conflict)
         return SwifQLableParts(parts: parts)
     }
-    public func select(_ fields: SwifQLable...) -> SwifQLable {
-        return select(fields)
+    public func conflict(_ fields: SwifQLable...) -> SwifQLable {
+        return conflict(fields)
     }
-    public func select(_ fields: [SwifQLable]) -> SwifQLable {
+    public func conflict(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .select)
+        parts.append(o: .conflict)
         parts.append(o: .space)
+        parts.append(o: .openBracket)
         for (i, v) in fields.enumerated() {
             if i > 0 {
                 parts.append(o: .comma)
@@ -31,6 +32,7 @@ extension SwifQLable {
             }
             parts.append(contentsOf: v.parts)
         }
+        parts.append(o: .closeBracket)
         return SwifQLableParts(parts: parts)
     }
 }

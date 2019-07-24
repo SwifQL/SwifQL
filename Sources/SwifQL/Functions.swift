@@ -17,6 +17,7 @@ extension Fn {
         case equal, notEqual, `in`, notIn, like, notLike, ilike, notILike, fulltext, isNull, isNotNull
         case contains, containedBy
         case on, `case`, when, then, `else`, end, null
+        case `do`, conflict, constraint, nothing
         case asc, desc
         case limit, offset
         case `for`
@@ -72,6 +73,10 @@ extension Fn {
             case .else: return "ELSE"
             case .end: return "END"
             case .null: return "NULL"
+            case .do: return "DO"
+            case .conflict: return "CONFLICT"
+            case .constraint: return "CONSTRAINT"
+            case .nothing: return "NOTHING"
             case .asc: return "ASC"
             case .desc: return "DESC"
             case .limit: return "LIMIT"

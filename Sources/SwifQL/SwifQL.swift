@@ -7,11 +7,18 @@
 
 import Foundation
 
-public let SwifQL = _SwifQL()
+public let SwifQL: SwifQLable = _SwifQL()
+public func SwifQL(_ query: SwifQLable) -> SwifQLable {
+    return _SwifQL(query)
+}
 
-public struct _SwifQL: SwifQLable {
-    public var parts: [SwifQLPart]  { return [] }
-    public init () {}
+private struct _SwifQL: SwifQLable {
+    public var parts: [SwifQLPart] = []
+    public init (_ query: SwifQLable? = nil) {
+        if let parts = query?.parts {
+            self.parts = parts
+        }
+    }
 }
 
 extension Decodable {

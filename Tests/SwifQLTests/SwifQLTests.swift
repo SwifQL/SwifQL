@@ -463,6 +463,76 @@ final class SwifQLTests: XCTestCase {
         SELECT 'hello', aaa FROM (SELECT CarBrands.name FROM CarBrands) as aaa
         """)
     }
+    
+    // MARK: - ON CONFLICT DO NOTHING
+    
+    func testOnConflict() {
+        let query = SwifQL.on.conflict(\CarBrands.id, \CarBrands.name)
+        let pg = """
+        ON CONFLICT ("CarBrands"."id", "CarBrands"."name")
+        """
+        let mySQL = """
+        ON CONFLICT (CarBrands.id, CarBrands.name)
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = query.do.nothing
+        checkAllDialects(query2, pg: pg + " DO NOTHING", mySQL: mySQL + " DO NOTHING")
+    }
+    
+    // MARK: - ON CONFLICT ON CONSTRAINT DO NOTHING
+    
+    func testOnConflictOnConstraintDoNothing() {
+        let query = SwifQL.on.conflict.on.constraint("hello_world")
+        let pg = """
+        ON CONFLICT ON CONSTRAINT "hello_world"
+        """
+        let mySQL = """
+        ON CONFLICT ON CONSTRAINT hello_world
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = query.do.nothing
+        checkAllDialects(query2, pg: pg + " DO NOTHING", mySQL: mySQL + " DO NOTHING")
+    }
+    
+    // MARK: - DO NOTHING
+    
+    func testDoNothing() {
+        let query = SwifQL.do.nothing
+        checkAllDialects(query, pg: """
+        DO NOTHING
+        """, mySQL: """
+        DO NOTHING
+        """)
+    }
+    
+    // MARK: - NOT / NOT BETWEEN / BETWEEN
+    
+    func testNotAndBetween() {
+        let query = SwifQL.between(10.and(20))
+        let pg = """
+        BETWEEN 10 AND 20
+        """
+        let mySQL = """
+        BETWEEN 10 AND 20
+        """
+        let query2 = SwifQL.between((\CarBrands.id).and(\CarBrands.name))
+        let pg2 = """
+        BETWEEN "CarBrands"."id" AND "CarBrands"."name"
+        """
+        let mySQL2 = """
+        BETWEEN CarBrands.id AND CarBrands.name
+        """
+        let query3 = SwifQL.not(query)
+        let pg3 = "NOT " + pg
+        let mySQL3 = "NOT " + mySQL
+        let query4 = SwifQL.not(query2)
+        let pg4 = "NOT " + pg2
+        let mySQL4 = "NOT " + mySQL2
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+        checkAllDialects(query3, pg: pg3, mySQL: mySQL3)
+        checkAllDialects(query4, pg: pg4, mySQL: mySQL4)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -526,6 +596,10 @@ final class SwifQLTests: XCTestCase {
         ("testNotExists", testNotExists),
         ("testWhereExists", testWhereExists),
         ("testWhereNotExists", testWhereNotExists),
-        ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams)
+        ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams),
+        ("testOnConflict", testOnConflict),
+        ("testOnConflictOnConstraintDoNothing", testOnConflictOnConstraintDoNothing),
+        ("testDoNothing", testDoNothing),
+        ("testNotAndBetween", testNotAndBetween),
     ]
 }

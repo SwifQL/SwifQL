@@ -10,6 +10,12 @@ import Foundation
 //MARK: NOT
 
 extension SwifQLable {
+    public var not: SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .not)
+        return SwifQLableParts(parts: parts)
+    }
     public func not(_ part: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
