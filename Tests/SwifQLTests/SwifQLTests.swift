@@ -452,6 +452,17 @@ final class SwifQLTests: XCTestCase {
         WHERE NOT EXISTS (1)
         """)
     }
+    
+    // MARK: - SELECT with alias in select params
+    
+    func testSelectWithAliasInSelectParams() {
+        let query = SwifQL.select("hello", =>"aaa").from(|SwifQL.select(\CarBrands.name).from(CarBrands.table))| => "aaa"
+        checkAllDialects(query, pg: """
+        SELECT 'hello', "aaa" FROM (SELECT "CarBrands"."name" FROM "CarBrands") as "aaa"
+        """, mySQL: """
+        SELECT 'hello', aaa FROM (SELECT CarBrands.name FROM CarBrands) as aaa
+        """)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -515,5 +526,6 @@ final class SwifQLTests: XCTestCase {
         ("testNotExists", testNotExists),
         ("testWhereExists", testWhereExists),
         ("testWhereNotExists", testWhereNotExists),
+        ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams)
     ]
 }

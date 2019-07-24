@@ -50,6 +50,15 @@ public func => (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     return SwifQLableParts(parts: parts)
 }
 
+prefix operator =>
+/// write `=>"aliasName"` in Swift
+/// to reach `"aliasName"` in SQL
+public prefix func => (rhs: String) -> SwifQLable {
+    var parts: [SwifQLPart] = []
+    parts.append(SwifQLPartAlias(rhs))
+    return SwifQLableParts(parts: parts)
+}
+
 /// Getting keypath with alias
 /// e.g. you have `User` table with `email` field, and normally you can just write \User.email
 /// but in case of alias e.g. `let u = User.alias("u")` you should call it like `u+\.email`
