@@ -576,6 +576,27 @@ final class SwifQLTests: XCTestCase {
         SELECT a.name, (SELECT json_agg(alias1) as test1 FROM (SELECT b.name as someName FROM CarBrands AS b WHERE b.id = a.id) as alias1) FROM CarBrands AS a
         """)
     }
+    
+    // MARK: - RETURNING
+    
+    func testReturning() {
+        let query = SwifQL.returning("hello_world", "bye_world")
+        let pg = """
+        RETURNING "hello_world", "bye_world"
+        """
+        let mySQL = """
+        RETURNING hello_world, bye_world
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = SwifQL.returning(\CarBrands.id, \CarBrands.name)
+        let pg2 = """
+        RETURNING "id", "name"
+        """
+        let mySQL2 = """
+        RETURNING id, name
+        """
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -645,5 +666,6 @@ final class SwifQLTests: XCTestCase {
         ("testDoNothing", testDoNothing),
         ("testNotAndBetween", testNotAndBetween),
         ("testSubqueryWithAlias", testSubqueryWithAlias),
+        ("testReturning", testReturning),
     ]
 }
