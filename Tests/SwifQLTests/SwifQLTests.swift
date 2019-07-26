@@ -618,6 +618,48 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
+    
+    // MARK: - Fn.to_tsquery
+    
+    func testFn_to_tsquery() {
+        let query = SwifQL.select(Fn.to_tsquery("english", "The & Fat & Rats"))
+        let pg = """
+        SELECT to_tsquery('english', 'The & Fat & Rats')
+        """
+        let mySQL = """
+        SELECT to_tsquery('english', 'The & Fat & Rats')
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = SwifQL.select(Fn.to_tsquery("english"))
+        let pg2 = """
+        SELECT to_tsquery('english')
+        """
+        let mySQL2 = """
+        SELECT to_tsquery('english')
+        """
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+    }
+    
+    // MARK: - Fn.plainto_tsquery
+    
+    func testFn_plainto_tsquery() {
+        let query = SwifQL.select(Fn.plainto_tsquery("english", "The Fat Rats"))
+        let pg = """
+        SELECT plainto_tsquery('english', 'The Fat Rats')
+        """
+        let mySQL = """
+        SELECT plainto_tsquery('english', 'The Fat Rats')
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = SwifQL.select(Fn.plainto_tsquery("english"))
+        let pg2 = """
+        SELECT plainto_tsquery('english')
+        """
+        let mySQL2 = """
+        SELECT plainto_tsquery('english')
+        """
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -689,5 +731,7 @@ final class SwifQLTests: XCTestCase {
         ("testSubqueryWithAlias", testSubqueryWithAlias),
         ("testReturning", testReturning),
         ("testFn_to_tsvector", testFn_to_tsvector),
+        ("testFn_to_tsquery", testFn_to_tsquery),
+        ("testFn_plainto_tsquery", testFn_plainto_tsquery),
     ]
 }

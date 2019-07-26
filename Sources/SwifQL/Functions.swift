@@ -144,7 +144,7 @@ extension Fn {
         //Array
         case array_agg
         //Text Search
-        case to_tsvector
+        case to_tsvector, to_tsquery, plainto_tsquery
         //custom
         case custom(String)
         
@@ -271,6 +271,8 @@ extension Fn {
             case .array_agg: return "array_agg"
                 
             case .to_tsvector: return "to_tsvector"
+            case .to_tsquery: return "to_tsquery"
+            case .plainto_tsquery: return "plainto_tsquery"
                 
             case .custom(let v): return v
             }
@@ -1761,6 +1763,49 @@ extension Fn {
             parts.append(contentsOf: text.parts)
         }
         return buildFn(.to_tsvector, body: parts)
+    }
+    
+    /// PostgreSQL provides to_tsquery function for converting a query to the tsquery data type.
+    /// to_tsquery offers access to more features than plainto_tsquery, but is less forgiving about its input.
+    /// to_tsquery([ config regconfig, ] querytext text) returns tsquery
+    /// # Example
+    /// ```swift
+    /// Fn.to_tsquery("english", "The & Fat & Rats")
+    /// ```
+    /// # Result
+    /// ```
+    /// 'fat' & 'rat'
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/textsearch-controls.html)
+    public static func to_tsquery(_ config: SwifQLable, _ text: SwifQLable? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = config.parts
+        if let text = text {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(contentsOf: text.parts)
+        }
+        return buildFn(.to_tsquery, body: parts)
+    }
+    
+    /// `plainto_tsquery` transforms unformatted text querytext to tsquery
+    /// plainto_tsquery([ config regconfig, ] querytext text) returns tsquery
+    /// # Example
+    /// ```swift
+    /// Fn.plainto_tsquery("english", "The Fat Rats")
+    /// ```
+    /// # Result
+    /// ```
+    /// 'fat' & 'rat'
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/textsearch-controls.html)
+    public static func plainto_tsquery(_ config: SwifQLable, _ text: SwifQLable? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = config.parts
+        if let text = text {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(contentsOf: text.parts)
+        }
+        return buildFn(.plainto_tsquery, body: parts)
     }
 }
 
