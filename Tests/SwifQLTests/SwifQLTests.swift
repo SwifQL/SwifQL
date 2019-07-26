@@ -3,7 +3,7 @@ import XCTest
 @testable import SwifQLPure
 
 final class SwifQLTests: XCTestCase {
-    struct CarBrands: Codable, Reflectable {
+    struct CarBrands: Codable, Reflectable, Tableable {
         var id: UUID
         var name: String
         var createdAt: Date
@@ -660,6 +660,27 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
+    
+    // MARK: - FormattedKeyPath
+    
+    func testFormattedKeyPath() {
+        let query = SwifQL.select(FormattedKeyPath(CarBrands.self, "id"))
+        let pg = """
+        SELECT "CarBrands"."id"
+        """
+        let mySQL = """
+        SELECT CarBrands.id
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = SwifQL.select(CarBrands.mkp("id"))
+        let pg2 = """
+        SELECT "CarBrands"."id"
+        """
+        let mySQL2 = """
+        SELECT CarBrands.id
+        """
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -733,5 +754,6 @@ final class SwifQLTests: XCTestCase {
         ("testFn_to_tsvector", testFn_to_tsvector),
         ("testFn_to_tsquery", testFn_to_tsquery),
         ("testFn_plainto_tsquery", testFn_plainto_tsquery),
+        ("testFormattedKeyPath", testFormattedKeyPath),
     ]
 }

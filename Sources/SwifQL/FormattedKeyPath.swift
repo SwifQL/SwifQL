@@ -42,3 +42,25 @@ extension FormattedKeyPath: SwifQLable {
 extension FormattedKeyPath: KeyPathLastPath {
     public var lastPath: String { return _paths.last ?? "" }
 }
+
+extension Tableable {
+    /// Manual key path. Alias to `\User.something`
+    public static func manualKeyPath(_ paths: String...) -> FormattedKeyPath {
+        return manualKeyPath(paths)
+    }
+    
+    /// Manual key path. Alias to `\User.something`
+    public static func manualKeyPath(_ paths: [String]) -> FormattedKeyPath {
+        return FormattedKeyPath(entity, paths)
+    }
+    
+    /// Manual key path. Alias to `\User.something`
+    public static func mkp(_ paths: String...) -> FormattedKeyPath {
+        return manualKeyPath(paths)
+    }
+    
+    /// Manual key path. Alias to `\User.something`
+    public static func mkp(_ paths: [String]) -> FormattedKeyPath {
+        return manualKeyPath(paths)
+    }
+}
