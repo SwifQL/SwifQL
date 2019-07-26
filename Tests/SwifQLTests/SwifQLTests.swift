@@ -609,6 +609,14 @@ final class SwifQLTests: XCTestCase {
         SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')
         """
         checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = SwifQL.select(Fn.to_tsvector("english"))
+        let pg2 = """
+        SELECT to_tsvector('english')
+        """
+        let mySQL2 = """
+        SELECT to_tsvector('english')
+        """
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
 
     static var allTests = [

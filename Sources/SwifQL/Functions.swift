@@ -1753,11 +1753,13 @@ extension Fn {
     /// 'ate':9 'cat':3 'fat':2,11 'mat':7 'rat':12 'sat':4
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/textsearch-controls.html)
-    public static func to_tsvector(_ config: SwifQLable, _ text: SwifQLable) -> SwifQLable {
+    public static func to_tsvector(_ config: SwifQLable, _ text: SwifQLable? = nil) -> SwifQLable {
         var parts: [SwifQLPart] = config.parts
-        parts.append(o: .comma)
-        parts.append(o: .space)
-        parts.append(contentsOf: text.parts)
+        if let text = text {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(contentsOf: text.parts)
+        }
         return buildFn(.to_tsvector, body: parts)
     }
 }
