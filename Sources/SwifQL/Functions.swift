@@ -143,6 +143,8 @@ extension Fn {
         case now, statement_timestamp, timeofday, transaction_timestamp, to_timestamp
         //Array
         case array_agg
+        //Text Search
+        case to_tsvector
         //custom
         case custom(String)
         
@@ -267,6 +269,9 @@ extension Fn {
             case .to_timestamp: return "to_timestamp"
                 
             case .array_agg: return "array_agg"
+                
+            case .to_tsvector: return "to_tsvector"
+                
             case .custom(let v): return v
             }
         }
@@ -1735,6 +1740,25 @@ extension Fn {
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func to_timestamp(_ value: SwifQLable) -> SwifQLable {
         return buildFn(.to_timestamp, body: value.parts)
+    }
+    
+    /// PostgreSQL provides the function to_tsvector for converting a document to the tsvector data type.
+    /// to_tsvector([ config regconfig, ] document text) returns tsvector
+    /// # Example
+    /// ```swift
+    /// Fn.to_tsvector("english", "a fat  cat sat on a mat - it ate a fat rats")
+    /// ```
+    /// # Result
+    /// ```
+    /// 'ate':9 'cat':3 'fat':2,11 'mat':7 'rat':12 'sat':4
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/textsearch-controls.html)
+    public static func to_tsvector(_ config: SwifQLable, _ text: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = config.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: text.parts)
+        return buildFn(.to_tsvector, body: parts)
     }
 }
 

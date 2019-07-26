@@ -597,6 +597,19 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
+    
+    // MARK: - Fn.to_tsvector
+    
+    func testFn_to_tsvector() {
+        let query = SwifQL.select(Fn.to_tsvector("english", "a fat  cat sat on a mat - it ate a fat rats"))
+        let pg = """
+        SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')
+        """
+        let mySQL = """
+        SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -667,5 +680,6 @@ final class SwifQLTests: XCTestCase {
         ("testNotAndBetween", testNotAndBetween),
         ("testSubqueryWithAlias", testSubqueryWithAlias),
         ("testReturning", testReturning),
+        ("testFn_to_tsvector", testFn_to_tsvector),
     ]
 }
