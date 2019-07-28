@@ -313,6 +313,7 @@ extension Fn {
         case timestamp
         case interval
         case doublePrecision
+        case custom(String)
         
         var string: String {
             switch self {
@@ -347,6 +348,7 @@ extension Fn {
             case .timestamp: return "timestamp"
             case .interval: return "interval"
             case .doublePrecision: return "double precision"
+            case .custom(let type): return type
             }
         }
     }
