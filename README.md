@@ -16,7 +16,7 @@ This lib can work either stand alone, or with Vapor3.
 
 For now it supports PostgreSQL and MySQL. But it's not so hard to add other dialects 🙂
 
-Please feel free to ask me any questions regarding this lib, either in issues or you could find me in the [Discord app](https://discordapp.com) as `@iMike#3049` to request some support (for free) 🙂
+Please feel free to ask any questions in issues, and also you could find me in the [Discord app](https://discordapp.com) as `@iMike#3049` or even better just join **#swifql** channel on [Vapor's Discord server](https://discord.gg/vapor) 🙂
 
 > NOTE:
 >
@@ -31,7 +31,7 @@ Please feel free to ask me any questions regarding this lib, either in issues or
 ## Installation
 
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.8.1")
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.19.1")
 ```
 
 ### Stand alone
