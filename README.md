@@ -31,7 +31,7 @@ Please feel free to ask any questions in issues, and also you could find me in t
 ## Installation
 
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.19.1")
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.20.1")
 ```
 
 ### Stand alone
