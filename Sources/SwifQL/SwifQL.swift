@@ -36,7 +36,7 @@ public func ~ (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     parts.append(contentsOf: rhs.parts)
     return SwifQLableParts(parts: parts)
 }
-public func ~ (lhs: SwifQLable, rhs: Fn.Operator) -> SwifQLable {
+public func ~ (lhs: SwifQLable, rhs: SwifQLPartOperator) -> SwifQLable {
     var parts = lhs.parts
     parts.append(o: rhs)
     return SwifQLableParts(parts: parts)
@@ -45,7 +45,7 @@ public func ~ (lhs: SwifQLable, rhs: Fn.Operator) -> SwifQLable {
 public enum SwifQLableArraySeparator {
     case comma
     
-    var `operator`: Fn.Operator {
+    var `operator`: SwifQLPartOperator {
         switch self {
         case .comma: return .comma
         }

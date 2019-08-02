@@ -85,7 +85,7 @@ public struct SwifQLPartAlias: SwifQLPart {
         self.alias = alias
     }
 }
-public struct SwifQLPartOperator: SwifQLPart {
+public struct SwifQLPartOperator: SwifQLPart, Equatable {
     var value: String
     public init (_ value: String) { self.value = value }
 }

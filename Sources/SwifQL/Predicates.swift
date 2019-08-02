@@ -10,7 +10,7 @@ import Foundation
 public struct SwifQLPredicate: SwifQLable {
     public var parts: [SwifQLPart]
     
-    public init (operator: Fn.Operator, lhs: SwifQLable, rhs: SwifQLable?) {
+    public init (operator: SwifQLPartOperator, lhs: SwifQLable, rhs: SwifQLable?) {
         parts = lhs.parts
         parts.append(o: .space)
         if let rhs = rhs {

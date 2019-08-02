@@ -10,100 +10,6 @@ import Foundation
 public struct Fn {}
 
 extension Fn {
-    public enum Operator {
-        case select, distinct, `as`, from, join, `where`, having, groupBy, orderBy, insertInto, values, union
-        case returning, exists
-        case and, or, greaterThan, lessThan, greaterThanOrEqual, lessThanOrEqual
-        case equal, notEqual, `in`, notIn, like, notLike, ilike, notILike, fulltext, isNull, isNotNull
-        case contains, containedBy
-        case on, `case`, when, then, `else`, end, null
-        case `do`, conflict, constraint, nothing
-        case asc, desc
-        case limit, offset
-        case `for`
-        case filter
-        case array, doubleDollar
-        case between, notBetween, not
-        //just syntax
-        case openBracket, closeBracket
-        case openSquareBracket, closeSquareBracket
-        case comma, space, `_`
-        //custom
-        case custom(String)
-        
-        var rawValue: String {
-            switch self {
-            case .select: return "SELECT"
-            case .distinct: return "DISTINCT"
-            case .as: return "as"
-            case .from: return "FROM"
-            case .join: return "JOIN"
-            case .where: return "WHERE"
-            case .having: return "HAVING"
-            case .groupBy: return "GROUP BY"
-            case .orderBy: return "ORDER BY"
-            case .insertInto: return "INSERT INTO"
-            case .values: return "VALUES"
-            case .union: return "UNION"
-            case .returning: return "RETURNING"
-            case .exists: return "EXISTS"
-            case .and: return "AND"
-            case .or: return "OR"
-            case .greaterThan: return ">"
-            case .lessThan: return "<"
-            case .greaterThanOrEqual: return ">="
-            case .lessThanOrEqual: return "<="
-            case .equal: return "="
-            case .notEqual: return "!="
-            case .in: return "IN"
-            case .notIn: return "NOT IN"
-            case .like: return "LIKE"
-            case .notLike: return "NOT LIKE"
-            case .ilike: return "ILIKE"
-            case .notILike: return "NOT ILIKE"
-            case .fulltext: return "@@"
-            case .isNull: return "IS NULL"
-            case .isNotNull: return "IS NOT NULL"
-            case .contains: return "@>"
-            case .containedBy: return "<@"
-            case .on: return "ON"
-            case .case: return "CASE"
-            case .when: return "WHEN"
-            case .then: return "THEN"
-            case .else: return "ELSE"
-            case .end: return "END"
-            case .null: return "NULL"
-            case .do: return "DO"
-            case .conflict: return "CONFLICT"
-            case .constraint: return "CONSTRAINT"
-            case .nothing: return "NOTHING"
-            case .asc: return "ASC"
-            case .desc: return "DESC"
-            case .limit: return "LIMIT"
-            case .offset: return "OFFSET"
-            case .for: return "FOR"
-            case .filter: return "FILTER"
-            case .array: return "ARRAY"
-            case .doubleDollar: return "$$"
-            case .between: return "BETWEEN"
-            case .notBetween: return "NOT BETWEEN"
-            case .not: return "NOT"
-            case .openBracket: return "("
-            case .closeBracket: return ")"
-            case .openSquareBracket: return "["
-            case .closeSquareBracket: return "]"
-            case .comma: return ","
-            case .space: fallthrough
-            case ._: return " "
-            case .custom(let v): return v
-            }
-        }
-        
-        var part: SwifQLPartOperator {
-            return SwifQLPartOperator(rawValue)
-        }
-    }
-    
     public enum Function {
         case substr, coalesce, octet_length, cast, ifnull, isnull, nvl, expression
         //string functions
@@ -1824,9 +1730,9 @@ extension Array where Element == SwifQLPart {
     public mutating func append(f: Fn.Function) {
         append(f.part)
     }
-    public mutating func append(o: Fn.Operator...) {
+    public mutating func append(o: SwifQLPartOperator...) {
         for o in o {
-            append(o.part)
+            append(o)
         }
     }
     public mutating func append(safe value: Any) {
