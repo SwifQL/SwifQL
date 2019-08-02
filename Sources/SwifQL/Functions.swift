@@ -1551,7 +1551,7 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: sec.parts)
-        return buildFn(.make_timestamptz, body: parts)
+        return buildFn(.make_timestamp, body: parts)
     }
     
     /// Create timestamp with time zone from year, month, day, hour, minute and seconds fields;
