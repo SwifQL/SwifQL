@@ -51,6 +51,8 @@ extension Fn {
         case array_agg
         //Text Search
         case to_tsvector, to_tsquery, plainto_tsquery
+        //Mysql
+        case from_unixtime
         //custom
         case custom(String)
         
@@ -179,6 +181,8 @@ extension Fn {
             case .to_tsvector: return "to_tsvector"
             case .to_tsquery: return "to_tsquery"
             case .plainto_tsquery: return "plainto_tsquery"
+                
+            case .from_unixtime: return "FROM_UNIXTIME"
                 
             case .custom(let v): return v
             }
@@ -1714,6 +1718,18 @@ extension Fn {
             parts.append(contentsOf: text.parts)
         }
         return buildFn(.plainto_tsquery, body: parts)
+    }
+    
+    // MARK: - MySQL
+    
+    public static func from_unixtime(_ timeinterval: SwifQLable, _ format: String? = nil) -> SwifQLable {
+        var parts: [SwifQLPart] = timeinterval.parts
+        if let format = format {
+            parts.append(o: .comma)
+            parts.append(o: .space)
+            parts.append(o: .custom(format.singleQuotted))
+        }
+        return buildFn(.from_unixtime, body: parts)
     }
 }
 
