@@ -61,6 +61,9 @@ extension Int32: SwifQLable {
 extension Int64: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
+extension Date: SwifQLable {
+    public var parts: [SwifQLPart] { return [SwifQLPartDate(self)] }
+}
 public protocol SwifQLRawRepresentable: RawRepresentable, SwifQLable {}
 extension SwifQLRawRepresentable {
     public var parts: [SwifQLPart] {

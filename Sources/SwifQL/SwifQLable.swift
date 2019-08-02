@@ -61,6 +61,22 @@ public struct SwifQLPartKeyPathLastPart: SwifQLPart {
         self.lastPath = lastPath
     }
 }
+public struct SwifQLPartDate: SwifQLPart {
+    public var date: Date
+    public init (_ date: Date) {
+        self.date = date
+    }
+    public var mysql: String {
+        return Fn.from_unixtime(date.timeIntervalSince1970).prepare(.mysql).plain
+    }
+    public var psql: String {
+        let interval = Fn.make_interval(secs: date.timeIntervalSince1970)
+        let epoch = SwifQL.epoch(with: interval)
+        let timestamp = SwifQL.timestamp(epoch)
+        let result = |timestamp|
+        return result.prepare(.psql).plain
+    }
+}
 public struct SwifQLPartKeyPath: SwifQLKeyPathable {
     public var table: String
     public var paths: [String]
@@ -209,6 +225,11 @@ extension SwifQLable {
                 return format(keyPathLastPart: v.lastPath, for: dialect)
             case let v as SwifQLPartOperator:
                 return v.value
+            case let v as SwifQLPartDate:
+                switch dialect {
+                case .mysql: return v.mysql
+                case .psql: return v.psql
+                }
             case let v as SwifQLPartSafeValue:
                 return formatSafeValue(v.safeValue, for: dialect)
             case let v as SwifQLPartUnsafeValue:
