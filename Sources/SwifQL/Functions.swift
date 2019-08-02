@@ -837,6 +837,10 @@ extension Fn {
     
     /// Builds a JSON object out of a variadic argument list.
     /// By convention, the argument list consists of alternating keys and values
+    /// # Example
+    /// ```swift
+    /// Fn.json_build_object("foo", 1, "bar", 2)
+    /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_build_object(_ items: SwifQLable...) -> SwifQLable {
         return json_build_object(items)
@@ -844,6 +848,10 @@ extension Fn {
     
     /// Builds a JSON object out of a variadic argument list.
     /// By convention, the argument list consists of alternating keys and values
+    /// # Example
+    /// ```swift
+    /// Fn.json_build_object("foo", 1, "bar", 2)
+    /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_build_object(_ items: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = []
@@ -1008,6 +1016,10 @@ extension Fn {
     
     /// Builds a JSON object out of a variadic argument list.
     /// By convention, the argument list consists of alternating keys and values
+    /// # Example
+    /// ```swift
+    /// Fn.jsonb_build_object("foo", 1, "bar", 2)
+    /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_build_object(_ items: SwifQLable...) -> SwifQLable {
         return jsonb_build_object(items)
@@ -1015,6 +1027,10 @@ extension Fn {
     
     /// Builds a JSON object out of a variadic argument list.
     /// By convention, the argument list consists of alternating keys and values
+    /// # Example
+    /// ```swift
+    /// Fn.jsonb_build_object("foo", 1, "bar", 2)
+    /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_build_object(_ items: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = []
