@@ -154,7 +154,10 @@ public class SwifQLSelectBuilder {
     }
     
     public func build() -> SwifQLable {
-        var query = SwifQL.select(select).from(froms)
+        var query = SwifQL.select(select)
+        if froms.count > 0 {
+            query = query.from(froms)
+        }
         joins.forEach {
             query = query.join($0.mode, $0.table, on: $0.predicates)
         }
