@@ -50,7 +50,7 @@ extension Fn {
         //Array
         case array_agg
         //Text Search
-        case to_tsvector, to_tsquery, plainto_tsquery
+        case to_tsvector, to_tsquery, plainto_tsquery, ts_rank_cd
         //Mysql
         case from_unixtime
         //custom
@@ -181,6 +181,7 @@ extension Fn {
             case .to_tsvector: return "to_tsvector"
             case .to_tsquery: return "to_tsquery"
             case .plainto_tsquery: return "plainto_tsquery"
+            case .ts_rank_cd: return "ts_rank_cd"
                 
             case .from_unixtime: return "FROM_UNIXTIME"
                 
@@ -1734,6 +1735,29 @@ extension Fn {
             parts.append(contentsOf: text.parts)
         }
         return buildFn(.plainto_tsquery, body: parts)
+    }
+    
+    /// PostgreSQL provides two predefined ranking functions, which take into account lexical, proximity,
+    /// and structural information; that is, they consider how often the query terms appear in the document,
+    /// how close together the terms are in the document, and how important is the part of the document where they occur.
+    
+    /// `ts_rank_rd` calculates the rank of the provided tsquery
+    /// ts_rank_rd(vector tsvector, query tsquery [, normalization integer ]) returns tsquery
+    /// # Example
+    /// ```swift
+    /// Fn.ts_rank_cd("rats", Fn.to_tsquery("The Fat Rats"))
+    /// ```
+    /// # Result
+    /// ```
+    /// ts_rank_cd("rats", to_tsquery('The Fat Rats'))
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.6/textsearch-controls.html#TEXTSEARCH-RANKING)
+    public static func ts_rank_cd(_ vector: SwifQLable, _ query: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = vector.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: query.parts)
+        return buildFn(.ts_rank_cd, body: parts)
     }
     
     // MARK: - MySQL

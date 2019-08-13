@@ -661,6 +661,19 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
     
+    // MARK: - Fn.ts_rank_cd
+    
+    func testFn_ts_rank_cd() {
+        let query = SwifQL.select(Fn.ts_rank_cd(FormattedKeyPath(CarBrands.self, "id"), Fn.to_tsquery("The Fat Rats")))
+        let pg = """
+        SELECT ts_rank_cd("CarBrands"."id", to_tsquery('The Fat Rats'))
+        """
+        let mySQL = """
+        SELECT ts_rank_cd(CarBrands.id, to_tsquery('The Fat Rats'))
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
+    
     // MARK: - FormattedKeyPath
     
     func testFormattedKeyPath() {
