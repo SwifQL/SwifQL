@@ -22,6 +22,9 @@ extension String: SwifQLable {
 extension UUID: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
+extension Bool: SwifQLable {
+    public var parts: [SwifQLPart] { return [SwifQLPartBool(self)] }
+}
 extension Decimal: SwifQLable {
     public var parts: [SwifQLPart] { return [SwifQLPartUnsafeValue(self)] }
 }
