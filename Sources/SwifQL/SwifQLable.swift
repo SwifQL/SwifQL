@@ -26,14 +26,14 @@ public struct SwifQLableParts: SwifQLable {
 }
 
 public protocol SwifQLPart {}
-struct SwifQLPartBool: SwifQLPart, SwifQLable {
-    var parts: [SwifQLPart] {
+public struct SwifQLPartBool: SwifQLPart, SwifQLable {
+    public var parts: [SwifQLPart] {
         return [self]
     }
     
     let value: Bool
     
-    init (_ value: Bool) {
+    public init (_ value: Bool) {
         self.value = value
     }
 }
