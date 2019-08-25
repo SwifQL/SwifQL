@@ -26,6 +26,7 @@ public struct SwifQLableParts: SwifQLable {
 }
 
 public protocol SwifQLPart {}
+public typealias SwifQLBool = SwifQLPartBool
 public struct SwifQLPartBool: SwifQLPart, SwifQLable {
     public var parts: [SwifQLPart] {
         return [self]

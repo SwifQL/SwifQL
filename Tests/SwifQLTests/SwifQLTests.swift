@@ -694,6 +694,27 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
+    
+    // MARK: - Concat
+    
+    func testConcat() {
+        let query = Fn.concat("Hello ", \CarBrands.name)
+        let pg = """
+        concat('Hello ', "CarBrands"."name")
+        """
+        let mySQL = """
+        concat('Hello ', CarBrands.name)
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        let query2 = Fn.concat_ws(", ", "Hello", \CarBrands.name)
+        let pg2 = """
+        concat_ws(', ', 'Hello', "CarBrands"."name")
+        """
+        let mySQL2 = """
+        concat_ws(', ', 'Hello', CarBrands.name)
+        """
+        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -768,5 +789,6 @@ final class SwifQLTests: XCTestCase {
         ("testFn_to_tsquery", testFn_to_tsquery),
         ("testFn_plainto_tsquery", testFn_plainto_tsquery),
         ("testFormattedKeyPath", testFormattedKeyPath),
+        ("testConcat", testConcat),
     ]
 }

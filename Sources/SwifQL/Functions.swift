@@ -14,6 +14,7 @@ extension Fn {
         case substr, coalesce, octet_length, cast, ifnull, isnull, nvl, expression
         //string functions
         case bit_length, btrim, char_length, character_length, initcap
+        case concat, concat_ws
         case array_length, length, lower, lpad, ltrim, position, `repeat`
         case replace, rpad, rtrim, strpos, substring, translate
         case trim, upper
@@ -72,6 +73,8 @@ extension Fn {
             case .char_length: return "char_length"
             case .character_length: return "character_length"
             case .initcap: return "initcap"
+            case .concat: return "concat"
+            case .concat_ws: return "concat_ws"
             case .array_length: return "array_length"
             case .length: return "length"
             case .lower: return "lower"
@@ -1758,6 +1761,82 @@ extension Fn {
         parts.append(o: .space)
         parts.append(contentsOf: query.parts)
         return buildFn(.ts_rank_cd, body: parts)
+    }
+    
+    /// Concatenate all arguments. NULL arguments are ignored.
+    ///
+    /// # Example
+    /// ```swift
+    /// Fn.concat("Hello ", \User.name)
+    /// ```
+    /// # Result
+    /// ```
+    /// concat('Hello ', "User"."name")
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
+    public static func concat(_ values: SwifQLable...) -> SwifQLable {
+        return concat(values)
+    }
+    
+    /// Concatenate all arguments. NULL arguments are ignored.
+    ///
+    /// # Example
+    /// ```swift
+    /// Fn.concat("Hello ", \User.name)
+    /// ```
+    /// # Result
+    /// ```
+    /// concat('Hello ', "User"."name")
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
+    public static func concat(_ values: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        values.enumerated().forEach { offset, value in
+            parts.append(contentsOf: value.parts)
+            if offset < values.count - 1 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+        }
+        return buildFn(.concat, body: parts)
+    }
+    
+    /// Concatenate all arguments. NULL arguments are ignored.
+    ///
+    /// # Example
+    /// ```swift
+    /// Fn.concat_ws(", ", "Hello", \User.name)
+    /// ```
+    /// # Result
+    /// ```
+    /// concat_ws(', ', 'Hello', "User"."name")
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
+    public static func concat_ws(_ values: SwifQLable...) -> SwifQLable {
+        return concat_ws(values)
+    }
+    
+    /// Concatenate all arguments. NULL arguments are ignored.
+    ///
+    /// # Example
+    /// ```swift
+    /// Fn.concat_ws(", ", "Hello", \User.name)
+    /// ```
+    /// # Result
+    /// ```
+    /// concat_ws(', ', 'Hello', "User"."name")
+    /// ```
+    /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
+    public static func concat_ws(_ values: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        values.enumerated().forEach { offset, value in
+            parts.append(contentsOf: value.parts)
+            if offset < values.count - 1 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+        }
+        return buildFn(.concat_ws, body: parts)
     }
     
     // MARK: - MySQL
