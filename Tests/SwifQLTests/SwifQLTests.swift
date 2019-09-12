@@ -715,6 +715,19 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
     }
+    
+    // MARK: - Delete
+    
+    func testDelete() {
+        let query = SwifQL.delete(from: CarBrands.table).where(\CarBrands.name == "BMW")
+        let pg = """
+        DELETE FROM "CarBrands" WHERE "CarBrands"."name" = 'BMW'
+        """
+        let mySQL = """
+        DELETE FROM CarBrands WHERE CarBrands.name = 'BMW'
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -790,5 +803,6 @@ final class SwifQLTests: XCTestCase {
         ("testFn_plainto_tsquery", testFn_plainto_tsquery),
         ("testFormattedKeyPath", testFormattedKeyPath),
         ("testConcat", testConcat),
+        ("testDelete", testDelete),
     ]
 }

@@ -16,6 +16,7 @@ extension SwifQLPartOperator {
     public static var select: Result { return "SELECT".operator }
     public static var distinct: Result { return "DISTINCT".operator }
     public static var `as`: Result { return "as".operator }
+    public static var delete: Result { return "DELETE".operator }
     public static var from: Result { return "FROM".operator }
     public static var join: Result { return "JOIN".operator }
     public static var `where`: Result { return "WHERE".operator }
