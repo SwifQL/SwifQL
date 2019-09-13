@@ -7,27 +7,56 @@
 
 import Foundation
 
-public struct Case: SwifQLable {
-    public var parts: [SwifQLPart] = []
-    public init (when: SwifQLable, then: SwifQLable?, else: SwifQLable) {
+public class Case {
+    var parts: [SwifQLPart] = []
+    
+    public init (_ expression: SwifQLable? = nil) {
         parts.append(o: .case)
-        parts.append(o: .space)
+        if let expression = expression {
+            parts.append(o: .space)
+            parts.append(contentsOf: expression.parts)
+        }
+    }
+    
+    public static func when(_ expression: SwifQLable) -> Case {
+        return Case().when(expression)
+    }
+    
+    public func when(_ expression: SwifQLable) -> Case {
+        parts.appendSpaceIfNeeded()
         parts.append(o: .when)
         parts.append(o: .space)
-        parts.append(contentsOf: when.parts)
-        parts.append(o: .space)
+        parts.append(contentsOf: expression.parts)
+        return self
+    }
+    
+    public func then(_ expression: SwifQLable?) -> Case {
+        parts.appendSpaceIfNeeded()
         parts.append(o: .then)
         parts.append(o: .space)
-        if let then = then {
-            parts.append(contentsOf: then.parts)
+        if let expression = expression {
+            parts.append(contentsOf: expression.parts)
         } else {
             parts.append(o: .null)
         }
-        parts.append(o: .space)
+        return self
+    }
+    
+    public func `else`(_ expression: SwifQLable?) -> Case {
+        parts.appendSpaceIfNeeded()
         parts.append(o: .else)
         parts.append(o: .space)
-        parts.append(contentsOf: `else`.parts)
-        parts.append(o: .space)
+        if let expression = expression {
+            parts.append(contentsOf: expression.parts)
+        } else {
+            parts.append(o: .null)
+        }
+        return self
+    }
+    
+    public var end: SwifQLable {
+        parts.appendSpaceIfNeeded()
         parts.append(o: .end)
+        return SwifQLableParts(parts: parts)
     }
 }
