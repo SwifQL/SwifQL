@@ -104,6 +104,7 @@ extension SwifQLPartOperator {
     public var select: Result { return concatWith(.select) }
     public var distinct: Result { return concatWith(.distinct) }
     public var `as`: Result { return concatWith(.as) }
+    public var delete: Result { return concatWith(.delete) }
     public var from: Result { return concatWith(.from) }
     public var join: Result { return concatWith(.join) }
     public var `where`: Result { return concatWith(.where) }
