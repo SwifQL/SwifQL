@@ -11,9 +11,13 @@ final class SwifQLTests: XCTestCase {
     
     let cb = CarBrands.as("cb")
     
-    func checkAllDialects(_ query: SwifQLable, pg: String, mySQL: String) {
-        XCTAssertEqual(query.prepare(.psql).plain, pg)
-        XCTAssertEqual(query.prepare(.mysql).plain, mySQL)
+    func checkAllDialects(_ query: SwifQLable, pg: String? = nil, mySQL: String? = nil) {
+        if let pg = pg {
+            XCTAssertEqual(query.prepare(.psql).plain, pg)
+        }
+        if let mySQL = mySQL {
+            XCTAssertEqual(query.prepare(.mysql).plain, mySQL)
+        }
     }
     
     func testSelect() {
@@ -727,6 +731,34 @@ final class SwifQLTests: XCTestCase {
         DELETE FROM CarBrands WHERE CarBrands.name = 'BMW'
         """
         checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
+    
+    // MARK: - Order by simple
+    
+    func testOrderByPostgreSQL() {
+        let query = SwifQL.orderBy(.asc(\CarBrands.name), .desc(\CarBrands.id))
+        let pg = """
+        ORDER BY "CarBrands"."name" ASC, "CarBrands"."id" DESC
+        """
+        let mySQL = """
+        ORDER BY CarBrands.name ASC, CarBrands.id DESC
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
+    
+    // MARK: - Order by with nulls
+    
+    func testOrderByWithNulls() {
+        let pgQuery = SwifQL.orderBy(.asc(\CarBrands.name, nulls: .first), .desc(\CarBrands.id, nulls: .last))
+        let pg = """
+        ORDER BY "CarBrands"."name" ASC NULLS FIRST, "CarBrands"."id" DESC NULLS LAST
+        """
+        let mysqlQuery = SwifQL.orderBy(.asc(\CarBrands.name == nil, \CarBrands.name), .desc(\CarBrands.id != nil, \CarBrands.id))
+        let mySQL = """
+        ORDER BY CarBrands.name IS NULL, CarBrands.name ASC, CarBrands.id IS NOT NULL, CarBrands.id DESC
+        """
+        checkAllDialects(pgQuery, pg: pg)
+        checkAllDialects(mysqlQuery, mySQL: mySQL)
     }
 
     static var allTests = [

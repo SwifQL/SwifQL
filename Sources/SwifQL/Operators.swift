@@ -92,6 +92,9 @@ extension SwifQLPartOperator {
     public static var century: Result { return "CENTURY".operator }
     public static var overlaps: Result { return "OVERLAPS".operator }
     public static var doublePrecision: Result { return "DOUBLE PRECISION".operator }
+    public static var nulls: Result { return "NULLS".operator }
+    public static var first: Result { return "FIRST".operator }
+    public static var last: Result { return "LAST".operator }
     public static var openBracket: Result { return "(".operator }
     public static var closeBracket: Result { return ")".operator }
     public static var openSquareBracket: Result { return "[".operator }
@@ -180,6 +183,9 @@ extension SwifQLPartOperator {
     public var century: Result { return concatWith(.century) }
     public var overlaps: Result { return concatWith(.overlaps) }
     public var doublePrecision: Result { return concatWith(.doublePrecision) }
+    public var nulls: Result { return concatWith(.nulls) }
+    public var first: Result { return concatWith(.first) }
+    public var last: Result { return concatWith(.last) }
     public var openBracket: Result { return concatWith(.openBracket) }
     public var closeBracket: Result { return concatWith(.closeBracket) }
     public var openSquareBracket: Result { return concatWith(.openSquareBracket) }
