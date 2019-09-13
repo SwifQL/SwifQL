@@ -735,7 +735,7 @@ final class SwifQLTests: XCTestCase {
     
     // MARK: - Order by simple
     
-    func testOrderByPostgreSQL() {
+    func testOrderBySimple() {
         let query = SwifQL.orderBy(.asc(\CarBrands.name), .desc(\CarBrands.id))
         let pg = """
         ORDER BY "CarBrands"."name" ASC, "CarBrands"."id" DESC
@@ -836,5 +836,7 @@ final class SwifQLTests: XCTestCase {
         ("testFormattedKeyPath", testFormattedKeyPath),
         ("testConcat", testConcat),
         ("testDelete", testDelete),
+        ("testOrderBySimple", testOrderBySimple),
+        ("testOrderByWithNulls", testOrderByWithNulls),
     ]
 }
