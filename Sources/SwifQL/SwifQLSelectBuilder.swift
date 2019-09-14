@@ -174,8 +174,9 @@ public class SwifQLSelectBuilder {
         havings.enumerated().forEach {
             if $0.offset == 0 {
                 query = query.having($0.element)
+            } else {
+                query = query && $0.element
             }
-            query = query && $0.element
         }
         if orderBy.count > 0 {
             query = query.orderBy(orderBy)
