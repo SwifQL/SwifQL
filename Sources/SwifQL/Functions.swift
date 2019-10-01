@@ -227,6 +227,7 @@ extension Fn {
         case timestamp
         case interval
         case doublePrecision
+        case regconfig
         case custom(String)
         
         var string: String {
@@ -262,6 +263,7 @@ extension Fn {
             case .timestamp: return "timestamp"
             case .interval: return "interval"
             case .doublePrecision: return "double precision"
+            case .regconfig: return "regconfig"
             case .custom(let type): return type
             }
         }
