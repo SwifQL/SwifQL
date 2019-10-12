@@ -24,10 +24,10 @@ public struct CastType {
     public static var integerArray: CastType = .init("integer[]")
     public static var numeric: CastType = .init("numeric")
     public static var numericArray: CastType = .init("numeric[]")
-    public static func numeric(_ p: Int, _ s: Int) -> Self { return .init("numeric(\(p), \(s))") }
+    public static func numeric(_ p: Int, _ s: Int) -> CastType { return .init("numeric(\(p), \(s))") }
     public static var bigint: CastType = .init("bigint")
     public static var bigintArray: CastType = .init("bigint[]")
-    public static func float(_ v: Int) -> Self { return .init("float(\(v))") }
+    public static func float(_ v: Int) -> CastType { return .init("float(\(v))") }
     public static var real: CastType = .init("real")
     public static var realArray: CastType = .init("real[]")
     public static var float8: CastType = .init("float8")
@@ -45,5 +45,5 @@ public struct CastType {
     public static var doublePrecision: CastType = .init("double precision")
     public static var regconfig: CastType = .init("regconfig")
     
-    public static func custom(_ name: String) -> Self { return .init(name) }
+    public static func custom(_ name: String) -> CastType { return .init(name) }
 }
