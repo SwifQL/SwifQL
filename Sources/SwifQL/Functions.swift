@@ -165,7 +165,7 @@ extension Fn {
         
         // MARK: Custom
         
-        public static func custom(_ name: String) -> CastType {
+        public static func custom(_ name: String) -> Name {
             return .init(name)
         }
         
