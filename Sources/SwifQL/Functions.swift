@@ -1238,6 +1238,35 @@ extension Fn {
     /// Get subfield
     /// # Example with timestamp
     /// ```swift
+    /// Fn.extract(.hour, "2001-02-16 20:38:40" => .timestamp)
+    /// ```
+    /// # Result
+    /// ```
+    /// 20
+    /// ```
+    /// # Example with interval
+    /// ```swift
+    /// Fn.extract(.month, "2 years 3 months" => .interval)
+    /// ```
+    /// # Result
+    /// ```
+    /// 3
+    /// ```
+    ///
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT)
+    public static func extract(_ field: ExtractFieldValue, from value: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        parts.append(safe: field.rawValue)
+        parts.append(o: .space)
+        parts.append(o: .from)
+        parts.append(o: .space)
+        parts.append(contentsOf: value.parts)
+        return build(.extract, body: parts)
+    }
+    
+    /// Get subfield
+    /// # Example with timestamp
+    /// ```swift
     /// Fn.extract("hour", "2001-02-16 20:38:40" => .timestamp)
     /// ```
     /// # Result
