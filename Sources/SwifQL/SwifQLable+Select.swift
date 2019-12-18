@@ -34,6 +34,6 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
     public func select(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
-        select(block().values)
+        select(block())
     }
 }

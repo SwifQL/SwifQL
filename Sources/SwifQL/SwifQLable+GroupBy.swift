@@ -28,6 +28,6 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
     public func groupBy(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
-        groupBy(block().values)
+        groupBy(block())
     }
 }
