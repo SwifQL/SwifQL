@@ -24,4 +24,8 @@ extension SwifQLable {
         parts.append(contentsOf: predicates.parts)
         return SwifQLableParts(parts: parts)
     }
+    // TODO
+//    public func `where`(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
+//        `where`(block())
+//    }
 }

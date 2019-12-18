@@ -17,7 +17,7 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
     public func select(_ fields: SwifQLable...) -> SwifQLable {
-        return select(fields)
+        select(fields)
     }
     public func select(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts
@@ -32,5 +32,8 @@ extension SwifQLable {
             parts.append(contentsOf: v.parts)
         }
         return SwifQLableParts(parts: parts)
+    }
+    public func select(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
+        select(block().values)
     }
 }

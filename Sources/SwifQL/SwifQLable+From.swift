@@ -27,6 +27,9 @@ extension SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
+    public func from(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
+        from(block().values)
+    }
 }
 
 //extension SwifQLable {
