@@ -26,9 +26,9 @@ extension SwifQLable {
     }
     public func `where`(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
         if let value = block() as? QueryBuilderItem {
-            `where`(value.values)
+            return `where`(value.values)
         } else {
-            `where`(block())
+            return `where`(block())
         }
     }
 }

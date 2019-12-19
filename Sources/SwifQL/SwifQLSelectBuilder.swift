@@ -1,3 +1,10 @@
+//
+//  SwifQLSelectBuilder.swift
+//  App
+//
+//  Created by Mihael Isaev on 22/02/2019.
+//
+
 import Foundation
 
 public class SwifQLSelectBuilder {

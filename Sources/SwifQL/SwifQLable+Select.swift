@@ -35,9 +35,9 @@ extension SwifQLable {
     }
     public func select(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
         if let value = block() as? QueryBuilderItem {
-            select(value.values)
+            return select(value.values)
         } else {
-            select(block())
+            return select(block())
         }
     }
 }
