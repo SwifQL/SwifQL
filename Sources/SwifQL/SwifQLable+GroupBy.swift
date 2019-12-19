@@ -27,7 +27,11 @@ extension SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
-    public func groupBy(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
-        groupBy(block())
+    public func groupBy(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
+        if let value = block() as? QueryBuilderItem {
+            groupBy(value.values)
+        } else {
+            groupBy(block())
+        }
     }
 }

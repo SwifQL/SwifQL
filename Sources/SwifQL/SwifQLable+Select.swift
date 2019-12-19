@@ -33,7 +33,11 @@ extension SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
-    public func select(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
-        select(block())
+    public func select(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
+        if let value = block() as? QueryBuilderItem {
+            select(value.values)
+        } else {
+            select(block())
+        }
     }
 }

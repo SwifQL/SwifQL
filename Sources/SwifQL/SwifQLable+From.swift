@@ -27,8 +27,12 @@ extension SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
-    public func from(@QueryBuilder block: QueryBuilder.SingleView) -> SwifQLable {
-        from(block())
+    public func from(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
+        if let value = block() as? QueryBuilderItem {
+            from(value.values)
+        } else {
+            from(block())
+        }
     }
 }
 
