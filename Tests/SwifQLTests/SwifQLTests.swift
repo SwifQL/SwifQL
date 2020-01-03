@@ -269,6 +269,22 @@ final class SwifQLTests: XCTestCase {
             SELECT sum(cb.id)
             """)
     }
+
+    func testSelectFnStringAgg() {
+        checkAllDialects(SwifQL.select(Fn.string_agg(\CarBrands.name, ", ")), pg: """
+            SELECT string_agg("CarBrands"."name", ', ')
+            """, mySQL: """
+            SELECT string_agg(CarBrands.name, ', ')
+            """)
+    }
+
+    func testSelectFnRegexpReplace() {
+        checkAllDialects(SwifQL.select(Fn.regexp_replace("/full/path/to/filename", "^.+/", "")), pg: """
+            SELECT regexp_replace('/full/path/to/filename', '^.+/', '')
+            """, mySQL: """
+            SELECT regexp_replace('/full/path/to/filename', '^.+/', '')
+            """)
+    }
     
     //MARK: - FROM
     
@@ -844,6 +860,8 @@ final class SwifQLTests: XCTestCase {
         ("testSelectFnSign", testSelectFnSign),
         ("testSelectFnSqrt", testSelectFnSqrt),
         ("testSelectFnSum", testSelectFnSum),
+        ("testSelectFnStringAgg", testSelectFnStringAgg),
+        ("testSelectFnRegexpReplace", testSelectFnRegexpReplace),
         ("testSelectFrom", testSelectFrom),
         ("testFrom", testFrom),
         ("testFromOneTable", testFromOneTable),
