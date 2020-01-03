@@ -50,6 +50,8 @@ extension Fn {
         public static var translate: Name = .init("translate")
         public static var trim: Name = .init("trim")
         public static var upper: Name = .init("upper")
+        public static var string_agg: Name = .init("string_agg")
+        public static var regexp_replace: Name = .init("regexp_replace")
         
         // MARK: Numeric/Math
         
@@ -546,7 +548,32 @@ extension Fn {
     public static func upper(_ string: SwifQLable) -> SwifQLable {
         return build(.upper, body: string.parts)
     }
-    
+
+    /// Concatenates non-null input values into a string, separated by delimiter
+    /// [Learn more →](https://www.postgresql.org/docs/11/functions-aggregate.html)
+    public static func string_agg(_ string: SwifQLable, _ separator: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        parts.append(contentsOf: string.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: separator.parts)
+        return build(.string_agg, body: parts)
+    }
+
+    /// Replaces a sequence of characters in a string with another set of characters using regular expression pattern matching
+    /// [Learn more →](https://www.techonthenet.com/oracle/functions/regexp_replace.php)
+    public static func regexp_replace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        parts.append(contentsOf: string.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: fromRegexp.parts)
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: toSubstring.parts)
+        return build(.regexp_replace, body: parts)
+    }
+
     //MARK: - Numeric/Math Functions
     
     /// Returns the absolute value of a number
