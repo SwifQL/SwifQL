@@ -49,10 +49,30 @@ In your target's dependencies add `"SwifQL"` and `"SwifQLNIO"`, e.g. like this:
 .target(name: "App", dependencies: ["SwifQL", "SwifQLNIO"]),
 ```
 
+### Stand alone with SwiftNIO2
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
+.package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"2.0.0"),
+```
+In your target's dependencies add `"SwifQL"` and `"SwifQLNIO"`, e.g. like this:
+```swift
+.target(name: "App", dependencies: ["SwifQL", "SwifQLNIO"]),
+```
+
 ### With Vapor 3
 ```swift
 .package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
 .package(url: "https://github.com/MihaelIsaev/SwifQLVapor.git", from:"1.0.0"),
+```
+In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this:
+```swift
+.target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
+```
+
+### With Vapor 4
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
+.package(url: "https://github.com/MihaelIsaev/SwifQLVapor.git", from:"2.0.0"),
 ```
 In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this:
 ```swift
@@ -127,7 +147,7 @@ extension YourModel: Tableable {}
 
 #### Pure Swift
 
- Just `import SwifQL` 
+ Just `import SwifQL`
 
 ### How to build query
 
