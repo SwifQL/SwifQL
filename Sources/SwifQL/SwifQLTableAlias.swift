@@ -88,6 +88,9 @@ extension AliasedKeyPath: SwifQLKeyPathable {
 
 extension AliasedKeyPath: SwifQLable {
     public var parts: [SwifQLPart] {
+        if let kp = self.originalKeyPath as? FluentKitFieldable {
+            return [SwifQLPartKeyPath(table: table, paths: [kp.key])]
+        }
         return [SwifQLPartKeyPath(table: table, paths: paths)]
     }
 }
