@@ -270,7 +270,7 @@ final class SwifQLTests: XCTestCase {
     }
 
     func testSelectFnStringAgg() {
-        checkAllDialects(SwifQL.select(Fn.string_agg(\CarBrands.name, ", ")), pg: """
+        checkAllDialects(SwifQL.select(Fn.string_agg(CarBrands.column("name"), ", ")), pg: """
             SELECT string_agg("CarBrands"."name", ', ')
             """, mySQL: """
             SELECT string_agg(CarBrands.name, ', ')
