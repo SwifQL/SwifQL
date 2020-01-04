@@ -24,11 +24,4 @@ extension SwifQLable {
         parts.append(contentsOf: predicates.parts)
         return SwifQLableParts(parts: parts)
     }
-    public func `where`(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
-        if let value = block() as? QueryBuilderItem {
-            return `where`(value.values)
-        } else {
-            return `where`(block())
-        }
-    }
 }

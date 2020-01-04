@@ -27,13 +27,6 @@ extension SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
-    public func from(@QueryBuilder block: QueryBuilder.Block) -> SwifQLable {
-        if let value = block() as? QueryBuilderItem {
-            return from(value.values)
-        } else {
-            return from(block())
-        }
-    }
 }
 
 //extension SwifQLable {

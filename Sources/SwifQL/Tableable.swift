@@ -20,4 +20,8 @@ extension Tableable {
     static var entity: String {
         return String(describing: Self.self)
     }
+    
+    public static func column(_ paths: String...) -> Column {
+        Column(entity, paths)
+    }
 }
