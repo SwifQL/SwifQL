@@ -22,6 +22,6 @@ extension Tableable {
     }
     
     public static func column(_ paths: String...) -> Column {
-        Column(entity, paths)
+        return Column(entity, paths)
     }
 }

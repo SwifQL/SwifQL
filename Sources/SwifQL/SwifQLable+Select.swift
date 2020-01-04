@@ -17,7 +17,7 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
     public func select(_ fields: SwifQLable...) -> SwifQLable {
-        select(fields)
+        return select(fields)
     }
     public func select(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts

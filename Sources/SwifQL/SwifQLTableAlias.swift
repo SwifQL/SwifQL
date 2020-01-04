@@ -40,7 +40,7 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
     }
     
     public func column(_ paths: String...) -> Column {
-        Column(alias, paths)
+        return Column(alias, paths)
     }
     
     //MARK: SQLQueryPart
