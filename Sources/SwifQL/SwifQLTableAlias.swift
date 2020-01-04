@@ -7,10 +7,6 @@
 
 import Foundation
 
-#if canImport(Fluent)
-import Fluent
-#endif
-
 protocol SwifQLTableAliasable {
     var alias: String { get }
 }
