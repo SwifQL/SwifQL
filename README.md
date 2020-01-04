@@ -30,17 +30,30 @@ Please feel free to ask any questions in issues, and also you could find me in t
 
 ## Installation
 
-```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"0.20.1")
-```
-
 ### Stand alone
-In your target's dependencies add `"SwifQL"` and `"SwifQLPure"`, e.g. like this:
 ```swift
-.target(name: "App", dependencies: ["SwifQL", "SwifQLPure"]),
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
+```
+In your target's dependencies add `"SwifQL"` e.g. like this:
+```swift
+.target(name: "App", dependencies: ["SwifQL"]),
 ```
 
-### With vapor 3
+### Stand alone with SwiftNIO1
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
+.package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"1.0.0"),
+```
+In your target's dependencies add `"SwifQL"` and `"SwifQLNIO"`, e.g. like this:
+```swift
+.target(name: "App", dependencies: ["SwifQL", "SwifQLNIO"]),
+```
+
+### With Vapor 3
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
+.package(url: "https://github.com/MihaelIsaev/SwifQLVapor.git", from:"1.0.0"),
+```
 In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this:
 ```swift
 .target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
@@ -112,9 +125,9 @@ extension YourModel: Tableable {}
 
 `import SwifQLVapor` and `import SwifQL` together cause Swift won't export predicates from `SwifQL` through `SwifQLVapor`, unfortunately.
 
-#### With pure Swift or other frameworks
+#### Pure Swift
 
-`import SwifQLPure` and `import SwifQL` together cause Swift won't export predicates from `SwifQL` through `SwifQLPure`, unfortunately.
+ Just `import SwifQL` 
 
 ### How to build query
 

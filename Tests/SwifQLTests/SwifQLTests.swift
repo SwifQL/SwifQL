@@ -1,9 +1,8 @@
 import XCTest
 @testable import SwifQL
-@testable import SwifQLPure
 
 final class SwifQLTests: XCTestCase {
-    struct CarBrands: Codable, Reflectable, Tableable {
+    struct CarBrands: Codable, Tableable {
         var id: UUID
         var name: String
         var createdAt: Date
@@ -42,7 +41,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectCarBrands() {
-        checkAllDialects(SwifQL.select(\CarBrands.id), pg: """
+        checkAllDialects(SwifQL.select(CarBrands.column("id")), pg: """
             SELECT "CarBrands"."id"
             """, mySQL: """
             SELECT CarBrands.id
@@ -50,7 +49,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectCarBrandsSeveralFields() {
-        checkAllDialects(SwifQL.select(\CarBrands.id, \CarBrands.name), pg: """
+        checkAllDialects(SwifQL.select(CarBrands.column("id"), CarBrands.column("name")), pg: """
             SELECT "CarBrands"."id", "CarBrands"."name"
             """, mySQL: """
             SELECT CarBrands.id, CarBrands.name
@@ -58,7 +57,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectCarBrandsWithAlias() {
-        checkAllDialects(SwifQL.select(cb~\.id), pg: """
+        checkAllDialects(SwifQL.select(cb.column("id")), pg: """
             SELECT "cb"."id"
             """, mySQL: """
             SELECT cb.id
@@ -66,7 +65,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectCarBrandsWithAliasSeveralFields() {
-        checkAllDialects(SwifQL.select(cb~\.id, cb~\.name), pg: """
+        checkAllDialects(SwifQL.select(cb.column("id"), cb.column("name")), pg: """
             SELECT "cb"."id", "cb"."name"
             """, mySQL: """
             SELECT cb.id, cb.name
@@ -74,7 +73,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectCarBrandsSeveralFieldsMixed() {
-        checkAllDialects(SwifQL.select(\CarBrands.id, cb~\.name, \CarBrands.createdAt), pg: """
+        checkAllDialects(SwifQL.select(CarBrands.column("id"), cb.column("name"), CarBrands.column("createdAt")), pg: """
             SELECT "CarBrands"."id", "cb"."name", "CarBrands"."createdAt"
             """, mySQL: """
             SELECT CarBrands.id, cb.name, CarBrands.createdAt
@@ -178,12 +177,12 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectFnCount() {
-        checkAllDialects(SwifQL.select(Fn.count(\CarBrands.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.count(CarBrands.column("id"))), pg: """
             SELECT count("CarBrands"."id")
             """, mySQL: """
             SELECT count(CarBrands.id)
             """)
-        checkAllDialects(SwifQL.select(Fn.count(cb~\.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.count(cb.column("id"))), pg: """
             SELECT count("cb"."id")
             """, mySQL: """
             SELECT count(cb.id)
@@ -203,12 +202,12 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectFnMax() {
-        checkAllDialects(SwifQL.select(Fn.max(\CarBrands.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.max(CarBrands.column("id"))), pg: """
             SELECT max("CarBrands"."id")
             """, mySQL: """
             SELECT max(CarBrands.id)
             """)
-        checkAllDialects(SwifQL.select(Fn.max(cb~\.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.max(cb.column("id"))), pg: """
             SELECT max("cb"."id")
             """, mySQL: """
             SELECT max(cb.id)
@@ -216,12 +215,12 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectFnMin() {
-        checkAllDialects(SwifQL.select(Fn.min(\CarBrands.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.min(CarBrands.column("id"))), pg: """
             SELECT min("CarBrands"."id")
             """, mySQL: """
             SELECT min(CarBrands.id)
             """)
-        checkAllDialects(SwifQL.select(Fn.min(cb~\.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.min(cb.column("id"))), pg: """
             SELECT min("cb"."id")
             """, mySQL: """
             SELECT min(cb.id)
@@ -258,12 +257,12 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectFnSum() {
-        checkAllDialects(SwifQL.select(Fn.sum(\CarBrands.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.sum(CarBrands.column("id"))), pg: """
             SELECT sum("CarBrands"."id")
             """, mySQL: """
             SELECT sum(CarBrands.id)
             """)
-        checkAllDialects(SwifQL.select(Fn.sum(cb~\.id)), pg: """
+        checkAllDialects(SwifQL.select(Fn.sum(cb.column("id"))), pg: """
             SELECT sum("cb"."id")
             """, mySQL: """
             SELECT sum(cb.id)
@@ -375,27 +374,27 @@ final class SwifQLTests: XCTestCase {
     //MARK: - INSERT INTO
     
     func testInsertInto() {
-        checkAllDialects(SwifQL.insertInto(CarBrands.table, fields: \CarBrands.id), pg: """
+        checkAllDialects(SwifQL.insertInto(CarBrands.table, fields: CarBrands.column("id")), pg: """
         INSERT INTO "CarBrands" ("id")
         """, mySQL: """
         INSERT INTO CarBrands (id)
         """)
-        checkAllDialects(SwifQL.insertInto(CarBrands.table, fields: \CarBrands.id, \CarBrands.name, \CarBrands.createdAt), pg: """
+        checkAllDialects(SwifQL.insertInto(CarBrands.table, fields: CarBrands.column("id"), CarBrands.column("name"), CarBrands.column("createdAt")), pg: """
         INSERT INTO "CarBrands" ("id", "name", "createdAt")
         """, mySQL: """
         INSERT INTO CarBrands (id, name, createdAt)
         """)
-        checkAllDialects(SwifQL.insertInto(cb.table, fields: cb~\.id), pg: """
+        checkAllDialects(SwifQL.insertInto(cb.table, fields: cb.column("id")), pg: """
         INSERT INTO "CarBrands" AS "cb" ("id")
         """, mySQL: """
         INSERT INTO CarBrands AS cb (id)
         """)
-        checkAllDialects(SwifQL.insertInto(cb.table, fields: cb~\.id, cb~\.name, cb~\.createdAt), pg: """
+        checkAllDialects(SwifQL.insertInto(cb.table, fields: cb.column("id"), cb.column("name"), cb.column("createdAt")), pg: """
         INSERT INTO "CarBrands" AS "cb" ("id", "name", "createdAt")
         """, mySQL: """
         INSERT INTO CarBrands AS cb (id, name, createdAt)
         """)
-        checkAllDialects(SwifQL.insertInto(cb.table, fields: \CarBrands.id, cb~\.name, \CarBrands.createdAt), pg: """
+        checkAllDialects(SwifQL.insertInto(cb.table, fields: CarBrands.column("id"), cb.column("name"), CarBrands.column("createdAt")), pg: """
         INSERT INTO "CarBrands" AS "cb" ("id", "name", "createdAt")
         """, mySQL: """
         INSERT INTO CarBrands AS cb (id, name, createdAt)
@@ -420,14 +419,14 @@ final class SwifQLTests: XCTestCase {
     // MARK: - BINDINGS
     
     func testBingingForPostgreSQL() {
-        let query = SwifQL.where(\CarBrands.name == "hello" || \CarBrands.name == "world").prepare(.psql).splitted.query
+        let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.psql).splitted.query
         XCTAssertEqual(query, """
         WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
         """)
     }
     
     func testBingingForMySQL() {
-        let query = SwifQL.where(\CarBrands.name == "hello" || \CarBrands.name == "world").prepare(.mysql).splitted.query
+        let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.mysql).splitted.query
         XCTAssertEqual(query, """
         WHERE CarBrands.name = ? OR CarBrands.name = ?
         """)
@@ -476,7 +475,7 @@ final class SwifQLTests: XCTestCase {
     // MARK: - SELECT with alias in select params
     
     func testSelectWithAliasInSelectParams() {
-        let query = SwifQL.select("hello", =>"aaa").from(|SwifQL.select(\CarBrands.name).from(CarBrands.table))| => "aaa"
+        let query = SwifQL.select("hello", =>"aaa").from(|SwifQL.select(CarBrands.column("name")).from(CarBrands.table))| => "aaa"
         checkAllDialects(query, pg: """
         SELECT 'hello', "aaa" FROM (SELECT "CarBrands"."name" FROM "CarBrands") as "aaa"
         """, mySQL: """
@@ -487,7 +486,7 @@ final class SwifQLTests: XCTestCase {
     // MARK: - ON CONFLICT DO NOTHING
     
     func testOnConflict() {
-        let query = SwifQL.on.conflict(\CarBrands.id, \CarBrands.name)
+        let query = SwifQL.on.conflict(CarBrands.column("id"), CarBrands.column("name"))
         let pg = """
         ON CONFLICT ("id", "name")
         """
@@ -512,7 +511,7 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(query, pg: pg, mySQL: mySQL)
         let query2 = query.do.nothing
         checkAllDialects(query2, pg: pg + " DO NOTHING", mySQL: mySQL + " DO NOTHING")
-        let query3 = SwifQL.on.conflict.on.constraint(\CarBrands.name)
+        let query3 = SwifQL.on.conflict.on.constraint(CarBrands.column("name"))
         let pg3 = """
         ON CONFLICT ON CONSTRAINT "name"
         """
@@ -543,7 +542,7 @@ final class SwifQLTests: XCTestCase {
         let mySQL = """
         BETWEEN 10 AND 20
         """
-        let query2 = SwifQL.between((\CarBrands.id).and(\CarBrands.name))
+        let query2 = SwifQL.between((CarBrands.column("id")).and(CarBrands.column("name")))
         let pg2 = """
         BETWEEN "CarBrands"."id" AND "CarBrands"."name"
         """
@@ -581,12 +580,12 @@ final class SwifQLTests: XCTestCase {
         // RIGHT EXAMPLE
         // so use subquery inside brackets or even better move it into variable (it'd be more beautiful and easy to support)
         let query = SwifQL.select(
-            a~\.name,
+            a.column("name"),
             |(SwifQL.select(Fn.json_agg(=>"alias1") => "test1")
                 .from(
-                    |SwifQL.select(b~\.name => "someName")
+                    |SwifQL.select(b.column("name") => "someName")
                         .from(b.table)
-                        .where(b~\.id == a~\.id)|
+                        .where(b.column("id") == a.column("id"))|
                 ) => "alias1")|
             )
             .from(a.table)
@@ -608,7 +607,7 @@ final class SwifQLTests: XCTestCase {
         RETURNING hello_world, bye_world
         """
         checkAllDialects(query, pg: pg, mySQL: mySQL)
-        let query2 = SwifQL.returning(\CarBrands.id, \CarBrands.name)
+        let query2 = SwifQL.returning(CarBrands.column("id"), CarBrands.column("name"))
         let pg2 = """
         RETURNING "id", "name"
         """
@@ -718,7 +717,7 @@ final class SwifQLTests: XCTestCase {
     // MARK: - Concat
     
     func testConcat() {
-        let query = Fn.concat("Hello ", \CarBrands.name)
+        let query = Fn.concat("Hello ", CarBrands.column("name"))
         let pg = """
         concat('Hello ', "CarBrands"."name")
         """
@@ -726,7 +725,7 @@ final class SwifQLTests: XCTestCase {
         concat('Hello ', CarBrands.name)
         """
         checkAllDialects(query, pg: pg, mySQL: mySQL)
-        let query2 = Fn.concat_ws(", ", "Hello", \CarBrands.name)
+        let query2 = Fn.concat_ws(", ", "Hello", CarBrands.column("name"))
         let pg2 = """
         concat_ws(', ', 'Hello', "CarBrands"."name")
         """
@@ -739,7 +738,7 @@ final class SwifQLTests: XCTestCase {
     // MARK: - Delete
     
     func testDelete() {
-        let query = SwifQL.delete(from: CarBrands.table).where(\CarBrands.name == "BMW")
+        let query = SwifQL.delete(from: CarBrands.table).where(CarBrands.column("name") == "BMW")
         let pg = """
         DELETE FROM "CarBrands" WHERE "CarBrands"."name" = 'BMW'
         """
@@ -752,7 +751,7 @@ final class SwifQLTests: XCTestCase {
     // MARK: - Order by simple
     
     func testOrderBySimple() {
-        let query = SwifQL.orderBy(.asc(\CarBrands.name), .desc(\CarBrands.id))
+        let query = SwifQL.orderBy(.asc(CarBrands.column("name")), .desc(CarBrands.column("id")))
         let pg = """
         ORDER BY "CarBrands"."name" ASC, "CarBrands"."id" DESC
         """
@@ -765,11 +764,11 @@ final class SwifQLTests: XCTestCase {
     // MARK: - Order by with nulls
     
     func testOrderByWithNulls() {
-        let pgQuery = SwifQL.orderBy(.asc(\CarBrands.name, nulls: .first), .desc(\CarBrands.id, nulls: .last))
+        let pgQuery = SwifQL.orderBy(.asc(CarBrands.column("name"), nulls: .first), .desc(CarBrands.column("id"), nulls: .last))
         let pg = """
         ORDER BY "CarBrands"."name" ASC NULLS FIRST, "CarBrands"."id" DESC NULLS LAST
         """
-        let mysqlQuery = SwifQL.orderBy(.asc(\CarBrands.name == nil, \CarBrands.name), .desc(\CarBrands.id != nil, \CarBrands.id))
+        let mysqlQuery = SwifQL.orderBy(.asc(CarBrands.column("name") == nil, CarBrands.column("name")), .desc(CarBrands.column("id") != nil, CarBrands.column("id")))
         let mySQL = """
         ORDER BY CarBrands.name IS NULL, CarBrands.name ASC, CarBrands.id IS NOT NULL, CarBrands.id DESC
         """
@@ -781,9 +780,9 @@ final class SwifQLTests: XCTestCase {
     
     func testCaseWhenThenElse1() {
         let query = Case
-            .when(\CarBrands.name == "BMW")
+            .when(CarBrands.column("name") == "BMW")
             .then("Crazy driver")
-            .when(\CarBrands.name == "Tesla")
+            .when(CarBrands.column("name") == "Tesla")
             .then("Fancy driver")
             .else("Normal driver")
             .end
@@ -797,7 +796,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testCaseWhenThenElse2() {
-        let query = Case(\CarBrands.name)
+        let query = Case(CarBrands.column("name"))
             .when("BMW")
             .then("Crazy driver")
             .when("Tesla")
