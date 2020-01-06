@@ -21,7 +21,7 @@ extension Tableable {
         return String(describing: Self.self)
     }
     
-    public static func column(_ paths: String...) -> Column {
-        return Column(entity, paths)
+    public static func column(_ paths: String...) -> TableWithColumn {
+        return Table(entity).column(paths)
     }
 }

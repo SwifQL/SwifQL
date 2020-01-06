@@ -35,8 +35,8 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
         self.alias = alias
     }
     
-    public func column(_ paths: String...) -> Column {
-        return Column(alias, paths)
+    public func column(_ paths: String...) -> TableWithColumn {
+        return Table(alias).column(paths)
     }
     
     //MARK: SQLQueryPart

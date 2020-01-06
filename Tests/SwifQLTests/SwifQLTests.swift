@@ -40,8 +40,16 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(SwifQL.select("hello", 1, 1.234), pg: "SELECT 'hello', 1, 1.234", mySQL: "SELECT 'hello', 1, 1.234")
     }
     
+    func testSelectColumn() {
+        checkAllDialects(SwifQL.select(Column("id")), pg: """
+            SELECT "id"
+            """, mySQL: """
+            SELECT id
+            """)
+    }
+    
     func testSelectColumnWithTable() {
-        checkAllDialects(SwifQL.select(Column("CarBrands", "id")), pg: """
+        checkAllDialects(SwifQL.select(Table("CarBrands").column("id")), pg: """
             SELECT "CarBrands"."id"
             """, mySQL: """
             SELECT CarBrands.id
@@ -874,6 +882,8 @@ final class SwifQLTests: XCTestCase {
         ("testSelectInt", testSelectInt),
         ("testSelectDouble", testSelectDouble),
         ("testSelectSeveralSimpleValues", testSelectSeveralSimpleValues),
+        ("testSelectColumn", testSelectColumn),
+        ("testSelectColumnWithTable", testSelectColumnWithTable),
         ("testSelectCarBrands", testSelectCarBrands),
         ("testSelectCarBrandsSeveralFields", testSelectCarBrandsSeveralFields),
         ("testSelectCarBrandsWithAlias", testSelectCarBrandsWithAlias),
