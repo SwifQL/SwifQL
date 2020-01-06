@@ -8,15 +8,15 @@
 import Foundation
 
 public struct Column {
-    public let table: String
+    public let table: String?
     public let paths: [String]
     
-    public init (_ table: String, _ paths: String...) {
+    public init (_ table: String? = nil, _ paths: String...) {
         self.table = table
         self.paths = paths
     }
     
-    public init (_ table: String, _ paths: [String]) {
+    public init (_ table: String? = nil, _ paths: [String]) {
         self.table = table
         self.paths = paths
     }

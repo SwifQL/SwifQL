@@ -82,7 +82,7 @@ public class AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, K: Keypathable, T: 
 }
 
 extension AliasedKeyPath: SwifQLKeyPathable {
-    public var table: String { return alias }
+    public var table: String? { return alias }
     public var paths: [String] { return kp.paths }
 }
 

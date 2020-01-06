@@ -53,7 +53,7 @@ public struct SwifQLPartTableWithAlias: SwifQLPart {
     }
 }
 public protocol SwifQLKeyPathable: SwifQLPart {
-    var table: String { get }
+    var table: String? { get }
     var paths: [String] { get }
 }
 public struct SwifQLPartKeyPathLastPart: SwifQLPart {
@@ -79,13 +79,14 @@ public struct SwifQLPartDate: SwifQLPart {
     }
 }
 public struct SwifQLPartKeyPath: SwifQLKeyPathable {
-    public var table: String
+    public var table: String?
     public var paths: [String]
     public var asText: Bool
-    public init (table: String, paths: String..., asText: Bool = false) {
+    // FIXME: instead of `asText` here create some protocol for path which will support `asText` for each part of path
+    public init (table: String? = nil, paths: String..., asText: Bool = false) {
         self.init(table: table, paths: paths, asText: asText)
     }
-    public init (table: String, paths: [String], asText: Bool = false) {
+    public init (table: String? = nil, paths: [String], asText: Bool = false) {
         self.table = table
         self.paths = paths
         self.asText = asText
@@ -247,16 +248,24 @@ extension SwifQLable {
         var result = ""
         switch dialect {
         case .mysql:
-            result.append(keyPath.table)
-            result.append(".")
+            if let table = keyPath.table {
+                result.append(table)
+            }
             if let lastPath = keyPath.paths.last {
+                if result.count > 0 {
+                    result.append(".")
+                }
                 result.append(lastPath)
             }
         case .psql:
-            result.append(keyPath.table.doubleQuotted)
+            if let table = keyPath.table {
+                result.append(table.doubleQuotted)
+            }
             for (i, v) in keyPath.paths.enumerated() {
                 if i == 0 {
-                    result.append(".")
+                    if result.count > 0 {
+                        result.append(".")
+                    }
                     result.append(v.doubleQuotted)
                 } else {
                     if keyPath.asText, i == keyPath.paths.count - 1 {
