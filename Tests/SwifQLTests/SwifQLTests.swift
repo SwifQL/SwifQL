@@ -838,18 +838,16 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(queryStringCast, pg: pgStringCast, mySQL: mySQLStringCast)
         
-        let formatter: DateFormatter = {
-            let f = DateFormatter()
-            f.dateFormat = "yyyy-MM-dd"
-            return f
-        }()
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        df.timeZone = TimeZone(secondsFromGMT: 0)
         
-        let queryDate = SwifQL.select(Fn.generate_series(formatter.date(from: "2019-10-01")!, formatter.date(from: "2019-10-04")!, "1 day"))
+        let queryDate = SwifQL.select(Fn.generate_series(df.date(from: "2019-10-01 00:00:00")!, df.date(from: "2019-10-04 00:00:00")!, "1 day"))
         let pgDate = """
-        SELECT generate_series((TIMESTAMP 'EPOCH' + make_interval(secs => 1569906000.0)), (TIMESTAMP 'EPOCH' + make_interval(secs => 1570165200.0)), '1 day')
+        SELECT generate_series((TIMESTAMP 'EPOCH' + make_interval(secs => 1569888000.0)), (TIMESTAMP 'EPOCH' + make_interval(secs => 1570147200.0)), '1 day')
         """
         let mySQLDate = """
-        SELECT generate_series(FROM_UNIXTIME(1569906000.0), FROM_UNIXTIME(1570165200.0), '1 day')
+        SELECT generate_series(FROM_UNIXTIME(1569888000.0), FROM_UNIXTIME(1570147200.0), '1 day')
         """
         checkAllDialects(queryDate, pg: pgDate, mySQL: mySQLDate)
     }
