@@ -811,6 +811,48 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(query, pg: pg, mySQL: mySQL)
     }
+    
+    // MARK - Generate Series
+    
+    func testGenerateSeriesNumbers() {
+        checkAllDialects(SwifQL.select(Fn.generate_series(1, 4)), pg: "SELECT generate_series(1, 4)", mySQL: "SELECT generate_series(1, 4)")
+        checkAllDialects(SwifQL.select(Fn.generate_series(1, 4, 2)), pg: "SELECT generate_series(1, 4, 2)", mySQL: "SELECT generate_series(1, 4, 2)")
+    }
+    
+    func testGenerateSeriesDates() {
+        let queryString = SwifQL.select(Fn.generate_series("2019-10-01", "2019-10-04", "1 day"))
+        let pgString = """
+        SELECT generate_series('2019-10-01', '2019-10-04', '1 day')
+        """
+        let mySQLString = """
+        SELECT generate_series('2019-10-01', '2019-10-04', '1 day')
+        """
+        checkAllDialects(queryString, pg: pgString, mySQL: mySQLString)
+        
+        let queryStringCast = SwifQL.select(Fn.generate_series("2019-10-01" => .date, "2019-10-04" => .date, "1 day"))
+        let pgStringCast = """
+        SELECT generate_series('2019-10-01'::date, '2019-10-04'::date, '1 day')
+        """
+        let mySQLStringCast = """
+        SELECT generate_series('2019-10-01'::date, '2019-10-04'::date, '1 day')
+        """
+        checkAllDialects(queryStringCast, pg: pgStringCast, mySQL: mySQLStringCast)
+        
+        let formatter: DateFormatter = {
+            let f = DateFormatter()
+            f.dateFormat = "yyyy-MM-dd"
+            return f
+        }()
+        
+        let queryDate = SwifQL.select(Fn.generate_series(formatter.date(from: "2019-10-01")!, formatter.date(from: "2019-10-04")!, "1 day"))
+        let pgDate = """
+        SELECT generate_series((TIMESTAMP 'EPOCH' + make_interval(secs => 1569906000.0)), (TIMESTAMP 'EPOCH' + make_interval(secs => 1570165200.0)), '1 day')
+        """
+        let mySQLDate = """
+        SELECT generate_series(FROM_UNIXTIME(1569906000.0), FROM_UNIXTIME(1570165200.0), '1 day')
+        """
+        checkAllDialects(queryDate, pg: pgDate, mySQL: mySQLDate)
+    }
 
     static var allTests = [
         ("testPureSelect", testSelect),
@@ -893,5 +935,7 @@ final class SwifQLTests: XCTestCase {
         ("testOrderByWithNulls", testOrderByWithNulls),
         ("testCaseWhenThenElse1", testCaseWhenThenElse1),
         ("testCaseWhenThenElse2", testCaseWhenThenElse2),
+        ("testGenerateSeriesNumbers", testGenerateSeriesNumbers),
+        ("testGenerateSeriesDates", testGenerateSeriesDates)
     ]
 }
