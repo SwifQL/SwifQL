@@ -7,7 +7,7 @@
     <a href="https://swift.org">
         <img src="https://img.shields.io/badge/swift-4.2-brightgreen.svg" alt="Swift 4.2">
     </a>
-    <img src="https://circleci.com/gh/MihaelIsaev/SwifQL.svg?style=svg" alt="CircleCI">
+    <img src="https://img.shields.io/github/workflow/status/MihaelIsaev/SwifQL/test" alt="Github Actions">
 </p>
 
 <br>
