@@ -14,7 +14,7 @@ public struct OrderByItem: SwifQLable {
     
     // MARK: - Direction
     
-    enum Direction {
+    public enum Direction {
         case asc, desc
         
         var `operator`: SwifQLPartOperator {
@@ -42,7 +42,17 @@ public struct OrderByItem: SwifQLable {
     
     let nulls: Nulls?
     
-    // MARK: - Public statis initializers
+    // MARK: - Public static initializers
+
+    // MARK: Direction
+
+    public static func direction(_ value: Direction, _ elements: SwifQLable..., nulls: Nulls? = nil) -> OrderByItem {
+        return direction(value, elements, nulls: nulls)
+    }
+
+    public static func direction(_ value: Direction, _ elements: [SwifQLable], nulls: Nulls? = nil) -> OrderByItem {
+        return OrderByItem(elements: elements, direction: value, nulls: nulls)
+    }
     
     // MARK: Ascending
     

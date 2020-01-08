@@ -385,7 +385,7 @@ final class SwifQLTests: XCTestCase {
         
         XCTAssertEqual(prepareBuildPSQL , prepareCopyPSQL)
     }
-    
+
     //MARK: - WHERE
     
     func testWhere() {
@@ -799,7 +799,22 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(pgQuery, pg: pg)
         checkAllDialects(mysqlQuery, mySQL: mySQL)
     }
-    
+
+    // MARK: - Order by with direction
+
+    func testOrderByDirection() {
+        let pgQuery = SwifQL.orderBy(.direction(.asc, CarBrands.column("name"), nulls: .last))
+        let pg = """
+        ORDER BY "CarBrands"."name" ASC NULLS LAST
+        """
+        let mysqlQuery = SwifQL.orderBy(.direction(.desc, CarBrands.column("id"), nulls: .first))
+        let mySQL = """
+        ORDER BY CarBrands.id DESC NULLS FIRST
+        """
+        checkAllDialects(pgQuery, pg: pg)
+        checkAllDialects(mysqlQuery, mySQL: mySQL)
+    }
+
     // MARK: - Case When Then Else
     
     func testCaseWhenThenElse1() {
@@ -957,6 +972,7 @@ final class SwifQLTests: XCTestCase {
         ("testDelete", testDelete),
         ("testOrderBySimple", testOrderBySimple),
         ("testOrderByWithNulls", testOrderByWithNulls),
+        ("testOrderByDirection", testOrderByDirection),
         ("testCaseWhenThenElse1", testCaseWhenThenElse1),
         ("testCaseWhenThenElse2", testCaseWhenThenElse2),
         ("testGenerateSeriesNumbers", testGenerateSeriesNumbers),
