@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  Union.swift
+//  SwifQL
 //
 //  Created by Taylor McIntyre on 2020-01-15.
 //
