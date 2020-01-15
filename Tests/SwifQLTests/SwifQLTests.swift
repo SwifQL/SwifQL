@@ -987,7 +987,6 @@ final class SwifQLTests: XCTestCase {
         ("testBingingForMySQL", testBingingForMySQL),
         ("testExists", testExists),
         ("testNotExists", testNotExists),
-        ("testPureWhere", testWhere),
         ("testUnion", testUnion),
         ("testWhereExists", testWhereExists),
         ("testWhereNotExists", testWhereNotExists),
