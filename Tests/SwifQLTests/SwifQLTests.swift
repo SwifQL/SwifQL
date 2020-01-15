@@ -411,7 +411,6 @@ final class SwifQLTests: XCTestCase {
         (SELECT Table1.* FROM Table1) UNION (SELECT Table2.* FROM Table2) UNION (SELECT Table3.* FROM Table3)
         """)
         
-        //Distinct(t1~\.name => .text => "name")
         let adv = SwifQL
             .select(Distinct(Column("uniqueName")) => .text => "name")
             .from(
