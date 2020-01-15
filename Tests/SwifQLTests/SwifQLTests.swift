@@ -394,6 +394,39 @@ final class SwifQLTests: XCTestCase {
     }
     
     //MARK: - UNION
+    func testUnion() {
+        let table1 = Table("Table1")
+        let table2 = Table("Table2")
+        let table3 = Table("Table3")
+        
+        let sql = Union(
+            SwifQL.select(table1.*).from(table1),
+            SwifQL.select(table2.*).from(table2),
+            SwifQL.select(table3.*).from(table3)
+        )
+        
+        checkAllDialects(sql, pg: """
+        (SELECT "Table1".* FROM "Table1") UNION (SELECT "Table2".* FROM "Table2") UNION (SELECT "Table3".* FROM "Table3")
+        """, mySQL: """
+        (SELECT Table1.* FROM Table1) UNION (SELECT Table2.* FROM Table2) UNION (SELECT Table3.* FROM Table3)
+        """)
+        
+        //Distinct(t1~\.name => .text => "name")
+        let adv = SwifQL
+            .select(Distinct(Column("uniqueName")) => .text => "name")
+            .from(
+                Union(
+                    SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table1),
+                    SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table2)
+                )
+            )
+        
+        checkAllDialects(adv, pg: """
+        SELECT DISTINCT "uniqueName"::text as "name" FROM (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table1") UNION (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table2")
+        """, mySQL: """
+        SELECT DISTINCT uniqueName::text as name FROM (SELECT DISTINCT name::text as uniqueName FROM Table1) UNION (SELECT DISTINCT name::text as uniqueName FROM Table2)
+        """)
+    }
     
     //MARK: - INSERT INTO
     
@@ -955,6 +988,8 @@ final class SwifQLTests: XCTestCase {
         ("testBingingForMySQL", testBingingForMySQL),
         ("testExists", testExists),
         ("testNotExists", testNotExists),
+        ("testPureWhere", testWhere),
+        ("testUnion", testUnion),
         ("testWhereExists", testWhereExists),
         ("testWhereNotExists", testWhereNotExists),
         ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams),
