@@ -654,7 +654,7 @@ final class SwifQLTests: XCTestCase {
     func testSubqueryWithAlias() {
         let a = CarBrands.as("a")
         let b = CarBrands.as("b")
-// WRONG EXAMPLE because of `|` postfix operator near `alias1`
+        // WRONG EXAMPLE because of `|` postfix operator near `alias1`
 //        let query = SwifQL.select(
 //            a~\.name,
 //            |SwifQL.select(Fn.json_agg(=>"alias1") => "test1" )
@@ -665,8 +665,8 @@ final class SwifQLTests: XCTestCase {
 //                ) => "alias1"|
 //            )
 //            .from(a.table)
-// RIGHT EXAMPLE
-// so use subquery inside brackets or even better move it into variable (it'd be more beautiful and easy to support)
+        // RIGHT EXAMPLE
+        // so use subquery inside brackets or even better move it into variable (it'd be more beautiful and easy to support)
         let query = SwifQL.select(
             a.column("name"),
             |(SwifQL.select(Fn.json_agg(=>"alias1") => "test1")
