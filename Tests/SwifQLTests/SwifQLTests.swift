@@ -385,7 +385,7 @@ final class SwifQLTests: XCTestCase {
         
         XCTAssertEqual(prepareBuildPSQL , prepareCopyPSQL)
     }
-
+    
     //MARK: - WHERE
     
     func testWhere() {
@@ -418,12 +418,44 @@ final class SwifQLTests: XCTestCase {
                     SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table1),
                     SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table2)
                 )
-            )
+        )
         
         checkAllDialects(adv, pg: """
         SELECT DISTINCT "uniqueName"::text as "name" FROM (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table1") UNION (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table2")
         """, mySQL: """
         SELECT DISTINCT uniqueName::text as name FROM (SELECT DISTINCT name::text as uniqueName FROM Table1) UNION (SELECT DISTINCT name::text as uniqueName FROM Table2)
+        """)
+    }
+    
+    // MARK: - With
+    func testWith() {
+        let sql = SwifQL
+            .with(.init(Table("Table1"), SwifQL.select(Table("Table2").*).from(Table("Table2"))))
+            .select(Table("Table1").*)
+            .from(Table("Table1"))
+        
+        checkAllDialects(sql, pg: """
+        WITH "Table1" as (SELECT "Table2".* FROM "Table2") SELECT "Table1".* FROM "Table1"
+        """, mySQL: """
+        WITH Table1 as (SELECT Table2.* FROM Table2) SELECT Table1.* FROM Table1
+        """)
+    }
+    
+    func testWithColumns() {
+        struct Table1: Codable, Tableable {}
+        
+        let sql = SwifQL
+            .with(
+                .init(Table1.table, SwifQL.select(Table1.table.*).from(Table1.table)),
+                .init(Table("Table2"), columns: [Column("hi"), Column("there")], SwifQL.select(Table("Table2").*).from(Table("Table2")))
+        )
+            .select(Table("Table3").*)
+            .from(Table("Table3"))
+        
+        checkAllDialects(sql, pg: """
+        WITH "Table1" as (SELECT "Table1".* FROM "Table1"), "Table2" ("hi", "there") as (SELECT "Table2".* FROM "Table2") SELECT "Table3".* FROM "Table3"
+        """, mySQL: """
+        WITH Table1 as (SELECT Table1.* FROM Table1), Table2 (hi, there) as (SELECT Table2.* FROM Table2) SELECT Table3.* FROM Table3
         """)
     }
     
@@ -623,16 +655,16 @@ final class SwifQLTests: XCTestCase {
         let a = CarBrands.as("a")
         let b = CarBrands.as("b")
         // WRONG EXAMPLE because of `|` postfix operator near `alias1`
-//        let query = SwifQL.select(
-//            a~\.name,
-//            |SwifQL.select(Fn.json_agg(=>"alias1") => "test1" )
-//                .from(
-//                    |SwifQL.select(b~\.name => "someName")
-//                        .from(b.table)
-//                        .where(b~\.id == a~\.id)|
-//                ) => "alias1"|
-//            )
-//            .from(a.table)
+        //        let query = SwifQL.select(
+        //            a~\.name,
+        //            |SwifQL.select(Fn.json_agg(=>"alias1") => "test1" )
+        //                .from(
+        //                    |SwifQL.select(b~\.name => "someName")
+        //                        .from(b.table)
+        //                        .where(b~\.id == a~\.id)|
+        //                ) => "alias1"|
+        //            )
+        //            .from(a.table)
         // RIGHT EXAMPLE
         // so use subquery inside brackets or even better move it into variable (it'd be more beautiful and easy to support)
         let query = SwifQL.select(
@@ -643,7 +675,7 @@ final class SwifQLTests: XCTestCase {
                         .from(b.table)
                         .where(b.column("id") == a.column("id"))|
                 ) => "alias1")|
-            )
+        )
             .from(a.table)
         checkAllDialects(query, pg: """
         SELECT "a"."name", (SELECT json_agg("alias1") as "test1" FROM (SELECT "b"."name" as "someName" FROM "CarBrands" AS "b" WHERE "b"."id" = "a"."id") as "alias1") FROM "CarBrands" AS "a"
@@ -831,9 +863,9 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(pgQuery, pg: pg)
         checkAllDialects(mysqlQuery, mySQL: mySQL)
     }
-
+    
     // MARK: - Order by with direction
-
+    
     func testOrderByDirection() {
         let pgQuery = SwifQL.orderBy(.direction(.asc, CarBrands.column("name"), nulls: .last))
         let pg = """
@@ -846,7 +878,7 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(pgQuery, pg: pg)
         checkAllDialects(mysqlQuery, mySQL: mySQL)
     }
-
+    
     // MARK: - Case When Then Else
     
     func testCaseWhenThenElse1() {
@@ -922,7 +954,7 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(queryDate, pg: pgDate, mySQL: mySQLDate)
     }
-
+    
     static var allTests = [
         ("testPureSelect", testSelect),
         ("testSimpleString", testSelectString),
@@ -988,6 +1020,8 @@ final class SwifQLTests: XCTestCase {
         ("testExists", testExists),
         ("testNotExists", testNotExists),
         ("testUnion", testUnion),
+        ("testWith", testWith),
+        ("testWithColumns", testWithColumns),
         ("testWhereExists", testWhereExists),
         ("testWhereNotExists", testWhereNotExists),
         ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams),
