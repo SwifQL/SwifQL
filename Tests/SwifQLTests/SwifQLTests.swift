@@ -385,7 +385,7 @@ final class SwifQLTests: XCTestCase {
         
         XCTAssertEqual(prepareBuildPSQL , prepareCopyPSQL)
     }
-
+    
     //MARK: - WHERE
     
     func testWhere() {
@@ -394,6 +394,70 @@ final class SwifQLTests: XCTestCase {
     }
     
     //MARK: - UNION
+    func testUnion() {
+        let table1 = Table("Table1")
+        let table2 = Table("Table2")
+        let table3 = Table("Table3")
+        
+        let sql = Union(
+            SwifQL.select(table1.*).from(table1),
+            SwifQL.select(table2.*).from(table2),
+            SwifQL.select(table3.*).from(table3)
+        )
+        
+        checkAllDialects(sql, pg: """
+        (SELECT "Table1".* FROM "Table1") UNION (SELECT "Table2".* FROM "Table2") UNION (SELECT "Table3".* FROM "Table3")
+        """, mySQL: """
+        (SELECT Table1.* FROM Table1) UNION (SELECT Table2.* FROM Table2) UNION (SELECT Table3.* FROM Table3)
+        """)
+        
+        let adv = SwifQL
+            .select(Distinct(Column("uniqueName")) => .text => "name")
+            .from(
+                Union(
+                    SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table1),
+                    SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table2)
+                )
+        )
+        
+        checkAllDialects(adv, pg: """
+        SELECT DISTINCT "uniqueName"::text as "name" FROM (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table1") UNION (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table2")
+        """, mySQL: """
+        SELECT DISTINCT uniqueName::text as name FROM (SELECT DISTINCT name::text as uniqueName FROM Table1) UNION (SELECT DISTINCT name::text as uniqueName FROM Table2)
+        """)
+    }
+    
+    // MARK: - With
+    func testWith() {
+        let sql = SwifQL
+            .with(.init(Table("Table1"), SwifQL.select(Table("Table2").*).from(Table("Table2"))))
+            .select(Table("Table1").*)
+            .from(Table("Table1"))
+        
+        checkAllDialects(sql, pg: """
+        WITH "Table1" as (SELECT "Table2".* FROM "Table2") SELECT "Table1".* FROM "Table1"
+        """, mySQL: """
+        WITH Table1 as (SELECT Table2.* FROM Table2) SELECT Table1.* FROM Table1
+        """)
+    }
+    
+    func testWithColumns() {
+        struct Table1: Codable, Tableable {}
+        
+        let sql = SwifQL
+            .with(
+                .init(Table1.table, SwifQL.select(Table1.table.*).from(Table1.table)),
+                .init(Table("Table2"), columns: [Column("hi"), Column("there")], SwifQL.select(Table("Table2").*).from(Table("Table2")))
+        )
+            .select(Table("Table3").*)
+            .from(Table("Table3"))
+        
+        checkAllDialects(sql, pg: """
+        WITH "Table1" as (SELECT "Table1".* FROM "Table1"), "Table2" ("hi", "there") as (SELECT "Table2".* FROM "Table2") SELECT "Table3".* FROM "Table3"
+        """, mySQL: """
+        WITH Table1 as (SELECT Table1.* FROM Table1), Table2 (hi, there) as (SELECT Table2.* FROM Table2) SELECT Table3.* FROM Table3
+        """)
+    }
     
     //MARK: - INSERT INTO
     
@@ -799,9 +863,9 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(pgQuery, pg: pg)
         checkAllDialects(mysqlQuery, mySQL: mySQL)
     }
-
+    
     // MARK: - Order by with direction
-
+    
     func testOrderByDirection() {
         let pgQuery = SwifQL.orderBy(.direction(.asc, CarBrands.column("name"), nulls: .last))
         let pg = """
@@ -814,7 +878,7 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(pgQuery, pg: pg)
         checkAllDialects(mysqlQuery, mySQL: mySQL)
     }
-
+    
     // MARK: - Case When Then Else
     
     func testCaseWhenThenElse1() {
@@ -890,7 +954,7 @@ final class SwifQLTests: XCTestCase {
         """
         checkAllDialects(queryDate, pg: pgDate, mySQL: mySQLDate)
     }
-
+    
     static var allTests = [
         ("testPureSelect", testSelect),
         ("testSimpleString", testSelectString),
@@ -955,6 +1019,9 @@ final class SwifQLTests: XCTestCase {
         ("testBingingForMySQL", testBingingForMySQL),
         ("testExists", testExists),
         ("testNotExists", testNotExists),
+        ("testUnion", testUnion),
+        ("testWith", testWith),
+        ("testWithColumns", testWithColumns),
         ("testWhereExists", testWhereExists),
         ("testWhereNotExists", testWhereNotExists),
         ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams),
