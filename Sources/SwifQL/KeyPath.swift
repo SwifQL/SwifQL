@@ -38,7 +38,7 @@ public protocol FQUniversalKeyPath {
 
 infix operator => : AdditionPrecedence
 /// e.g. `"1"::.text`
-public func => (lhs: SwifQLable, rhs: CastType) -> SwifQLable {
+public func => (lhs: SwifQLable, rhs: Type) -> SwifQLable {
     var parts: [SwifQLPart] = lhs.parts
     parts.append(o: .custom("::"))
     parts.append(o: .custom(rhs.name))

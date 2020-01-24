@@ -278,11 +278,11 @@ extension Fn {
 }
 
 extension Fn {
-    public static func cast(_ queryPart: SwifQLable, _ to: CastType) -> SwifQLable {
+    public static func cast(_ queryPart: SwifQLable, _ to: Type) -> SwifQLable {
         return cast(nil, queryPart, to)
     }
     
-    public static func cast(_ from: CastType?, _ queryPart: SwifQLable, _ to: CastType) -> SwifQLable {
+    public static func cast(_ from: Type?, _ queryPart: SwifQLable, _ to: Type) -> SwifQLable {
         var parts: [SwifQLPart] = []
         if let from = from?.name {
             parts.append(o: .custom(from))
