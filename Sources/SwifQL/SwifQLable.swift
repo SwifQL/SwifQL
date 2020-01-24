@@ -104,8 +104,8 @@ public struct SwifQLPartAlias: SwifQLPart {
     }
 }
 public struct SwifQLPartOperator: SwifQLPart, Equatable {
-    var value: String
-    public init (_ value: String) { self.value = value }
+    var _value: String
+    public init (_ value: String) { self._value = value }
 }
 public struct SwifQLPartUnsafeValue: SwifQLPart {
     var unsafeValue: Encodable
@@ -226,7 +226,7 @@ extension SwifQLable {
             case let v as SwifQLPartKeyPathLastPart:
                 return format(keyPathLastPart: v.lastPath, for: dialect)
             case let v as SwifQLPartOperator:
-                return v.value
+                return v._value
             case let v as SwifQLPartDate:
                 switch dialect {
                 case .mysql: return v.mysql

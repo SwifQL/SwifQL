@@ -21,9 +21,11 @@ extension SwifQLPartOperator {
     public static var join: Result { return "JOIN".operator }
     public static var `where`: Result { return "WHERE".operator }
     public static var having: Result { return "HAVING".operator }
-    public static var groupBy: Result { return "GROUP BY".operator }
-    public static var orderBy: Result { return "ORDER BY".operator }
-    public static var insertInto: Result { return "INSERT INTO".operator }
+    public static var group: Result { return "GROUP".operator }
+    public static var order: Result { return "ORDER".operator }
+    public static var by: Result { return "BY".operator }
+    public static var insert: Result { return "INSERT".operator }
+    public static var into: Result { return "INTO".operator }
     public static var values: Result { return "VALUES".operator }
     public static var union: Result { return "UNION".operator }
     public static var returning: Result { return "RETURNING".operator }
@@ -95,6 +97,46 @@ extension SwifQLPartOperator {
     public static var nulls: Result { return "NULLS".operator }
     public static var first: Result { return "FIRST".operator }
     public static var last: Result { return "LAST".operator }
+    public static var create: Result { return "CREATE".operator }
+    public static var type: Result { return "TYPE".operator }
+    public static var function: Result { return "FUNCTION".operator }
+    public static var table: Result { return "TABLE".operator }
+    public static var `enum`: Result { return "ENUM".operator }
+    public static var range: Result { return "RANGE".operator }
+    public static var subtype: Result { return "SUBTYPE".operator }
+    public static var subtypeOpClass: Result { return "SUBTYPE_OPCLASS".operator }
+    public static var collate: Result { return "COLLATE".operator }
+    public static var collation: Result { return "COLLATION".operator }
+    public static var collatable: Result { return "COLLATABLE".operator }
+    public static var canonical: Result { return "CANONICAL".operator }
+    public static var subtypeDiff: Result { return "SUBTYPE_DIFF".operator }
+    public static var input: Result { return "INPUT".operator }
+    public static var output: Result { return "OUTPUT".operator }
+    public static var receive: Result { return "RECEIVE".operator }
+    public static var send: Result { return "SEND".operator }
+    public static var typmodIn: Result { return "TYPMOD_IN".operator }
+    public static var typmodOut: Result { return "TYPMOD_OUT".operator }
+    public static var analyze: Result { return "ANALYZE".operator }
+    public static var internalLength: Result { return "INTERNALLENGTH".operator }
+    public static var variable: Result { return "VARIABLE".operator }
+    public static var passedByValue: Result { return "PASSEDBYVALUE".operator }
+    public static var alignment: Result { return "ALIGNMENT".operator }
+    public static var storage: Result { return "STORAGE".operator }
+    public static var category: Result { return "CATEGORY".operator }
+    public static var preferred: Result { return "PREFERRED".operator }
+    public static var `default`: Result { return "DEFAULT".operator }
+    public static var element: Result { return "ELEMENT".operator }
+    public static var delimiter: Result { return "DELIMITER".operator }
+    public static var returns: Result { return "RETURNS".operator }
+    public static var setOf: Result { return "SETOF".operator }
+    public static var begin: Result { return "BEGIN".operator }
+    public static var commit: Result { return "COMMIT".operator }
+    public static var rollback: Result { return "ROLLBACK".operator }
+    public static var `return`: Result { return "RETURN".operator }
+    public static var raise: Result { return "RAISE".operator }
+    public static var exception: Result { return "EXCEPTION".operator }
+    public static var replace: Result { return "REPLACE".operator }
+    public static var semicolon: Result { return ";".operator }
     public static var openBracket: Result { return "(".operator }
     public static var closeBracket: Result { return ")".operator }
     public static var openSquareBracket: Result { return "[".operator }
@@ -102,6 +144,23 @@ extension SwifQLPartOperator {
     public static var comma: Result { return ",".operator }
     public static var space: Result { return `_` }
     public static var `_`: Result { return " ".operator }
+    public static var owner: Result { return "OWNER".operator }
+    public static var to: Result { return "TO".operator }
+    public static var currentUser: Result { return "CURRENT_USER".operator }
+    public static var sessionUser: Result { return "SESSION_USER".operator }
+    public static var rename: Result { return "RENAME".operator }
+    public static var attribute: Result { return "ATTRIBUTE".operator }
+    public static var cascade: Result { return "CASCADE".operator }
+    public static var restrict: Result { return "RESTRICT".operator }
+    public static var schema: Result { return "SCHEMA".operator }
+    public static var value: Result { return "VALUE".operator }
+    public static var before: Result { return "BEFORE".operator }
+    public static var after: Result { return "AFTER".operator }
+    public static var drop: Result { return "DROP".operator }
+    public static var update: Result { return "UPDATE".operator }
+    public static var alter: Result { return "ALTER".operator }
+    public static var set: Result { return "SET".operator }
+    public static var data: Result { return "DATA".operator }
     public static func custom(_ v: String) -> Result { return v.operator }
     
     public var select: Result { return concatWith(.select) }
@@ -112,9 +171,11 @@ extension SwifQLPartOperator {
     public var join: Result { return concatWith(.join) }
     public var `where`: Result { return concatWith(.where) }
     public var having: Result { return concatWith(.having) }
-    public var groupBy: Result { return concatWith(.groupBy) }
-    public var orderBy: Result { return concatWith(.orderBy) }
-    public var insertInto: Result { return concatWith(.insertInto) }
+    public var group: Result { return concatWith(.group) }
+    public var order: Result { return concatWith(.order) }
+    public var by: Result { return concatWith(.by) }
+    public var insert: Result { return concatWith(.insert) }
+    public var into: Result { return concatWith(.into) }
     public var values: Result { return concatWith(.values) }
     public var union: Result { return concatWith(.union) }
     public var returning: Result { return concatWith(.returning) }
@@ -186,6 +247,46 @@ extension SwifQLPartOperator {
     public var nulls: Result { return concatWith(.nulls) }
     public var first: Result { return concatWith(.first) }
     public var last: Result { return concatWith(.last) }
+    public var create: Result { return concatWith(.create) }
+    public var type: Result { return concatWith(.type) }
+    public var function: Result { return concatWith(.function) }
+    public var table: Result { return concatWith(.table) }
+    public var `enum`: Result { return concatWith(.enum) }
+    public var range: Result { return concatWith(.range) }
+    public var subtype: Result { return concatWith(.subtype) }
+    public var subtypeOpClass: Result { return concatWith(.subtypeOpClass) }
+    public var collate: Result { return concatWith(.collate) }
+    public var collation: Result { return concatWith(.collation) }
+    public var collatable: Result { return concatWith(.collatable) }
+    public var canonical: Result { return concatWith(.canonical) }
+    public var subtypeDiff: Result { return concatWith(.subtypeDiff) }
+    public var input: Result { return concatWith(.input) }
+    public var output: Result { return concatWith(.output) }
+    public var receive: Result { return concatWith(.receive) }
+    public var send: Result { return concatWith(.send) }
+    public var typmodIn: Result { return concatWith(.typmodIn) }
+    public var typmodOut: Result { return concatWith(.typmodOut) }
+    public var analyze: Result { return concatWith(.analyze) }
+    public var internalLength: Result { return concatWith(.internalLength) }
+    public var variable: Result { return concatWith(.variable) }
+    public var passedByValue: Result { return concatWith(.passedByValue) }
+    public var alignment: Result { return concatWith(.alignment) }
+    public var storage: Result { return concatWith(.storage) }
+    public var category: Result { return concatWith(.category) }
+    public var preferred: Result { return concatWith(.preferred) }
+    public var `default`: Result { return concatWith(.default) }
+    public var element: Result { return concatWith(.element) }
+    public var delimiter: Result { return concatWith(.delimiter) }
+    public var returns: Result { return concatWith(.returns) }
+    public var setOf: Result { return concatWith(.setOf) }
+    public var begin: Result { return concatWith(.begin) }
+    public var commit: Result { return concatWith(.commit) }
+    public var rollback: Result { return concatWith(.rollback) }
+    public var `return`: Result { return concatWith(.return) }
+    public var raise: Result { return concatWith(.raise) }
+    public var exception: Result { return concatWith(.exception) }
+    public var replace: Result { return concatWith(.replace) }
+    public var semicolon: Result { return concatWith(.semicolon) }
     public var openBracket: Result { return concatWith(.openBracket) }
     public var closeBracket: Result { return concatWith(.closeBracket) }
     public var openSquareBracket: Result { return concatWith(.openSquareBracket) }
@@ -193,10 +294,27 @@ extension SwifQLPartOperator {
     public var comma: Result { return concatWith(.comma) }
     public var space: Result { return concatWith(.space) }
     public var `_`: Result { return concatWith(._) }
+    public var owner: Result { return concatWith(.owner) }
+    public var to: Result { return concatWith(.to) }
+    public var currentUser: Result { return concatWith(.currentUser) }
+    public var sessionUser: Result { return concatWith(.sessionUser) }
+    public var rename: Result { return concatWith(.rename) }
+    public var attribute: Result { return concatWith(.attribute) }
+    public var cascade: Result { return concatWith(.cascade) }
+    public var restrict: Result { return concatWith(.restrict) }
+    public var schema: Result { return concatWith(.schema) }
+    public var value: Result { return concatWith(.value) }
+    public var before: Result { return concatWith(.before) }
+    public var after: Result { return concatWith(.after) }
+    public var drop: Result { return concatWith(.drop) }
+    public var update: Result { return concatWith(.update) }
+    public var alter: Result { return concatWith(.alter) }
+    public var set: Result { return concatWith(.set) }
+    public var data: Result { return concatWith(.data) }
     public func custom(_ v: String) -> Result { return concatWith(.custom(v)) }
     
     private func concatWith(_ operator: Result) -> Result {
-        return (value + `operator`.value).operator
+        return (_value + `operator`._value).operator
     }
 }
 

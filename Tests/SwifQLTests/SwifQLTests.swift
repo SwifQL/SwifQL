@@ -493,14 +493,14 @@ final class SwifQLTests: XCTestCase {
     
     func testValues() {
         checkAllDialects(SwifQL.values(1, 1.2, 1.234, "hello"), pg: """
-        VALUES (1, 1.2, 1.234, 'hello')
+        (1, 1.2, 1.234, 'hello')
         """, mySQL: """
-        VALUES (1, 1.2, 1.234, 'hello')
+        (1, 1.2, 1.234, 'hello')
         """)
         checkAllDialects(SwifQL.values(array: [1, 1.2, 1.234, "hello"], [2, 2.3, 2.345, "bye"]), pg: """
-        VALUES (1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')
+        (1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')
         """, mySQL: """
-        VALUES (1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')
+        (1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')
         """)
     }
     

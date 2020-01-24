@@ -155,7 +155,9 @@ extension SwifQLable {
     public func orderBy(_ fields: [OrderByItem]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .orderBy)
+        parts.append(o: .order)
+        parts.append(o: .space)
+        parts.append(o: .by)
         parts.append(o: .space)
         for (i, v) in fields.enumerated() {
             if i > 0 {

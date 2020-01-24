@@ -1852,7 +1852,7 @@ extension Fn {
 extension Array where Element == SwifQLPart {
     public mutating func appendSpaceIfNeeded() {
         if count == 0 { return }
-        if let last = last as? SwifQLPartOperator, last.value == " " {
+        if let last = last as? SwifQLPartOperator, last._value == " " {
             return
         }
         append(o: .space)

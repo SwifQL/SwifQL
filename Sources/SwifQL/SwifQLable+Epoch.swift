@@ -19,7 +19,7 @@ extension SwifQLable {
     public func epoch(with value: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .custom(Op.epoch.value.singleQuotted))
+        parts.append(o: .custom(Op.epoch._value.singleQuotted))
         parts.append(o: .space)
         parts.append(o: .custom("+"))
         parts.append(o: .space)

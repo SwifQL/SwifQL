@@ -7,12 +7,13 @@
 
 import Foundation
 
-extension Optional: SwifQLable, CustomStringConvertible where Wrapped: Encodable {
+extension Optional: SwifQLable, CustomStringConvertible where Wrapped: SwifQLable {
     public var parts: [SwifQLPart] {
-        if let s = self {
-            return [SwifQLPartUnsafeValue(s)]
-        } else {
+        switch self {
+        case .none:
             return [SwifQLPartSafeValue(nil)]
+        case .some(let value):
+            return value.parts
         }
     }
 }
