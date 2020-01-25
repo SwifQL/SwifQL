@@ -17,7 +17,7 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
     public func timestamp(_ fields: SwifQLable...) -> SwifQLable {
-        return timestamp(fields)
+        timestamp(fields)
     }
     public func timestamp(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts

@@ -36,31 +36,33 @@ public struct FormattedKeyPath {
 }
 
 extension FormattedKeyPath: SwifQLable {
-    public var parts: [SwifQLPart] { return [SwifQLPartKeyPath(table: _table, paths: _paths)] }
+    public var parts: [SwifQLPart] {
+        [SwifQLPartKeyPath(table: _table, paths: _paths)]
+    }
 }
 
 extension FormattedKeyPath: KeyPathLastPath {
-    public var lastPath: String { return _paths.last ?? "" }
+    public var lastPath: String { _paths.last ?? "" }
 }
 
 extension Tableable {
     /// Manual key path. Alias to `\User.something`
     public static func manualKeyPath(_ paths: String...) -> FormattedKeyPath {
-        return manualKeyPath(paths)
+        manualKeyPath(paths)
     }
     
     /// Manual key path. Alias to `\User.something`
     public static func manualKeyPath(_ paths: [String]) -> FormattedKeyPath {
-        return FormattedKeyPath(entity, paths)
+        FormattedKeyPath(entity, paths)
     }
     
     /// Manual key path. Alias to `\User.something`
     public static func mkp(_ paths: String...) -> FormattedKeyPath {
-        return manualKeyPath(paths)
+        manualKeyPath(paths)
     }
     
     /// Manual key path. Alias to `\User.something`
     public static func mkp(_ paths: [String]) -> FormattedKeyPath {
-        return manualKeyPath(paths)
+        manualKeyPath(paths)
     }
 }

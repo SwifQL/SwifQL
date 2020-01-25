@@ -58,19 +58,19 @@ public struct Type {
     public static var decimal: Type = .init("decimal")
     public static var decimalArray: Type = .init("decimal[]")
     /// exact numeric of selectable precision
-    public static func decimal(_ p: Int, _ s: Int) -> Type { return .init("decimal(\(p), \(s))") }
+    public static func decimal(_ p: Int, _ s: Int) -> Type { .init("decimal(\(p), \(s))") }
     
     /// exact numeric of selectable precision
     public static var numeric: Type = .init("numeric")
     public static var numericArray: Type = .init("numeric[]")
     /// exact numeric of selectable precision
-    public static func numeric(_ p: Int, _ s: Int) -> Type { return .init("numeric(\(p), \(s))") }
+    public static func numeric(_ p: Int, _ s: Int) -> Type { .init("numeric(\(p), \(s))") }
     
     /// single precision floating-point number (4 bytes)
     public static var real: Type = .init("real")
     public static var realArray: Type = .init("real[]")
     
-    public static func float(_ v: Int) -> Type { return .init("float(\(v))") }
+    public static func float(_ v: Int) -> Type { .init("float(\(v))") }
     
     /// single precision floating-point number (4 bytes)
     public static var float4: Type = .init("float4")
@@ -255,18 +255,18 @@ public struct Type {
     public static var bit: Type = .init("bit")
     public static var bitArray: Type = .init("bit[]")
     /// fixed-length bit string
-    public static func bit(_ v: Int) -> Type { return .init("bit(\(v))") }
+    public static func bit(_ v: Int) -> Type { .init("bit(\(v))") }
     
     /// variable-length bit string
     public static var bitVarying: Type = .init("bit varying")
     public static var bitVaryingArray: Type = .init("bit varying[]")
     /// variable-length bit string
-    public static func bitVarying(_ v: Int) -> Type { return .init("bit varying(\(v))") }
+    public static func bitVarying(_ v: Int) -> Type { .init("bit varying(\(v))") }
     
     /// variable-length bit string
     public static var varbit: Type = .init("varbit")
     /// variable-length bit string
-    public static func varbit(_ v: Int) -> Type { return .init("varbit(\(v))") }
+    public static func varbit(_ v: Int) -> Type { .init("varbit(\(v))") }
     
     // MARK: Text Search Types
     
@@ -482,14 +482,10 @@ public struct Type {
     // MARK: -
     // MARK: Array Subscript
     
-    public subscript () -> Type {
-        get {
-            return .init("\(name)[]")
-        }
-    }
+    public subscript () -> Type { .init("\(name)[]") }
     
     // MARK: -
     // MARK: Custom
     
-    public static func custom(_ name: String) -> Type { return .init(name) }
+    public static func custom(_ name: String) -> Type { .init(name) }
 }

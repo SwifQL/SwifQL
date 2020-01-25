@@ -37,5 +37,5 @@ extension Table: SwifQLable {
 }
 
 extension Table: KeyPathLastPath {
-    public var lastPath: String { return "" }
+    public var lastPath: String { "" }
 }

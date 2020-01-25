@@ -21,10 +21,10 @@ public struct Column {
 
 extension Column: SwifQLable {
     public var parts: [SwifQLPart] {
-        return [SwifQLPartKeyPath(table: nil, paths: paths)]
+        [SwifQLPartKeyPath(table: nil, paths: paths)]
     }
 }
 
 extension Column: KeyPathLastPath {
-    public var lastPath: String { return paths.last ?? "" }
+    public var lastPath: String { paths.last ?? "" }
 }

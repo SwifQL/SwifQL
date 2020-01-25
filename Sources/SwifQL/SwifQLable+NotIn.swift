@@ -11,7 +11,7 @@ import Foundation
 
 extension SwifQLable {
     public func notIn(_ items: SwifQLable...) -> SwifQLable {
-        return notIn(items)
+        notIn(items)
     }
     public func notIn(_ items: [SwifQLable]) -> SwifQLable {
         var parts = self.parts

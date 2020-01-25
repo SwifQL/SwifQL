@@ -66,7 +66,7 @@ postfix public func *(table: Tableable.Type) -> SwifQLable {
 
 extension Decodable {
     public static func `as`(_ alias: String) -> SwifQLTableAlias<Self> {
-        return SwifQLTableAlias(alias)
+        SwifQLTableAlias(alias)
     }
 }
 
@@ -82,8 +82,8 @@ public class AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, K: Keypathable, T: 
 }
 
 extension AliasedKeyPath: SwifQLKeyPathable {
-    public var table: String? { return alias }
-    public var paths: [String] { return kp.paths }
+    public var table: String? { alias }
+    public var paths: [String] { kp.paths }
 }
 
 extension AliasedKeyPath: SwifQLable {
@@ -100,8 +100,8 @@ extension AliasedKeyPath: FQUniversalKeyPath, FQUniversalKeyPathSimple {
     public typealias AModel = T
     public typealias ARoot = AliasedKeyPath
     
-    public var queryValue: String { return kp.fullPath(table: alias) }
-    public var path: String { return kp.shortPath }
-    public var lastPath: String { return kp.lastPath }
-    public var originalKeyPath: KeyPath<T, V> { return kp }
+    public var queryValue: String { kp.fullPath(table: alias) }
+    public var path: String { kp.shortPath }
+    public var lastPath: String { kp.lastPath }
+    public var originalKeyPath: KeyPath<T, V> { kp }
 }

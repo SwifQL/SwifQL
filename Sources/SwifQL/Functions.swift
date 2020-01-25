@@ -185,10 +185,10 @@ extension Fn {
 
 extension Fn {
     public static func build(_ fn: Name) -> SwifQLable {
-        return build(fn, body: nil)
+        build(fn, body: nil)
     }
     public static func build(_ fn: Name, body: SwifQLPart...) -> SwifQLable {
-        return build(fn, body: body)
+        build(fn, body: body)
     }
     public static func build(_ fn: Name, body: [SwifQLPart]? = nil) -> SwifQLable {
         var parts: [SwifQLPart] = []
@@ -203,7 +203,7 @@ extension Fn {
 }
 
 public func Select(_ queryPart: SwifQLable...) -> SwifQLable {
-    return Select(queryPart)
+    Select(queryPart)
 }
 
 public func Select(_ queryParts: [SwifQLable]) -> SwifQLable {
@@ -220,7 +220,7 @@ public func Select(_ queryParts: [SwifQLable]) -> SwifQLable {
     return SwifQLableParts(parts: parts)
 }
 
-public var Select: SwifQLable { return Fn.build(.custom("SELECT")) }
+public var Select: SwifQLable { Fn.build(.custom("SELECT")) }
 
 //MARK: Functions
 
@@ -258,7 +258,7 @@ extension Fn {
     }
     
     public static func coalesce(_ queryPart: SwifQLable...) -> SwifQLable {
-        return coalesce(queryPart)
+        coalesce(queryPart)
     }
     
     public static func coalesce(_ queryParts: [SwifQLable]) -> SwifQLable {
@@ -273,13 +273,13 @@ extension Fn {
     }
     
     public static func octet_length(_ string: SwifQLable) -> SwifQLable {
-        return build(.octet_length, body: string.parts)
+        build(.octet_length, body: string.parts)
     }
 }
 
 extension Fn {
     public static func cast(_ queryPart: SwifQLable, _ to: Type) -> SwifQLable {
-        return cast(nil, queryPart, to)
+        cast(nil, queryPart, to)
     }
     
     public static func cast(_ from: Type?, _ queryPart: SwifQLable, _ to: Type) -> SwifQLable {
@@ -306,7 +306,7 @@ extension Fn {
     /// e.g. `bit_length('jose')` will return 32
     /// [Learn more →]()
     public static func bit_length(_ string: SwifQLable) -> SwifQLable {
-        return build(.bit_length, body: string.parts)
+        build(.bit_length, body: string.parts)
     }
     
     //MARK: - String Functions
@@ -348,31 +348,31 @@ extension Fn {
     /// Returns the length of the specified string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/char_length.php)
     public static func char_length(_ string: SwifQLable) -> SwifQLable {
-        return build(.char_length, body: string.parts)
+        build(.char_length, body: string.parts)
     }
     
     /// Returns the length of the specified string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/character_length.php)
     public static func character_length(_ string: SwifQLable) -> SwifQLable {
-        return build(.character_length, body: string.parts)
+        build(.character_length, body: string.parts)
     }
     
     /// Converts the first letter of each word to uppercase and all other letters are converted to lowercase
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/initcap.php)
     public static func initcap(_ string: SwifQLable) -> SwifQLable {
-        return build(.initcap, body: string.parts)
+        build(.initcap, body: string.parts)
     }
     
     /// Returns the length of the specified string, expressed as the number of characters.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/length.php)
     public static func length(_ string: SwifQLable) -> SwifQLable {
-        return build(.length, body: string.parts)
+        build(.length, body: string.parts)
     }
     
     /// Converts all characters in the specified string to lowercase
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/lower.php)
     public static func lower(_ string: SwifQLable) -> SwifQLable {
-        return build(.lower, body: string.parts)
+        build(.lower, body: string.parts)
     }
     
     /// Returns a string that is left-padded with a specified string to a certain length
@@ -468,17 +468,17 @@ extension Fn {
     /// Allows you to extract a substring from a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/substring.php)
     public static func substring(_ string: SwifQLable, from startPosition: Int) -> SwifQLable {
-        return _substring(string, from: startPosition)
+        _substring(string, from: startPosition)
     }
     /// Allows you to extract a substring from a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/substring.php)
     public static func substring(_ string: SwifQLable, for length: Int) -> SwifQLable {
-        return _substring(string, for: length)
+        _substring(string, for: length)
     }
     /// Allows you to extract a substring from a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/substring.php)
     public static func substring(_ string: SwifQLable, from startPosition: Int, for length: Int) -> SwifQLable {
-        return _substring(string, from: startPosition, for: length)
+        _substring(string, from: startPosition, for: length)
     }
     private static func _substring(_ string: SwifQLable, from startPosition: Int? = nil, for length: Int? = nil) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
@@ -513,23 +513,23 @@ extension Fn {
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
     public static func trim(_ string: SwifQLable) -> SwifQLable {
-        return build(.trim, body: string.parts)
+        build(.trim, body: string.parts)
     }
     
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
     public static func trim(leading trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
-        return _trim("leading", trimCharacter, from: string)
+        _trim("leading", trimCharacter, from: string)
     }
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
     public static func trim(trailing trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
-        return _trim("trailing", trimCharacter, from: string)
+        _trim("trailing", trimCharacter, from: string)
     }
     /// Removes all specified characters either from the beginning or the end of a string.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/trim.php)
     public static func trim(both trimCharacter: SwifQLable? = nil, from string: SwifQLable) -> SwifQLable {
-        return _trim("both", trimCharacter, from: string)
+        _trim("both", trimCharacter, from: string)
     }
     
     /// Private `trim` builder method
@@ -550,7 +550,7 @@ extension Fn {
     /// Converts all characters in the specified string to uppercase
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/upper.php)
     public static func upper(_ string: SwifQLable) -> SwifQLable {
-        return build(.upper, body: string.parts)
+        build(.upper, body: string.parts)
     }
 
     /// Concatenates non-null input values into a string, separated by delimiter
@@ -583,31 +583,31 @@ extension Fn {
     /// Returns the absolute value of a number
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/abs.php)
     public static func abs(_ number: SwifQLable) -> SwifQLable {
-        return build(.abs, body: number.parts)
+        build(.abs, body: number.parts)
     }
     
     /// Returns the average value of an expression
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/avg.php)
     public static func avg(_ quantity: SwifQLable) -> SwifQLable {
-        return build(.avg, body: quantity.parts)
+        build(.avg, body: quantity.parts)
     }
     
     /// Returns the smallest integer value that is greater than or equal to a number
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/ceil.php)
     public static func ceil(_ number: SwifQLable) -> SwifQLable {
-        return build(.ceil, body: number.parts)
+        build(.ceil, body: number.parts)
     }
     
     /// Returns the smallest integer value that is greater than or equal to a number
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/ceiling.php)
     public static func ceiling(_ number: SwifQLable) -> SwifQLable {
-        return build(.ceiling, body: number.parts)
+        build(.ceiling, body: number.parts)
     }
     
     /// Returns the count of an expression
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/count.php)
     public static func count(_ expression: SwifQLable) -> SwifQLable {
-        return build(.count, body: expression.parts)
+        build(.count, body: expression.parts)
     }
     
     /// Used for integer division where n is divided by m and an integer value is returned
@@ -633,19 +633,19 @@ extension Fn {
     /// Returns the largest integer value that is equal to or less than a number
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/floor.php)
     public static func floor(_ number: SwifQLable) -> SwifQLable {
-        return build(.floor, body: number.parts)
+        build(.floor, body: number.parts)
     }
     
     /// Returns the maximum value of an expression
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/max.php)
     public static func max(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.max, body: aggregateExpression.parts)
+        build(.max, body: aggregateExpression.parts)
     }
     
     /// Returns the minimum value of an expression
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/min.php)
     public static func min(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.min, body: aggregateExpression.parts)
+        build(.min, body: aggregateExpression.parts)
     }
     
     /// Returns the remainder of n divided by m
@@ -671,7 +671,7 @@ extension Fn {
     /// Random function can be used to return a random number or a random number within a range
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/random.php)
     public static func random() -> SwifQLable {
-        return build(.random, body: [])
+        build(.random, body: [])
     }
     
     /// Returns a number rounded to a certain number of decimal places
@@ -691,32 +691,32 @@ extension Fn {
     /// This may or may not be truly random.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/setseed.php)
     public static func setseed(_ number: SwifQLable) -> SwifQLable {
-        return build(.setseed, body: number.parts)
+        build(.setseed, body: number.parts)
     }
     
     /// Returns a value indicating the sign of a number
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/sign.php)
     public static func sign(_ number: SwifQLable) -> SwifQLable {
-        return build(.sign, body: number.parts)
+        build(.sign, body: number.parts)
     }
     
     /// Returns the square root of a number
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/sqrt.php)
     public static func sqrt(_ number: SwifQLable) -> SwifQLable {
-        return build(.sqrt, body: number.parts)
+        build(.sqrt, body: number.parts)
     }
     
     /// Returns the summed value of an expression
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/sum.php)
     public static func sum(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.sum, body: aggregateExpression.parts)
+        build(.sum, body: aggregateExpression.parts)
     }
     
     // MARK: Postgres JSON
     
     ///
     public static func json_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_agg, body: aggregateExpression.parts)
+        build(.json_agg, body: aggregateExpression.parts)
     }
     
     /// Returns the value as json.
@@ -727,7 +727,7 @@ extension Fn {
     /// the text representation will be used, in such a fashion that it is a valid json or jsonb value.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func to_json(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.to_json, body: aggregateExpression.parts)
+        build(.to_json, body: aggregateExpression.parts)
     }
     
     /// Returns the array as a JSON array.
@@ -760,7 +760,7 @@ extension Fn {
     /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_build_array(_ items: SwifQLable...) -> SwifQLable {
-        return json_build_array(items)
+        json_build_array(items)
     }
     
     /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
@@ -785,7 +785,7 @@ extension Fn {
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_build_object(_ items: SwifQLable...) -> SwifQLable {
-        return json_build_object(items)
+        json_build_object(items)
     }
     
     /// Builds a JSON object out of a variadic argument list.
@@ -813,7 +813,7 @@ extension Fn {
     /// or two dimensions such that each inner array has exactly two elements, which are taken as a key/value pair
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_object, body: aggregateExpression.parts)
+        build(.json_object, body: aggregateExpression.parts)
     }
     
     /// This form of json_object takes keys and values pairwise from two separate arrays.
@@ -830,19 +830,19 @@ extension Fn {
     /// Returns the number of elements in the outermost JSON array
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_array_length(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_array_length, body: aggregateExpression.parts)
+        build(.json_array_length, body: aggregateExpression.parts)
     }
     
     /// Expands the outermost JSON object into a set of key/value pairs
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_each(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_each, body: aggregateExpression.parts)
+        build(.json_each, body: aggregateExpression.parts)
     }
     
     /// Expands the outermost JSON object into a set of key/value pairs. The returned values will be of type text
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_each_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_each_text, body: aggregateExpression.parts)
+        build(.json_each_text, body: aggregateExpression.parts)
     }
     
     /// Returns JSON value pointed to by path_elems (equivalent to #> operator)
@@ -860,7 +860,7 @@ extension Fn {
     /// Returns set of keys in the outermost JSON object.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_object_keys(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_object_keys, body: aggregateExpression.parts)
+        build(.json_object_keys, body: aggregateExpression.parts)
     }
     
     /// Expands the object in from_json to a row whose columns match the record type defined by base (see note below).
@@ -886,44 +886,44 @@ extension Fn {
     /// Expands a JSON array to a set of JSON values.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_array_elements(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_array_elements, body: aggregateExpression.parts)
+        build(.json_array_elements, body: aggregateExpression.parts)
     }
     
     /// Expands a JSON array to a set of text values.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_array_elements_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_array_elements_text, body: aggregateExpression.parts)
+        build(.json_array_elements_text, body: aggregateExpression.parts)
     }
     
     /// Returns the type of the outermost JSON value as a text string. Possible types are object, array, string, number, boolean, and null.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_typeof(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_typeof, body: aggregateExpression.parts)
+        build(.json_typeof, body: aggregateExpression.parts)
     }
     
     /// Builds an arbitrary record from a JSON object (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_to_record(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_to_record, body: aggregateExpression.parts)
+        build(.json_to_record, body: aggregateExpression.parts)
     }
     
     /// Builds an arbitrary set of records from a JSON array of objects (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_to_recordset(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_to_recordset, body: aggregateExpression.parts)
+        build(.json_to_recordset, body: aggregateExpression.parts)
     }
     
     /// Returns from_json with all object fields that have null values omitted. Other null values are untouched.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_strip_nulls(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.json_strip_nulls, body: aggregateExpression.parts)
+        build(.json_strip_nulls, body: aggregateExpression.parts)
     }
     
     // MARK: Postgres JSONB
     
     ///
     public static func jsonb_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_agg, body: aggregateExpression.parts)
+        build(.jsonb_agg, body: aggregateExpression.parts)
     }
     
     /// Returns the value as jsonb.
@@ -933,13 +933,13 @@ extension Fn {
     /// For any scalar type other than a number, a Boolean, or a null value,
     /// the text representation will be used, in such a fashion that it is a valid json or jsonb value.
     public static func to_jsonb(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.to_jsonb, body: aggregateExpression.parts)
+        build(.to_jsonb, body: aggregateExpression.parts)
     }
     
     /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_build_array(_ items: SwifQLable...) -> SwifQLable {
-        return jsonb_build_array(items)
+        jsonb_build_array(items)
     }
     
     /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
@@ -964,7 +964,7 @@ extension Fn {
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_build_object(_ items: SwifQLable...) -> SwifQLable {
-        return jsonb_build_object(items)
+        jsonb_build_object(items)
     }
     
     /// Builds a JSON object out of a variadic argument list.
@@ -992,7 +992,7 @@ extension Fn {
     /// or two dimensions such that each inner array has exactly two elements, which are taken as a key/value pair
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_object(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_object, body: aggregateExpression.parts)
+        build(.jsonb_object, body: aggregateExpression.parts)
     }
     
     /// This form of json_object takes keys and values pairwise from two separate arrays.
@@ -1009,19 +1009,19 @@ extension Fn {
     /// Returns the number of elements in the outermost JSON array
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_array_length(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_array_length, body: aggregateExpression.parts)
+        build(.jsonb_array_length, body: aggregateExpression.parts)
     }
     
     /// Expands the outermost JSON object into a set of key/value pairs
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_each(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_each, body: aggregateExpression.parts)
+        build(.jsonb_each, body: aggregateExpression.parts)
     }
     
     /// Expands the outermost JSON object into a set of key/value pairs. The returned values will be of type text
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_each_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_each_text, body: aggregateExpression.parts)
+        build(.jsonb_each_text, body: aggregateExpression.parts)
     }
     
     /// Returns JSON value pointed to by path_elems (equivalent to #> operator)
@@ -1039,7 +1039,7 @@ extension Fn {
     /// Returns set of keys in the outermost JSON object.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_object_keys(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_object_keys, body: aggregateExpression.parts)
+        build(.jsonb_object_keys, body: aggregateExpression.parts)
     }
     
     /// Expands the object in from_json to a row whose columns match the record type defined by base (see note below).
@@ -1065,37 +1065,37 @@ extension Fn {
     /// Expands a JSON array to a set of JSON values.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_array_elements(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_array_elements, body: aggregateExpression.parts)
+        build(.jsonb_array_elements, body: aggregateExpression.parts)
     }
     
     /// Expands a JSON array to a set of text values.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_array_elements_text(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_array_elements_text, body: aggregateExpression.parts)
+        build(.jsonb_array_elements_text, body: aggregateExpression.parts)
     }
     
     /// Returns the type of the outermost JSON value as a text string. Possible types are object, array, string, number, boolean, and null.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_typeof(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_typeof, body: aggregateExpression.parts)
+        build(.jsonb_typeof, body: aggregateExpression.parts)
     }
     
     /// Builds an arbitrary record from a JSON object (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_to_record(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_to_record, body: aggregateExpression.parts)
+        build(.jsonb_to_record, body: aggregateExpression.parts)
     }
     
     /// Builds an arbitrary set of records from a JSON array of objects (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_to_recordset(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_to_recordset, body: aggregateExpression.parts)
+        build(.jsonb_to_recordset, body: aggregateExpression.parts)
     }
     
     /// Returns from_json with all object fields that have null values omitted. Other null values are untouched.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_strip_nulls(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_strip_nulls, body: aggregateExpression.parts)
+        build(.jsonb_strip_nulls, body: aggregateExpression.parts)
     }
     
     /// Returns target with the section designated by path replaced by new_value,
@@ -1122,14 +1122,14 @@ extension Fn {
     /// Returns from_json as indented JSON text.
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_pretty(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.jsonb_pretty, body: aggregateExpression.parts)
+        build(.jsonb_pretty, body: aggregateExpression.parts)
     }
     
     // MARK: Array
     
     ///
     public static func array_agg(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return build(.array_agg, body: aggregateExpression.parts)
+        build(.array_agg, body: aggregateExpression.parts)
     }
     
     // MARK: Postgres Time Functions
@@ -1165,7 +1165,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func age(_ timestamp1: SwifQLable) -> SwifQLable {
-        return build(.age, body: timestamp1.parts)
+        build(.age, body: timestamp1.parts)
     }
     
     /// Current date and time (changes during statement execution)
@@ -1176,7 +1176,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
     public static func clock_timestamp() -> SwifQLable {
-        return build(.clock_timestamp, body: [])
+        build(.clock_timestamp, body: [])
     }
     
     /// Current date
@@ -1187,7 +1187,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
     public static var current_date: SwifQLable {
-        return SwifQLableParts(parts: Name.current_date.part)
+        SwifQLableParts(parts: Name.current_date.part)
     }
     
     /// Current time of day
@@ -1198,7 +1198,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
     public static func current_time(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return SwifQLableParts(parts: Name.current_time.part)
+        SwifQLableParts(parts: Name.current_time.part)
     }
     
     /// Current date and time (start of current transaction)
@@ -1209,7 +1209,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-CURRENT)
     public static func current_timestamp(_ aggregateExpression: SwifQLable) -> SwifQLable {
-        return SwifQLableParts(parts: Name.current_timestamp.part)
+        SwifQLableParts(parts: Name.current_timestamp.part)
     }
     
     /// Get subfield (equivalent to extract)
@@ -1335,7 +1335,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func isfinite(_ interval: SwifQLable) -> SwifQLable {
-        return build(.isfinite, body: interval.parts)
+        build(.isfinite, body: interval.parts)
     }
     
     /// Adjust interval so 30-day time periods are represented as months
@@ -1350,7 +1350,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func justify_days(_ interval: SwifQLable) -> SwifQLable {
-        return build(.justify_days, body: interval.parts)
+        build(.justify_days, body: interval.parts)
     }
     
     /// Adjust interval so 24-hour time periods are represented as days
@@ -1365,7 +1365,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func justify_hours(_ interval: SwifQLable) -> SwifQLable {
-        return build(.justify_hours, body: interval.parts)
+        build(.justify_hours, body: interval.parts)
     }
     
     /// Adjust interval using justify_days and justify_hours, with additional sign adjustments
@@ -1380,7 +1380,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func justify_interval(_ interval: SwifQLable) -> SwifQLable {
-        return build(.justify_interval, body: interval.parts)
+        build(.justify_interval, body: interval.parts)
     }
     
     /// Current time of day
@@ -1391,7 +1391,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static var localtime: SwifQLable {
-        return SwifQLableParts(parts: Name.localtime.part)
+        SwifQLableParts(parts: Name.localtime.part)
     }
     
     /// Current date and time (start of current transaction)
@@ -1402,7 +1402,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static var localtimestamp: SwifQLable {
-        return SwifQLableParts(parts: Name.localtimestamp.part)
+        SwifQLableParts(parts: Name.localtimestamp.part)
     }
     
     /// Create date from year, month and day fields
@@ -1592,7 +1592,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func now() -> SwifQLable {
-        return build(.now, body: [])
+        build(.now, body: [])
     }
     
     /// Current date and time (start of current statement)
@@ -1603,7 +1603,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func statement_timestamp() -> SwifQLable {
-        return build(.statement_timestamp, body: [])
+        build(.statement_timestamp, body: [])
     }
     
     /// Current date and time (like clock_timestamp, but as a text string)
@@ -1614,7 +1614,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func timeofday() -> SwifQLable {
-        return build(.timeofday, body: [])
+        build(.timeofday, body: [])
     }
     
     /// Current date and time (start of current transaction)
@@ -1625,7 +1625,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func transaction_timestamp() -> SwifQLable {
-        return build(.transaction_timestamp, body: [])
+        build(.transaction_timestamp, body: [])
     }
     
     /// Convert Unix epoch (seconds since 1970-01-01 00:00:00+00) to timestamp
@@ -1640,7 +1640,7 @@ extension Fn {
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
     public static func to_timestamp(_ value: SwifQLable) -> SwifQLable {
-        return build(.to_timestamp, body: value.parts)
+        build(.to_timestamp, body: value.parts)
     }
     
     /// Generate series
@@ -1770,7 +1770,7 @@ extension Fn {
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
     public static func concat(_ values: SwifQLable...) -> SwifQLable {
-        return concat(values)
+        concat(values)
     }
     
     /// Concatenate all arguments. NULL arguments are ignored.
@@ -1808,7 +1808,7 @@ extension Fn {
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
     public static func concat_ws(_ values: SwifQLable...) -> SwifQLable {
-        return concat_ws(values)
+        concat_ws(values)
     }
     
     /// Concatenate all arguments. NULL arguments are ignored.

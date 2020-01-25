@@ -16,9 +16,11 @@ extension SwifQLable {
         parts.append(o: .select)
         return SwifQLableParts(parts: parts)
     }
+    
     public func select(_ fields: SwifQLable...) -> SwifQLable {
-        return select(fields)
+        select(fields)
     }
+    
     public func select(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

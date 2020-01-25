@@ -11,7 +11,7 @@ import Foundation
 
 extension SwifQLable {
     public func groupBy(_ fields: SwifQLable...) -> SwifQLable {
-        return groupBy(fields)
+        groupBy(fields)
     }
     public func groupBy(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts

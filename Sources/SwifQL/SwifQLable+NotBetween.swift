@@ -11,6 +11,6 @@ import Foundation
 
 extension SwifQLable {
     public func notBetween(_ part: SwifQLable) -> SwifQLable {
-        return SwifQLableParts(parts: self.parts).not.between(part)
+        SwifQLableParts(parts: self.parts).not.between(part)
     }
 }

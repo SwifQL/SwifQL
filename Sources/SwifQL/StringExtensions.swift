@@ -9,30 +9,30 @@ import Foundation
 
 extension String {
     public var singleQuotted: String {
-        return "'\(self)'"
+        "'\(self)'"
     }
     
     public var doubleQuotted: String {
-        return "\"\(self)\""
+        "\"\(self)\""
     }
     
     public var roundBracketted: String {
-        return "(\(self))"
+        "(\(self))"
     }
     
     public static func singleQuotted(_ v: Any) -> String {
-        return "\(v)".singleQuotted
+        "\(v)".singleQuotted
     }
     
     public static func doubleQuotted(_ v: Any) -> String {
-        return "\(v)".doubleQuotted
+        "\(v)".doubleQuotted
     }
     
     public static func roundBracketted(_ v: Any) -> String {
-        return "\(v)".roundBracketted
+        "\(v)".roundBracketted
     }
     
     public func `as`(_ v: String) -> String {
-        return self + " as " + v
+        self + " as " + v
     }
 }

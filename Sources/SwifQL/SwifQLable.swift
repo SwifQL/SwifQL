@@ -12,7 +12,7 @@ public protocol SwifQLable: CustomStringConvertible {
 }
 
 extension SwifQLable {
-    public var description: String { return prepare(.psql).plain }
+    public var description: String { prepare(.psql).plain }
 }
 
 public struct SwifQLableParts: SwifQLable {
@@ -30,9 +30,7 @@ public protocol SwifQLPart {}
 public typealias SwifQLBool = SwifQLPartBool
 
 public struct SwifQLPartBool: SwifQLPart, SwifQLable {
-    public var parts: [SwifQLPart] {
-        return [self]
-    }
+    public var parts: [SwifQLPart] { [self] }
     
     let value: Bool
     
@@ -64,6 +62,7 @@ public protocol SwifQLKeyPathable: SwifQLPart {
 
 public struct SwifQLPartKeyPathLastPart: SwifQLPart {
     public var lastPath: String
+    
     public init (_ lastPath: String) {
         self.lastPath = lastPath
     }
@@ -71,6 +70,7 @@ public struct SwifQLPartKeyPathLastPart: SwifQLPart {
 
 public struct SwifQLPartDate: SwifQLPart {
     public var date: Date
+    
     public init (_ date: Date) {
         self.date = date
     }
@@ -93,12 +93,13 @@ public struct SwifQLPartKeyPath: SwifQLKeyPathable {
 
 extension SwifQLPartKeyPath: SwifQLable{
     public var parts: [SwifQLPart] {
-        return SwifQLableParts(parts: self).parts
+        SwifQLableParts(parts: self).parts
     }
 }
 
 public struct SwifQLPartAlias: SwifQLPart {
     var alias: String
+    
     init (_ alias: String) {
         self.alias = alias
     }
@@ -106,17 +107,26 @@ public struct SwifQLPartAlias: SwifQLPart {
 
 public struct SwifQLPartOperator: SwifQLPart, Equatable {
     var _value: String
-    public init (_ value: String) { self._value = value }
+    
+    public init (_ value: String) {
+        self._value = value
+    }
 }
 
 public struct SwifQLPartUnsafeValue: SwifQLPart {
     var unsafeValue: Encodable
-    public init (_ value: Encodable) { unsafeValue = value }
+    
+    public init (_ value: Encodable) {
+        unsafeValue = value
+    }
 }
 
 public struct SwifQLPartSafeValue: SwifQLPart {
     var safeValue: Any?
-    public init (_ value: Any?) { safeValue = value }
+    
+    public init (_ value: Any?) {
+        safeValue = value
+    }
 }
 
 extension SwifQLable {

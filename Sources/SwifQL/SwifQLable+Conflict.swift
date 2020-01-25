@@ -16,9 +16,11 @@ extension SwifQLable {
         parts.append(o: .conflict)
         return SwifQLableParts(parts: parts)
     }
+    
     public func conflict(_ paths: KeyPathLastPath...) -> SwifQLable {
-        return conflict(paths)
+        conflict(paths)
     }
+    
     public func conflict(_ paths: [KeyPathLastPath]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

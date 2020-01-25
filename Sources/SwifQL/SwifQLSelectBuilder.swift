@@ -65,12 +65,12 @@ public class SwifQLSelectBuilder {
     
     @discardableResult
     public func join(_ mode: JoinMode, _ table: SwifQLable, on predicates: SwifQLable) -> SwifQLSelectBuilder {
-        return join(SwifQLJoinBuilder(mode, table, on: predicates))
+        join(SwifQLJoinBuilder(mode, table, on: predicates))
     }
     
     @discardableResult
     public func join(_ item: SwifQLJoinBuilder...) -> SwifQLSelectBuilder {
-        return join(item)
+        join(item)
     }
     
     @discardableResult
@@ -83,7 +83,7 @@ public class SwifQLSelectBuilder {
     
     @discardableResult
     public func `where`(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        return `where`(item)
+        `where`(item)
     }
     
     @discardableResult
@@ -96,7 +96,7 @@ public class SwifQLSelectBuilder {
     
     @discardableResult
     public func groupBy(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        return groupBy(item)
+        groupBy(item)
     }
     
     @discardableResult
@@ -109,7 +109,7 @@ public class SwifQLSelectBuilder {
     
     @discardableResult
     public func having(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        return having(item)
+        having(item)
     }
     
     @discardableResult
@@ -122,7 +122,7 @@ public class SwifQLSelectBuilder {
     
     @discardableResult
     public func orderBy(_ item: OrderByItem...) -> SwifQLSelectBuilder {
-        return orderBy(item)
+        orderBy(item)
     }
     
     @discardableResult

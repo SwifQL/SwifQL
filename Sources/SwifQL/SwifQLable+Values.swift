@@ -9,11 +9,11 @@ import Foundation
 
 extension SwifQLable {
     public subscript (values items: SwifQLable...) -> SwifQLable {
-        get { return values(items) }
+        values(items)
     }
     
     public subscript (values items: [SwifQLable]) -> SwifQLable {
-        get { return values(items) }
+        values(items)
     }
     
     /// Represent just `VALUES` keyword
@@ -26,7 +26,7 @@ extension SwifQLable {
     
     /// Represent provided values in round brackets separated with comma
     public func values(_ items: SwifQLable...) -> SwifQLable {
-        return values(items)
+        values(items)
     }
     /// Represent provided values in round brackets separated with comma
     public func values(_ items: [SwifQLable]) -> SwifQLable {
@@ -46,7 +46,7 @@ extension SwifQLable {
     
     /// e.g. INSERT INTO CarBrands (name) VALUES ("Acura"), ("Audi"), ("BMW")
     public func values(array: [SwifQLable]...) -> SwifQLable {
-        return values(array: array)
+        values(array: array)
     }
     /// e.g. INSERT INTO CarBrands (name) VALUES ("Acura"), ("Audi"), ("BMW")
     public func values(array: [[SwifQLable]]) -> SwifQLable {

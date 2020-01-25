@@ -9,16 +9,16 @@ import Foundation
 
 extension SwifQLable {
     public subscript (fields items: SwifQLable...) -> SwifQLable {
-        get { return fields(items) }
+        fields(items)
     }
     
     public subscript (fields items: [SwifQLable]) -> SwifQLable {
-        get { return fields(items) }
+        fields(items)
     }
     
     /// Represent just a list of fields in round brackets separated by comma
     public func fields(_ items: SwifQLable...) -> SwifQLable {
-        return fields(items)
+        fields(items)
     }
     
     /// Represent just a list of fields in round brackets separated by comma
@@ -59,22 +59,20 @@ extension SwifQLable {
     }
     
     public subscript (table item: SwifQLable) -> SwifQLable {
-        get {
-            var parts: [SwifQLPart] = self.parts
-            parts.appendSpaceIfNeeded()
-            if let name = item as? String {
-                parts.append(SwifQLPartTable(name))
-            } else {
-                parts.append(contentsOf: item.parts)
-            }
-            return SwifQLableParts(parts: parts)
+        var parts: [SwifQLPart] = self.parts
+        parts.appendSpaceIfNeeded()
+        if let name = item as? String {
+            parts.append(SwifQLPartTable(name))
+        } else {
+            parts.append(contentsOf: item.parts)
         }
+        return SwifQLableParts(parts: parts)
     }
     
     public func insertInto(_ table: SwifQLable, fields: SwifQLable...) -> SwifQLable {
-        return insertInto(table, fields: fields)
+        insertInto(table, fields: fields)
     }
     public func insertInto(_ table: SwifQLable, fields: [SwifQLable]) -> SwifQLable {
-        return insert.into[table: table].fields(fields)
+        insert.into[table: table].fields(fields)
     }
 }

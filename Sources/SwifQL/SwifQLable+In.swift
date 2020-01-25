@@ -11,7 +11,7 @@ import Foundation
 
 extension SwifQLable {
     public func `in`(_ items: SwifQLable...) -> SwifQLable {
-        return `in`(items)
+        `in`(items)
     }
     public func `in`(_ items: [SwifQLable]) -> SwifQLable {
         var parts = self.parts

@@ -19,5 +19,5 @@ extension TableWithColumn: SwifQLable {
 }
 
 extension TableWithColumn: KeyPathLastPath {
-    public var lastPath: String { return paths.last ?? "" }
+    public var lastPath: String { paths.last ?? "" }
 }

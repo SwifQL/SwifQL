@@ -16,6 +16,7 @@ extension SwifQLable {
         parts.append(o: .epoch)
         return SwifQLableParts(parts: parts)
     }
+    
     public func epoch(with value: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

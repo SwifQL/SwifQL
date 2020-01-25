@@ -13,10 +13,13 @@ public struct PostgresArray: SwifQLable {
     public enum EmptyMode {
         case simple, dollar
     }
+    
     public var parts: [SwifQLPart] = []
+    
     public init (_ items: SwifQLable..., emptyMode: EmptyMode = .simple) {
         self.init(items, emptyMode: emptyMode)
     }
+    
     public init (_ items: [SwifQLable], emptyMode: EmptyMode = .simple) {
         if items.count == 0 && emptyMode == .dollar {
             parts.append(o: .doubleDollar)

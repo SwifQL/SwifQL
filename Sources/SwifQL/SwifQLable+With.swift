@@ -30,7 +30,7 @@ import Foundation
 ///
 extension SwifQLable {
     public func with(_ withs: With...) -> SwifQLable {
-        return with(withs)
+        with(withs)
     }
     
     public func with(_ withs: [With]) -> SwifQLable {

@@ -10,6 +10,7 @@ import Foundation
 public struct SwifQLSplittedQuery {
     public var query: String
     public var values: [Encodable]
+    
     init (query: String, values: [Encodable]) {
         self.query = query
         self.values = values

@@ -16,9 +16,11 @@ extension SwifQLable {
         parts.append(o: .overlaps)
         return SwifQLableParts(parts: parts)
     }
+    
     public func overlaps(_ fields: SwifQLable...) -> SwifQLable {
-        return overlaps(fields)
+        overlaps(fields)
     }
+    
     public func overlaps(_ fields: [SwifQLable]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

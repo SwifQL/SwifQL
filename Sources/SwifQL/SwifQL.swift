@@ -9,7 +9,7 @@ import Foundation
 
 public let SwifQL: SwifQLable = _SwifQL()
 public func SwifQL(_ query: SwifQLable) -> SwifQLable {
-    return _SwifQL(query)
+    _SwifQL(query)
 }
 
 private struct _SwifQL: SwifQLable {
@@ -54,7 +54,7 @@ public enum SwifQLableArraySeparator {
 
 extension Array: SwifQLable where Element == SwifQLable {
     public var parts: [SwifQLPart] {
-        return separator(.comma).parts
+        separator(.comma).parts
     }
 }
 

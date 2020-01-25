@@ -11,7 +11,7 @@ import Foundation
 
 extension SwifQLable {
     public func filter(where predicates: SwifQLable...) -> SwifQLable {
-        return filter(where: predicates)
+        filter(where: predicates)
     }
     
     public func filter(where predicates: [SwifQLable]) -> SwifQLable {

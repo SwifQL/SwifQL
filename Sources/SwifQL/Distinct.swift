@@ -51,7 +51,7 @@ public class Distinct: SwifQLable {
     }
     
     public func andAlso(_ fields: SwifQLable...) -> Distinct {
-        return andAlso(fields)
+        andAlso(fields)
     }
     
     public func andAlso(_ fields: [SwifQLable]) -> Distinct {

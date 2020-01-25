@@ -14,7 +14,7 @@ public protocol KeyPathLastPath {
 }
 
 extension String: KeyPathLastPath {
-    public var lastPath: String { return self }
+    public var lastPath: String { self }
 }
 
 public protocol FQUniversalKeyPathSimple: KeyPathLastPath {

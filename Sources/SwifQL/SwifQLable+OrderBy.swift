@@ -47,47 +47,47 @@ public struct OrderByItem: SwifQLable {
     // MARK: Direction
 
     public static func direction(_ value: Direction, _ elements: SwifQLable..., nulls: Nulls? = nil) -> OrderByItem {
-        return direction(value, elements, nulls: nulls)
+        direction(value, elements, nulls: nulls)
     }
 
     public static func direction(_ value: Direction, _ elements: [SwifQLable], nulls: Nulls? = nil) -> OrderByItem {
-        return OrderByItem(elements: elements, direction: value, nulls: nulls)
+        OrderByItem(elements: elements, direction: value, nulls: nulls)
     }
     
     // MARK: Ascending
     
     public static func asc(_ elements: SwifQLable...) -> OrderByItem {
-        return asc(elements, nulls: nil)
+        asc(elements, nulls: nil)
     }
     
     public static func asc(_ elements: [SwifQLable]) -> OrderByItem {
-        return asc(elements, nulls: nil)
+        asc(elements, nulls: nil)
     }
     
     public static func asc(_ elements: SwifQLable..., nulls: Nulls?) -> OrderByItem {
-        return asc(elements, nulls: nulls)
+        asc(elements, nulls: nulls)
     }
     
     public static func asc(_ elements: [SwifQLable], nulls: Nulls?) -> OrderByItem {
-        return OrderByItem(elements: elements, direction: .asc, nulls: nulls)
+        OrderByItem(elements: elements, direction: .asc, nulls: nulls)
     }
     
     // MARK: Descending
     
     public static func desc(_ elements: SwifQLable...) -> OrderByItem {
-        return desc(elements, nulls: nil)
+        desc(elements, nulls: nil)
     }
     
     public static func desc(_ elements: [SwifQLable]) -> OrderByItem {
-        return desc(elements, nulls: nil)
+        desc(elements, nulls: nil)
     }
     
     public static func desc(_ elements: SwifQLable..., nulls: Nulls?) -> OrderByItem {
-        return desc(elements, nulls: nulls)
+        desc(elements, nulls: nulls)
     }
     
     public static func desc(_ elements: [SwifQLable], nulls: Nulls?) -> OrderByItem {
-        return OrderByItem(elements: elements, direction: .desc, nulls: nulls)
+        OrderByItem(elements: elements, direction: .desc, nulls: nulls)
     }
     
     // MARK: - SwifQLable
@@ -149,7 +149,7 @@ extension SwifQLable {
     /// ```
     ///
     public func orderBy(_ fields: OrderByItem...) -> SwifQLable {
-        return orderBy(fields)
+        orderBy(fields)
     }
     
     public func orderBy(_ fields: [OrderByItem]) -> SwifQLable {

@@ -16,6 +16,7 @@ extension SwifQLable {
         parts.append(o: .constraint)
         return SwifQLableParts(parts: parts)
     }
+    
     public func constraint(_ value: KeyPathLastPath) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

@@ -14,9 +14,11 @@ extension SwifQLable {
         parts.append(o: .returning)
         return SwifQLableParts(parts: parts)
     }
+    
     public func returning(_ paths: KeyPathLastPath...) -> SwifQLable {
-        return returning(paths)
+        returning(paths)
     }
+    
     public func returning(_ paths: [KeyPathLastPath]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
