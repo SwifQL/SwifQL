@@ -15,11 +15,11 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
     public typealias Model = M
     
     public var parts: [SwifQLPart] {
-        return [SwifQLPartTable(alias)]
+        [SwifQLPartTable(alias)]
     }
     
     public var table: SwifQLable {
-        return SwifQLableParts(parts: SwifQLPartTableWithAlias(name, alias))
+        SwifQLableParts(parts: SwifQLPartTableWithAlias(name, alias))
     }
     
     var name: String {
@@ -35,8 +35,8 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
         self.alias = alias
     }
     
-    public func column(_ paths: String...) -> TableWithColumn {
-        return Table(alias).column(paths)
+    public func column(_ paths: String...) -> Path.TableWithColumn {
+        Path.Table(alias).column(paths)
     }
     
     //MARK: SQLQueryPart

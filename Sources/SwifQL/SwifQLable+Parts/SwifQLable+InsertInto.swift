@@ -8,6 +8,33 @@
 import Foundation
 
 extension SwifQLable {
+    public subscript (newColumns items: NewColumn...) -> SwifQLable {
+        newColumns(items)
+    }
+    
+    public subscript (newColumns items: [NewColumn]) -> SwifQLable {
+        newColumns(items)
+    }
+    
+    public func newColumns(_ items: NewColumn...) -> SwifQLable {
+        newColumns(items)
+    }
+    
+    public func newColumns(_ items: [NewColumn]) -> SwifQLable {
+        var parts: [SwifQLPart] = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .openBracket)
+        items.enumerated().forEach { i, v in
+            if i > 0 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+            parts.append(contentsOf: v.parts)
+        }
+        parts.append(o: .closeBracket)
+        return SwifQLableParts(parts: parts)
+    }
+    
     public subscript (fields items: SwifQLable...) -> SwifQLable {
         fields(items)
     }
@@ -26,14 +53,16 @@ extension SwifQLable {
         var parts: [SwifQLPart] = self.parts
         parts.appendSpaceIfNeeded()
         parts.append(o: .openBracket)
-        for (i, v) in items.compactMap({ v -> SwifQLPart? in
+        items.compactMap { v -> SwifQLPart? in
             if let part = v.parts.first as? SwifQLKeyPathable, let lastPath = part.paths.last {
-                return SwifQLPartKeyPathLastPart(lastPath)
+                return SwifQLPartColumn(lastPath)
             } else if let name = v as? String {
-                return SwifQLPartKeyPathLastPart(name)
+                return SwifQLPartColumn(name)
             }
             return nil
-        }).enumerated() {
+        }
+        .enumerated()
+        .forEach { i, v in
             if i > 0 {
                 parts.append(o: .comma)
                 parts.append(o: .space)

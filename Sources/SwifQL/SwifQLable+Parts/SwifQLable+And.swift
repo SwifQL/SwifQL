@@ -10,6 +10,13 @@ import Foundation
 //MARK: AND
 
 extension SwifQLable {
+    public var and: SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .and)
+        return SwifQLableParts(parts: parts)
+    }
+    
     public func and(_ predicate: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

@@ -27,109 +27,17 @@ public struct SwifQLableParts: SwifQLable {
 
 public protocol SwifQLPart {}
 
-public typealias SwifQLBool = SwifQLPartBool
-
-public struct SwifQLPartBool: SwifQLPart, SwifQLable {
-    public var parts: [SwifQLPart] { [self] }
-    
-    let value: Bool
-    
-    public init (_ value: Bool) {
-        self.value = value
-    }
-}
-
-public struct SwifQLPartTable: SwifQLPart {
-    public var table: String
-    public init (_ table: String) {
-        self.table = table
-    }
-}
-
-public struct SwifQLPartTableWithAlias: SwifQLPart {
-    public var table: String
-    public var alias: String
-    public init (_ table: String, _ alias: String) {
-        self.table = table
-        self.alias = alias
-    }
-}
-
 public protocol SwifQLKeyPathable: SwifQLPart {
     var table: String? { get }
     var paths: [String] { get }
 }
 
-public struct SwifQLPartKeyPathLastPart: SwifQLPart {
-    public var lastPath: String
-    
-    public init (_ lastPath: String) {
-        self.lastPath = lastPath
-    }
-}
-
-public struct SwifQLPartDate: SwifQLPart {
-    public var date: Date
-    
-    public init (_ date: Date) {
-        self.date = date
-    }
-}
-
-public struct SwifQLPartKeyPath: SwifQLKeyPathable {
-    public var table: String?
-    public var paths: [String]
-    public var asText: Bool
-    // FIXME: instead of `asText` here create some protocol for path which will support `asText` for each part of path
-    public init (table: String? = nil, paths: String..., asText: Bool = false) {
-        self.init(table: table, paths: paths, asText: asText)
-    }
-    public init (table: String? = nil, paths: [String], asText: Bool = false) {
-        self.table = table
-        self.paths = paths
-        self.asText = asText
-    }
-}
-
-extension SwifQLPartKeyPath: SwifQLable{
-    public var parts: [SwifQLPart] {
-        SwifQLableParts(parts: self).parts
-    }
-}
-
-public struct SwifQLPartAlias: SwifQLPart {
-    var alias: String
-    
-    init (_ alias: String) {
-        self.alias = alias
-    }
-}
-
-public struct SwifQLPartOperator: SwifQLPart, Equatable {
-    var _value: String
-    
-    public init (_ value: String) {
-        self._value = value
-    }
-}
-
-public struct SwifQLPartUnsafeValue: SwifQLPart {
-    var unsafeValue: Encodable
-    
-    public init (_ value: Encodable) {
-        unsafeValue = value
-    }
-}
-
-public struct SwifQLPartSafeValue: SwifQLPart {
-    var safeValue: Any?
-    
-    public init (_ value: Any?) {
-        safeValue = value
-    }
-}
-
 extension SwifQLable {
+    /// Good choice only for super short and universal queries like `BEGIN;`, `ROLLBACK;`, `COMMIT;`
+    public func prepare() -> SwifQLPrepared {
+        prepare(.any)
+    }
+    
     public func prepare(_ dialect: SQLDialect) -> SwifQLPrepared {
         var values: [Encodable] = []
         var formattedValues: [String] = []
@@ -145,8 +53,8 @@ extension SwifQLable {
                 return dialect.alias(v.alias)
             case let v as SwifQLPartKeyPath:
                 return dialect.keyPath(v)
-            case let v as SwifQLPartKeyPathLastPart:
-                return dialect.column(v.lastPath)
+            case let v as SwifQLPartColumn:
+                return dialect.column(v.name)
             case let v as SwifQLPartOperator:
                 return v._value
             case let v as SwifQLPartDate:

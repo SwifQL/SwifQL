@@ -7,8 +7,6 @@
 
 import Foundation
 
-public protocol FQKeyPath: Decodable {}
-
 public protocol KeyPathLastPath {
     var lastPath: String { get }
 }
@@ -281,23 +279,18 @@ postfix public func ||||||(rhs: SwifQLable) -> SwifQLable {
     return SwifQLableParts(parts: parts)
 }
 
+postfix operator *
+postfix public func *(lhs: SwifQLable) -> SwifQLable {
+    var parts = lhs.parts
+    parts.appendSpaceIfNeeded()
+    parts.append(o: .custom("*"))
+    return SwifQLableParts(parts: parts)
+}
+
 postfix operator .*
 postfix public func .*(lhs: SwifQLable) -> SwifQLable {
     var parts = lhs.parts
     parts.append(o: .custom(".*"))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)
-}
-
-extension SwifQLable {
-//    public func `_`(_ operator: Fn.SwifQLOperator) -> SwifQLable {
-//        var parts = self.parts
-//        parts.append(o: `operator`)
-//        return SwifQLableParts(parts: parts)
-//    }
-//    public func `_`(_ part: SwifQLable) -> SwifQLable {
-//        var parts = self.parts
-//        parts.append(contentsOf: part.parts)
-//        return SwifQLableParts(parts: parts)
-//    }
 }

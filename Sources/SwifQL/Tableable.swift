@@ -18,10 +18,10 @@ public protocol Tableable: Codable {
 extension Tableable {
     /// See `SwifQLTable`.
     static var entity: String {
-        return String(describing: Self.self)
+        String(describing: Self.self)
     }
     
-    public static func column(_ paths: String...) -> TableWithColumn {
-        return Table(entity).column(paths)
+    public static func column(_ paths: String...) -> Path.TableWithColumn {
+        Path.Table(entity).column(paths)
     }
 }

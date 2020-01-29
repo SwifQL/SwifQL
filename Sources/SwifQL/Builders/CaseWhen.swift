@@ -19,7 +19,7 @@ public class Case {
     }
     
     public static func when(_ expression: SwifQLable) -> Case {
-        return Case().when(expression)
+        Case().when(expression)
     }
     
     public func when(_ expression: SwifQLable) -> Case {

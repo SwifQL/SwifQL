@@ -13,6 +13,14 @@ public typealias Operator = SwifQLPartOperator
 extension SwifQLPartOperator {
     public typealias Result = SwifQLPartOperator
     
+    public static var action: Result { "ACTION".operator }
+    public static var no: Result { "NO".operator }
+    public static var references: Result { "REFERENCES".operator }
+    public static var check: Result { "CHECK".operator }
+    public static var add: Result { "ADD".operator }
+    public static var primary: Result { "PRIMARY".operator }
+    public static var key: Result { "KEY".operator }
+    public static var unique: Result { "UNIQUE".operator }
     public static var select: Result { "SELECT".operator }
     public static var distinct: Result { "DISTINCT".operator }
     public static var `as`: Result { "as".operator }
@@ -38,6 +46,7 @@ extension SwifQLPartOperator {
     public static var lessThanOrEqual: Result { "<=".operator }
     public static var equal: Result { "=".operator }
     public static var notEqual: Result { "!=".operator }
+    public static var `if`: Result { "IF".operator }
     public static var `in`: Result { "IN".operator }
     public static var notIn: Result { "NOT IN".operator }
     public static var like: Result { "LIKE".operator }
@@ -163,6 +172,14 @@ extension SwifQLPartOperator {
     public static var data: Result { "DATA".operator }
     public static func custom(_ v: String) -> Result { v.operator }
     
+    public var no: Result { concatWith(.no) }
+    public var action: Result { concatWith(.action) }
+    public var references: Result { concatWith(.references) }
+    public var add: Result { concatWith(.add) }
+    public var check: Result { concatWith(.check) }
+    public var primary: Result { concatWith(.primary) }
+    public var key: Result { concatWith(.key) }
+    public var unique: Result { concatWith(.unique) }
     public var select: Result { concatWith(.select) }
     public var distinct: Result { concatWith(.distinct) }
     public var `as`: Result { concatWith(.as) }
@@ -188,6 +205,7 @@ extension SwifQLPartOperator {
     public var lessThanOrEqual: Result { concatWith(.lessThanOrEqual) }
     public var equal: Result { concatWith(.equal) }
     public var notEqual: Result { concatWith(.notEqual) }
+    public var `if`: Result { concatWith(.if) }
     public var `in`: Result { concatWith(.in) }
     public var notIn: Result { concatWith(.notIn) }
     public var like: Result { concatWith(.like) }

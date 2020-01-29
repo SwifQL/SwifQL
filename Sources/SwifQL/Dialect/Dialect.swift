@@ -16,6 +16,11 @@ open class SQLDialect {
         PostgreSQLDialect()
     }
     
+    /// Good choice only for super short and universal queries like `BEGIN;`, `ROLLBACK;`, `COMMIT;`
+    public static var any: SQLDialect {
+        .init()
+    }
+    
     init () {}
     
     open func boolValue(_ value: Bool) -> String {

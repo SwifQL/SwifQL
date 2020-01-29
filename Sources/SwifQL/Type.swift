@@ -122,6 +122,7 @@ public struct Type {
     
     /// variable-length character string
     public static var varchar: Type = .init("varchar")
+    public static func varchar(_ n: Int) -> Type { .init("varchar(\(n))") }
     public static var varcharArray: Type = .init("varchar[]")
     
     /// variable-length character string

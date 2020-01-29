@@ -10,6 +10,12 @@ import Foundation
 //MARK: Exists
 
 extension SwifQLable {
+    public var exists: SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .exists)
+        return SwifQLableParts(parts: parts)
+    }
     public func exists(_ predicates: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
