@@ -41,7 +41,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectColumn() {
-        checkAllDialects(SwifQL.select(Column("id")), pg: """
+        checkAllDialects(SwifQL.select(Path.Column("id")), pg: """
             SELECT "id"
             """, mySQL: """
             SELECT id
@@ -49,7 +49,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectColumnWithTable() {
-        checkAllDialects(SwifQL.select(Table("CarBrands").column("id")), pg: """
+        checkAllDialects(SwifQL.select(Path.Table("CarBrands").column("id")), pg: """
             SELECT "CarBrands"."id"
             """, mySQL: """
             SELECT CarBrands.id
@@ -57,7 +57,7 @@ final class SwifQLTests: XCTestCase {
     }
     
     func testSelectColumnWithoutTable() {
-        checkAllDialects(SwifQL.select(Column("id")), pg: """
+        checkAllDialects(SwifQL.select(Path.Column("id")), pg: """
             SELECT "id"
             """, mySQL: """
             SELECT id
@@ -395,9 +395,9 @@ final class SwifQLTests: XCTestCase {
     
     //MARK: - UNION
     func testUnion() {
-        let table1 = Table("Table1")
-        let table2 = Table("Table2")
-        let table3 = Table("Table3")
+        let table1 = Path.Table("Table1")
+        let table2 = Path.Table("Table2")
+        let table3 = Path.Table("Table3")
         
         let sql = Union(
             SwifQL.select(table1.*).from(table1),
@@ -412,11 +412,11 @@ final class SwifQLTests: XCTestCase {
         """)
         
         let adv = SwifQL
-            .select(Distinct(Column("uniqueName")) => .text => "name")
+            .select(Distinct(Path.Column("uniqueName")) => .text => "name")
             .from(
                 Union(
-                    SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table1),
-                    SwifQL.select(Distinct(Column("name")) => .text => "uniqueName").from(table2)
+                    SwifQL.select(Distinct(Path.Column("name")) => .text => "uniqueName").from(table1),
+                    SwifQL.select(Distinct(Path.Column("name")) => .text => "uniqueName").from(table2)
                 )
         )
         
@@ -430,9 +430,9 @@ final class SwifQLTests: XCTestCase {
     // MARK: - With
     func testWith() {
         let sql = SwifQL
-            .with(.init(Table("Table1"), SwifQL.select(Table("Table2").*).from(Table("Table2"))))
-            .select(Table("Table1").*)
-            .from(Table("Table1"))
+            .with(.init(Path.Table("Table1"), SwifQL.select(Path.Table("Table2").*).from(Path.Table("Table2"))))
+            .select(Path.Table("Table1").*)
+            .from(Path.Table("Table1"))
         
         checkAllDialects(sql, pg: """
         WITH "Table1" as (SELECT "Table2".* FROM "Table2") SELECT "Table1".* FROM "Table1"
@@ -447,10 +447,10 @@ final class SwifQLTests: XCTestCase {
         let sql = SwifQL
             .with(
                 .init(Table1.table, SwifQL.select(Table1.table.*).from(Table1.table)),
-                .init(Table("Table2"), columns: [Column("hi"), Column("there")], SwifQL.select(Table("Table2").*).from(Table("Table2")))
-        )
-            .select(Table("Table3").*)
-            .from(Table("Table3"))
+                .init(Path.Table("Table2"), columns: [Path.Column("hi"), Path.Column("there")], SwifQL.select(Path.Table("Table2").*).from(Path.Table("Table2")))
+            )
+            .select(Path.Table("Table3").*)
+            .from(Path.Table("Table3"))
         
         checkAllDialects(sql, pg: """
         WITH "Table1" as (SELECT "Table1".* FROM "Table1"), "Table2" ("hi", "there") as (SELECT "Table2".* FROM "Table2") SELECT "Table3".* FROM "Table3"
