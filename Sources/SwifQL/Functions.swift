@@ -1287,7 +1287,7 @@ extension Fn {
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT)
     public static func extract(_ field: ExtractFieldValue, from value: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = []
-        parts.append(safe: field.rawValue)
+        parts.append(safe: field.value)
         parts.append(o: .space)
         parts.append(o: .from)
         parts.append(o: .space)
