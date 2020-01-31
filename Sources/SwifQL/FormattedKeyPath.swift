@@ -15,12 +15,12 @@ public struct FormattedKeyPath {
     let _paths: [String]
     
     public init <T: Tableable>(_ table: T.Type, _ paths: String...) {
-        _table = table.entity
+        _table = table.tableName
         _paths = paths
     }
     
     public init <T: Tableable>(_ table: T.Type, _ paths: [String]) {
-        _table = table.entity
+        _table = table.tableName
         _paths = paths
     }
     
@@ -53,7 +53,7 @@ extension Tableable {
     
     /// Manual key path. Alias to `\User.something`
     public static func manualKeyPath(_ paths: [String]) -> FormattedKeyPath {
-        FormattedKeyPath(entity, paths)
+        FormattedKeyPath(tableName, paths)
     }
     
     /// Manual key path. Alias to `\User.something`

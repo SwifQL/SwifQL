@@ -10,18 +10,18 @@ import Foundation
 public protocol Tableable: Codable {
     /// This model's unique name. By default, this property is set to a `String` describing the type.
     /// Override this property to change the model's table / collection name for all of Fluent.
-    static var entity: String { get }
+    static var tableName: String { get }
 }
 
 // MARK: Optional
 
 extension Tableable {
     /// See `SwifQLTable`.
-    static var entity: String {
+    public static var tableName: String {
         String(describing: Self.self)
     }
     
     public static func column(_ paths: String...) -> Path.TableWithColumn {
-        Path.Table(entity).column(paths)
+        Path.Table(tableName).column(paths)
     }
 }
