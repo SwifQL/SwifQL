@@ -16,4 +16,17 @@ extension SwifQLable {
         parts.append(o: .custom(anything))
         return SwifQLableParts(parts: parts)
     }
+    
+    public static func raw(_ anything: String) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        parts.append(o: .space)
+        parts.append(safe: value)
+        return SwifQLableParts(parts: parts)
+    }
+}
+
+extension String {
+    public var raw: SwifQLable {
+        SwifQL.raw(self)
+    }
 }
