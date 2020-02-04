@@ -8,32 +8,6 @@
 import Foundation
 
 extension SwifQLable {
-    public subscript (items items: SwifQLable...) -> SwifQLable {
-        self.items(items)
-    }
-    
-    public subscript (items items: [SwifQLable]) -> SwifQLable {
-        self.items(items)
-    }
-    
-    /// Represent provided values in round brackets separated with comma
-    public func items(_ items: SwifQLable...) -> SwifQLable {
-        self.items(items)
-    }
-    /// Represent provided values in round brackets separated with comma
-    public func items(_ items: [SwifQLable]) -> SwifQLable {
-        var parts: [SwifQLPart] = self.parts
-        parts.appendSpaceIfNeeded()
-        for (i, v) in items.enumerated() {
-            if i > 0 {
-                parts.append(o: .comma)
-                parts.append(o: .space)
-            }
-            parts.append(contentsOf: v.parts)
-        }
-        return SwifQLableParts(parts: parts)
-    }
-    
     public subscript (newColumns items: NewColumn...) -> SwifQLable {
         newColumns(items)
     }

@@ -20,6 +20,9 @@ public struct SwifQLPartKeyPath: SwifQLKeyPathable {
         self.paths = paths
         self.asText = asText
     }
+    public var column: SwifQLPartColumn {
+        .init(paths[0])
+    }
 }
 
 extension SwifQLPartKeyPath: SwifQLable{
