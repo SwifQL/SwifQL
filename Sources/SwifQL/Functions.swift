@@ -257,10 +257,12 @@ extension Fn {
         return build(.nvl, body: parts)
     }
     
+    /// `SELECT COALESCE (NULL, 2 , 1);` will return 2
     public static func coalesce(_ queryPart: SwifQLable...) -> SwifQLable {
         coalesce(queryPart)
     }
     
+    /// `SELECT COALESCE (NULL, 2 , 1);` will return 2
     public static func coalesce(_ queryParts: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = []
         for (i, q) in queryParts.enumerated() {
