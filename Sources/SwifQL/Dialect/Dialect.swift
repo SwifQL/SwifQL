@@ -72,7 +72,7 @@ open class SQLDialect {
         case let v as Float: return String(describing: v)
         case let v as Double: return String(describing: v)
         case let v as Decimal: return String(describing: v)
-        default: return stringValue(String(describing: value))
+        default: return stringValue(String(describing: "<unsafe value>")) // TODO:
         }
     }
     
