@@ -7,13 +7,34 @@
 
 import Foundation
 
-public enum JoinMode: String {
-    case left = "LEFT"
-    case leftOuter = "LEFT OUTER"
-    case right = "RIGHT"
-    case rightOuter = "RIGHT OUTER"
-    case inner = "INNER"
-    case outer = "OUTER"
+public struct JoinMode {
+    let parts: [SwifQLPartOperator]
+    
+    public init (_ parts: SwifQLPartOperator...) {
+        self.parts = parts
+    }
+    
+    public init (_ parts: [SwifQLPartOperator]) {
+        self.parts = parts
+    }
+    
+    public static var left: JoinMode { .init(.left, .space, .join) }
+    public static var leftLateral: JoinMode { .init(.left, .space, .join, .space, .lateral) }
+    
+    public static var leftOuter: JoinMode { .init(.left, .space, .outer, .space, .join) }
+    public static var leftOuterLateral: JoinMode { .init(.left, .space, .outer, .space, .join, .space, .lateral) }
+
+    public static var right: JoinMode { .init(.right, .space, .join) }
+    public static var rightLateral: JoinMode { .init(.right, .space, .join, .space, .lateral) }
+
+    public static var rightOuter: JoinMode { .init(.right, .space, .outer, .space, .join) }
+    public static var rightOuterLateral: JoinMode { .init(.right, .space, .outer, .space, .join, .space, .lateral) }
+
+    public static var inner: JoinMode { .init(.inner, .space, .join) }
+    public static var outer: JoinMode { .init(.outer, .space, .join) }
+    
+    public static var cross: JoinMode { .init(.cross, .space, .join) }
+    public static var crossLateral: JoinMode { .init(.cross, .space, .join, .space, .lateral) }
 }
 
 public struct SwifQLJoinBuilder: SwifQLable {
@@ -30,9 +51,7 @@ public struct SwifQLJoinBuilder: SwifQLable {
     public var parts: [SwifQLPart] {
         var parts: [SwifQLPart] = []
         parts.appendSpaceIfNeeded()
-        parts.append(o: .custom(mode.rawValue))
-        parts.append(o: .space)
-        parts.append(o: .join)
+        parts.append(contentsOf: mode.parts)
         parts.append(o: .space)
         parts.append(contentsOf: table.parts)
         parts.append(o: .space)

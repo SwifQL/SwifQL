@@ -13,6 +13,12 @@ public typealias Operator = SwifQLPartOperator
 extension SwifQLPartOperator {
     public typealias Result = SwifQLPartOperator
     
+    public static var left: Result { "LEFT".operator }
+    public static var right: Result { "RIGHT".operator }
+    public static var inner: Result { "INNER".operator }
+    public static var outer: Result { "OUTER".operator }
+    public static var cross: Result { "CROSS".operator }
+    public static var lateral: Result { "LATERAL".operator }
     public static var action: Result { "ACTION".operator }
     public static var no: Result { "NO".operator }
     public static var references: Result { "REFERENCES".operator }
@@ -172,6 +178,12 @@ extension SwifQLPartOperator {
     public static var data: Result { "DATA".operator }
     public static func custom(_ v: String) -> Result { v.operator }
     
+    public var left: Result { concatWith(.left) }
+    public var right: Result { concatWith(.right) }
+    public var inner: Result { concatWith(.inner) }
+    public var outer: Result { concatWith(.outer) }
+    public var cross: Result { concatWith(.cross) }
+    public var lateral: Result { concatWith(.lateral) }
     public var no: Result { concatWith(.no) }
     public var action: Result { concatWith(.action) }
     public var references: Result { concatWith(.references) }
