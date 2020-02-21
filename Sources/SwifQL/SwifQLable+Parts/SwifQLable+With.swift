@@ -43,7 +43,7 @@ extension SwifQLable {
                 parts.append(o: .comma)
                 parts.append(o: .space)
             }
-            parts += v.parts
+            parts.append(contentsOf: v.parts)
         }
         return SwifQLableParts(parts: parts)
     }
