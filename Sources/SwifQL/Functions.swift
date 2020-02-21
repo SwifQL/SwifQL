@@ -864,6 +864,10 @@ extension Fn {
         return build(.json_extract_path, body: parts)
     }
     
+    public static func json_extract_path(_ from_json: SwifQLable, path_elems: String...) -> SwifQLable {
+        json_extract_path(from_json, path_elems: path_elems)
+    }
+    
     /// Returns JSON value pointed to by path_elems as text (equivalent to #>> operator)
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func json_extract_path_text(_ from_json: SwifQLable, path_elems: [String]) -> SwifQLable {
@@ -879,6 +883,10 @@ extension Fn {
         }
         
         return build(.json_extract_path_text, body: parts)
+    }
+    
+    public static func json_extract_path_text(_ from_json: SwifQLable, path_elems: String...) -> SwifQLable {
+        json_extract_path_text(from_json, path_elems: path_elems)
     }
     
     /// Returns set of keys in the outermost JSON object.
@@ -1065,6 +1073,10 @@ extension Fn {
         return build(.jsonb_extract_path, body: parts)
     }
     
+    public static func jsonb_extract_path(_ from_json: SwifQLable, path_elems: String...) -> SwifQLable {
+        jsonb_extract_path(from_json, path_elems: path_elems)
+    }
+    
     /// Returns JSON value pointed to by path_elems as text (equivalent to #>> operator)
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
     public static func jsonb_extract_path_text(_ from_json: SwifQLable, path_elems: [String]) -> SwifQLable {
@@ -1080,6 +1092,10 @@ extension Fn {
         }
         
         return build(.jsonb_extract_path_text, body: parts)
+    }
+    
+    public static func jsonb_extract_path_text(_ from_json: SwifQLable, path_elems: String...) -> SwifQLable {
+        jsonb_extract_path_text(from_json, path_elems: path_elems)
     }
     
     /// Returns set of keys in the outermost JSON object.
