@@ -18,6 +18,8 @@ public struct JoinMode {
         self.parts = parts
     }
     
+    public static var none: JoinMode { .init(.join) }
+    
     public static var left: JoinMode { .init(.left, .space, .join) }
     public static var leftLateral: JoinMode { .init(.left, .space, .join, .space, .lateral) }
     
