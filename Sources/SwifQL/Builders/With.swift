@@ -22,7 +22,7 @@ public class With: SwifQLable {
                     parts.append(o: .comma)
                     parts.append(o: .space)
                 }
-                parts += v.parts
+                parts.append(contentsOf: v.parts)
             }
             parts.append(o: .closeBracket)
         }
@@ -30,7 +30,7 @@ public class With: SwifQLable {
         parts.append(o: .as)
         parts.append(o: .space)
         parts.append(o: .openBracket)
-        parts += query.parts
+        parts.append(contentsOf: query.parts)
         parts.append(o: .closeBracket)
     }
 }
