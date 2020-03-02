@@ -10,7 +10,7 @@ import Foundation
 //MARK: JOIN
 
 extension SwifQLable {
-    public func join(_ mode: JoinMode = .none, _ expression: SwifQLable, on predicates: SwifQLable) -> SwifQLable {
+    public func join(_ mode: JoinMode = .none, _ expression: SwifQLable, on predicates: SwifQLable? = nil) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
         let join = SwifQLJoinBuilder(mode, expression, on: predicates)

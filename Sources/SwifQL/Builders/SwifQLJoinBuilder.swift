@@ -42,10 +42,10 @@ public struct JoinMode {
 public struct SwifQLJoinBuilder: SwifQLable {
     let mode: JoinMode
     let table: SwifQLable
-    let predicates: SwifQLable
+    let predicates: SwifQLable?
     
-    public init (_ mode: JoinMode, _ table: SwifQLable, on predicates: SwifQLable) {
-        self.mode = mode
+    public init (_ mode: JoinMode? = nil, _ table: SwifQLable, on predicates: SwifQLable? = nil) {
+        self.mode = mode ?? .none
         self.table = table
         self.predicates = predicates
     }
@@ -56,10 +56,12 @@ public struct SwifQLJoinBuilder: SwifQLable {
         parts.append(contentsOf: mode.parts)
         parts.append(o: .space)
         parts.append(contentsOf: table.parts)
-        parts.append(o: .space)
-        parts.append(o: .on)
-        parts.append(o: .space)
-        parts.append(contentsOf: predicates.parts)
+        if let predicates = predicates {
+            parts.append(o: .space)
+            parts.append(o: .on)
+            parts.append(o: .space)
+            parts.append(contentsOf: predicates.parts)
+        }
         return parts
     }
 }
