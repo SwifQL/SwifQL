@@ -9,7 +9,9 @@ import Foundation
 
 public struct SwifQLPartTable: SwifQLPart {
     public var table: String
-    public init (_ table: String) {
+    public var schema: String?
+    public init(_ table: String, schema: String? = nil) {
         self.table = table
+        self.schema = schema
     }
 }

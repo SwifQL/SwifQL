@@ -10,7 +10,7 @@ import Foundation
 extension Decodable {
     public static var table: SwifQLable {
         if let model = Self.self as? Tableable.Type {
-            return SwifQLableParts(parts: SwifQLPartTable(model.tableName))
+            return SwifQLableParts(parts: SwifQLPartTable(model.tableName, schema: model.schemaName))
         }
         return SwifQLableParts(parts: SwifQLPartTable(String(describing: Self.self)))
     }

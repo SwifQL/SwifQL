@@ -46,9 +46,17 @@ extension SwifQLable {
             case let v as SwifQLPartBool:
                 return dialect.boolValue(v.value)
             case let v as SwifQLPartTable:
-                return dialect.tableName(v.table)
+                if let schema = v.schema {
+                    return dialect.tableName(v.table, schema: schema)
+                } else {
+                    return dialect.tableName(v.table)
+                }
             case let v as SwifQLPartTableWithAlias:
-                return dialect.tableName(v.table, andAlias: v.alias)
+                if let schema = v.schema {
+                    return dialect.tableName(v.table, schema: schema, andAlias: v.alias)
+                } else {
+                    return dialect.tableName(v.table, andAlias: v.alias)
+                }
             case let v as SwifQLPartAlias:
                 return dialect.alias(v.alias)
             case let v as SwifQLPartKeyPath:

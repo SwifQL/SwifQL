@@ -12,32 +12,37 @@ public typealias FKP = FormattedKeyPath
 
 public struct FormattedKeyPath {
     let _table: String
+    let _schema: String?
     let _paths: [String]
     
     public init <T: Tableable>(_ table: T.Type, _ paths: String...) {
         _table = table.tableName
+        _schema = table.schemaName
         _paths = paths
     }
     
     public init <T: Tableable>(_ table: T.Type, _ paths: [String]) {
         _table = table.tableName
+        _schema = table.schemaName
         _paths = paths
     }
     
-    public init (_ table: String, _ paths: String...) {
+    public init (_ table: String, _ schema: String? = nil, _ paths: String...) {
         _table = table
+        _schema = schema
         _paths = paths
     }
     
-    public init (_ table: String, _ paths: [String]) {
+    public init (_ table: String, _ schema: String? = nil, _ paths: [String]) {
         _table = table
+        _schema = schema
         _paths = paths
     }
 }
 
 extension FormattedKeyPath: SwifQLable {
     public var parts: [SwifQLPart] {
-        [SwifQLPartKeyPath(table: _table, paths: _paths)]
+        [SwifQLPartKeyPath(table: _table, schema: _schema, paths: _paths)]
     }
 }
 
@@ -53,7 +58,7 @@ extension Tableable {
     
     /// Manual key path. Alias to `\User.something`
     public static func manualKeyPath(_ paths: [String]) -> FormattedKeyPath {
-        FormattedKeyPath(tableName, paths)
+        FormattedKeyPath(tableName, schemaName, paths)
     }
     
     /// Manual key path. Alias to `\User.something`

@@ -10,13 +10,14 @@ import Foundation
 extension Path {
     public struct TableWithColumn {
         let table: String
+        let schema: String?
         let paths: [String]
     }
 }
 
 extension Path.TableWithColumn: SwifQLable {
     public var parts: [SwifQLPart] {
-        [SwifQLPartKeyPath(table: table, paths: paths)]
+        [SwifQLPartKeyPath(table: table, schema: schema, paths: paths)]
     }
 }
 

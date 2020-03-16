@@ -27,7 +27,7 @@ open class SQLDialect {
         value ? "TRUE" : "FALSE"
     }
     
-    open func tableName(_ value: String) -> String { value }
+    open func tableName(_ value: String, schema: String? = nil) -> String { value }
     
     open func alias(_ value: String) -> String { value }
     
@@ -39,8 +39,8 @@ open class SQLDialect {
     
     open func jsonField(_ value: String) -> String { value }
     
-    open func tableName(_ tableName: String, andAlias alias: String) -> String {
-        self.tableName(tableName) + " AS " + self.alias(alias)
+    open func tableName(_ tableName: String, schema: String? = nil, andAlias alias: String) -> String {
+        self.tableName(tableName, schema: schema) + " AS " + self.alias(alias)
     }
     
     open func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {

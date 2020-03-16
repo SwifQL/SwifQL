@@ -23,7 +23,7 @@ extension Path {
 
 extension Path.Column: SwifQLable {
     public var parts: [SwifQLPart] {
-        [SwifQLPartKeyPath(table: nil, paths: paths)]
+        [SwifQLPartKeyPath(table: nil, schema: nil, paths: paths)]
     }
 }
 

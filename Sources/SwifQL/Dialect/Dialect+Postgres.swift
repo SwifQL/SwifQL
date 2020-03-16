@@ -8,7 +8,12 @@
 import Foundation
 
 class PostgreSQLDialect: SQLDialect {
-    override func tableName(_ value: String) -> String { value.doubleQuotted }
+    override func tableName(_ value: String, schema: String? = nil) -> String {
+        if let schema = schema {
+            return "\(schema.doubleQuotted).\(value.doubleQuotted)"
+        }
+        return value.doubleQuotted
+    }
     
     override func alias(_ value: String) -> String { value.doubleQuotted }
     

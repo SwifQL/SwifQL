@@ -10,8 +10,10 @@ import Foundation
 extension Path {
     public struct Table {
         public let name: String
+        public let schema: String?
         
-        public init (_ name: String) {
+        public init (_ name: String, schema: String? = nil) {
+            self.schema = schema
             self.name = name
         }
         
@@ -27,14 +29,14 @@ extension Path {
         
         @discardableResult
         public func column(_ paths: [String]) -> TableWithColumn {
-            TableWithColumn(table: name, paths: paths)
+            TableWithColumn(table: name, schema: schema, paths: paths)
         }
     }
 }
 
 extension Path.Table: SwifQLable {
     public var parts: [SwifQLPart] {
-        [SwifQLPartTable(name)]
+        [SwifQLPartTable(name, schema: schema)]
     }
 }
 

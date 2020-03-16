@@ -19,7 +19,14 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
     }
     
     public var table: SwifQLable {
-        SwifQLableParts(parts: SwifQLPartTableWithAlias(name, alias))
+        SwifQLableParts(parts: SwifQLPartTableWithAlias(name, schema, alias))
+    }
+    
+    var schema: String? {
+        if let mmm = M.self as? Tableable.Type {
+            return mmm.schemaName
+        }
+        return nil
     }
     
     var name: String {
@@ -56,7 +63,7 @@ postfix public func *<T: Decodable>(table: SwifQLTableAlias<T>) -> SwifQLable {
 }
 postfix public func *(table: Tableable.Type) -> SwifQLable {
     var parts: [SwifQLPart] = []
-    parts.append(SwifQLPartTable(table.tableName))
+    parts.append(SwifQLPartTable(table.tableName, schema: table.schemaName))
     parts.append(o: .custom(".*"))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)

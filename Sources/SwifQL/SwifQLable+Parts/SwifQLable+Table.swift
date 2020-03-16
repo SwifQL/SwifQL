@@ -15,12 +15,12 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
     
-    public func table(_ name: String) -> SwifQLable {
+    public func table(_ name: String, schema: String? = nil) -> SwifQLable {
         var parts: [SwifQLPart] = self.parts
         parts.appendSpaceIfNeeded()
         parts.append(o: .table)
         parts.append(o: .space)
-        parts.append(SwifQLPartTable(name))
+        parts.append(SwifQLPartTable(name, schema: schema))
         return SwifQLableParts(parts: parts)
     }
 }
