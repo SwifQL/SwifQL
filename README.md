@@ -12,9 +12,9 @@
 
 <br>
 
-This lib can be used either stand alone, or with some frameworks like Vapor.
+This lib can be used either stand alone, or with frameworks like Vapor, Kitura, Perfect and others
 
-We recommend to use it with our [Bridges](https://github.com/SwifQL/Bridges) lib which is built on top of SwifQL and support all its flexibility.
+We recommend to use it with our [Bridges](https://github.com/SwifQL/Bridges) lib which is built on top of SwifQL and support all its flexibility
 
 It supports PostgreSQL and MySQL. And it's not so hard to add other dialects 🙂 just check [SwifQL/Dialect](https://github.com/SwifQL/SwifQL/tree/master/Sources/SwifQL/Dialect) folder
 
