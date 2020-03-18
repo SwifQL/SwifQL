@@ -29,53 +29,59 @@ Please feel free to ask any questions in issues, and also you could find me in t
 ### Support SwifQL development by giving a ⭐️
 
 ## Installation
-
-### Stand alone
+### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + PostgreSQL
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
-```
-In your target's dependencies add `"SwifQL"` e.g. like this:
-```swift
-.target(name: "App", dependencies: ["SwifQL"]),
+.package(url: "https://github.com/vapor/vapor.git", from:"4.0.0-rc"),
+.package(url: "https://github.com/SwifQL/VaporBridges.git", from:"1.0.0-rc"),
+.package(url: "https://github.com/SwifQL/PostgresBridge.git", from:"1.0.0-rc"),
+.target(name: "App", dependencies: [
+    .product(name: "Vapor", package: "vapor"),
+    .product(name: "VaporBridges", package: "VaporBridges"),
+    .product(name: "PostgresBridge", package: "PostgresBridge")
+]),
 ```
 
-### Stand alone with SwiftNIO1
+### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + MySQL
+```swift
+.package(url: "https://github.com/vapor/vapor.git", from:"4.0.0-rc"),
+.package(url: "https://github.com/SwifQL/VaporBridges.git", from:"1.0.0-rc"),
+.package(url: "https://github.com/SwifQL/MySQLBridge.git", from:"1.0.0-rc"),
+.target(name: "App", dependencies: [
+    .product(name: "Vapor", package: "vapor"),
+    .product(name: "VaporBridges", package: "VaporBridges"),
+    .product(name: "MySQLBridge", package: "MySQLBridge")
+]),
+```
+
+### Pure
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"2.0.0-beta"),
+.target(name: "App", dependencies: [
+    .product(name: "SwifQL", package: "SwifQL"),
+]),
+```
+
+### Pure on NIO2
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"2.0.0-beta"),
+.package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"2.0.0"),
+.target(name: "App", dependencies: [
+    .product(name: "SwifQL", package: "SwifQL"),
+    .product(name: "SwifQLNIO", package: "SwifQLNIO"),
+]),
+```
+
+#### Pure on NIO1 (deprecated)
 ```swift
 .package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
 .package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"1.0.0"),
-```
-In your target's dependencies add `"SwifQL"` and `"SwifQLNIO"`, e.g. like this:
-```swift
 .target(name: "App", dependencies: ["SwifQL", "SwifQLNIO"]),
 ```
 
-### Stand alone with SwiftNIO2
-```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
-.package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"2.0.0"),
-```
-In your target's dependencies add `"SwifQL"` and `"SwifQLNIO"`, e.g. like this:
-```swift
-.target(name: "App", dependencies: ["SwifQL", "SwifQLNIO"]),
-```
-
-### With Vapor 3
+#### With Vapor 3 + Fluent (deprecated)
 ```swift
 .package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
 .package(url: "https://github.com/MihaelIsaev/SwifQLVapor.git", from:"1.0.0"),
-```
-In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this:
-```swift
-.target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
-```
-
-### With Vapor 4
-```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
-.package(url: "https://github.com/MihaelIsaev/SwifQLVapor.git", from:"2.0.0"),
-```
-In your target's dependencies add `"SwifQL"` and `"SwifQLVapor"`, e.g. like this:
-```swift
 .target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
 ```
 
@@ -92,49 +98,18 @@ then with SwifQL you can build it like this
 ```swift
 SwifQL.select(User.table.*).from(User.table).where(\User.email == "john.smith@gmail.com")
 ```
-
-### How it works under the hood
-
-`SwifQL` object needed just to start writing query, but it's just an empty object that conforms to `SwifQLable`.
-
-You can build your query with everything which conforms to `SwifQLable`, because `SwifQLable` is that very piece which will be used for concatenation to build a query.
-
-> If you take a look at the lib's files you may realize that the most of files are just extensions to `SwifQLable`.
-
-All available operators like `select`, `from`, `where`, and `orderBy` realized just as a function in `SwifQLable` extension and these functions always returns `SwifQLable` as a result. That's why you can write a query by calling `SwifQL.select().from().where().orderBy()` one by one. That's awesome cause it feels like writing a raw SQL, but it also gives you an ordering limitation, so if you write `SwifQL.select().where().from()` then you'll get wrong query as a result. But this limitation is resolved by using special builders, like `SwifQLSelectBuilder` (read about it later below).
-
-So let's take a look how lib builds a simple `SELECT "User".* FROM "User" WHERE "User"."email" = 'john.smith@gmail.com'` query
-
-First of all we should split query into the parts. Almost every word and punctuation here is a `SwifQLable` piece.
-
-- `SELECT` is `Fn.Operator.select`
-- ` ` is `Fn.Operator.space`
-- `"User"` is `User.table`
-- `.*` is `postfix operator .*`
-- ` ` is `Fn.Operator.space`
-- `FROM` is `Fn.Operator.from`
-- `"User"` is `User.table`
-- ` ` is `Fn.Operator.space`
-- `WHERE` is `Fn.Operator.where`
-- ` ` is `Fn.Operator.space`
-- `"User"."email"` is `\User.email` keypath
-- ` ` is `Fn.Operator.space`
-- `==` is `infix operator ==`
-- ` ` is `Fn.Operator.space`
-- `'john.smith@gmail.com'` is `SwifQLPartUnsafeValue` (it means that this value should be passed as $1 to the database)
-
-That's crazy, but awesome, right? 😄 But it's under the hood, so no worries! 😃 I just wanted to explain, that if you need something more than already provided then you'll be able to add needed operators/functions easily just by writing little extensions.
-
-> And also there is no overhead, it works pretty fast, but I'd love to hear if you know how to make it faster.
-
-This way gives you almost absolute flexibility in building queries. More than that as lib support `SQLDialect`'s it will build this query different way for PostgreSQL and MySQL, e.g.:
-
-- PostgreSQL: `SELECT "User".* FROM "User" WHERE "User"."email" = 'john.smith@gmail.com'`
-- MySQL: `SELECT User.* FROM User WHERE User.email = 'john.smith@gmail.com'`
+or with SwifQL + [Bridges](https://github.com/SwifQL/Bridges)
+```swift
+SwifQL.select(User.table.*).from(User.table).where(\User.$email == "john.smith@gmail.com")
+// or
+User.select.where(\User.$email == "john.smith@gmail.com")
+```
 
 ## Usage
 
 ### Preparation
+
+> TIP: It is simpler and more powerful with [Bridges](https://github.com/SwifQL/Bridges)
 
 #### Your database models should be conformed to `Tableable` protocol.
 ```swift
@@ -147,7 +122,7 @@ extension YourModel: Tableable {}
 
 #### Pure Swift
 
- Just `import SwifQL`
+Just `import SwifQL`
 
 ### How to build query
 
@@ -427,6 +402,45 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 For now tests coverage is maybe around 25%. If you have timе and interest please feel free to send pull requests with more tests.
 
 You could find tests in `Tests/SwifQLTests/SwifQLTests.swift`
+
+### How it works under the hood
+
+`SwifQL` object needed just to start writing query, but it's just an empty object that conforms to `SwifQLable`.
+
+You can build your query with everything which conforms to `SwifQLable`, because `SwifQLable` is that very piece which will be used for concatenation to build a query.
+
+> If you take a look at the lib's files you may realize that the most of files are just extensions to `SwifQLable`.
+
+All available operators like `select`, `from`, `where`, and `orderBy` realized just as a function in `SwifQLable` extension and these functions always returns `SwifQLable` as a result. That's why you can write a query by calling `SwifQL.select().from().where().orderBy()` one by one. That's awesome cause it feels like writing a raw SQL, but it also gives you an ordering limitation, so if you write `SwifQL.select().where().from()` then you'll get wrong query as a result. But this limitation is resolved by using special builders, like `SwifQLSelectBuilder` (read about it later below).
+
+So let's take a look how lib builds a simple `SELECT "User".* FROM "User" WHERE "User"."email" = 'john.smith@gmail.com'` query
+
+First of all we should split query into the parts. Almost every word and punctuation here is a `SwifQLable` piece.
+
+- `SELECT` is `Fn.Operator.select`
+- ` ` is `Fn.Operator.space`
+- `"User"` is `User.table`
+- `.*` is `postfix operator .*`
+- ` ` is `Fn.Operator.space`
+- `FROM` is `Fn.Operator.from`
+- `"User"` is `User.table`
+- ` ` is `Fn.Operator.space`
+- `WHERE` is `Fn.Operator.where`
+- ` ` is `Fn.Operator.space`
+- `"User"."email"` is `\User.email` keypath
+- ` ` is `Fn.Operator.space`
+- `==` is `infix operator ==`
+- ` ` is `Fn.Operator.space`
+- `'john.smith@gmail.com'` is `SwifQLPartUnsafeValue` (it means that this value should be passed as $1 to the database)
+
+That's crazy, but awesome, right? 😄 But it's under the hood, so no worries! 😃 I just wanted to explain, that if you need something more than already provided then you'll be able to add needed operators/functions easily just by writing little extensions.
+
+> And also there is no overhead, it works pretty fast, but I'd love to hear if you know how to make it faster.
+
+This way gives you almost absolute flexibility in building queries. More than that as lib support `SQLDialect`'s it will build this query different way for PostgreSQL and MySQL, e.g.:
+
+- PostgreSQL: `SELECT "User".* FROM "User" WHERE "User"."email" = 'john.smith@gmail.com'`
+- MySQL: `SELECT User.* FROM User WHERE User.email = 'john.smith@gmail.com'`
 
 ## Contributing
 
