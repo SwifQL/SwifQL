@@ -87,21 +87,20 @@ Please feel free to ask any questions in issues, and also you could find me in t
 
 ## Philosophy
 
-This lib provides you with ability to build an SQL query from a little tiny pieces of it.
+This lib gives an ability to build absolutely any SQL query from simplest to monster complex.
 
-For example if you'd like to execute
+Example of simple query
 ```sql
 SELECT * FROM "User" WHERE "email" = 'john.smith@gmail.com'
 ```
-
-then with SwifQL you can build it like this
+build it with pure SwifQL this way
 ```swift
 SwifQL.select(User.table.*).from(User.table).where(\User.email == "john.smith@gmail.com")
 ```
 or with SwifQL + [Bridges](https://github.com/SwifQL/Bridges)
 ```swift
 SwifQL.select(User.table.*).from(User.table).where(\User.$email == "john.smith@gmail.com")
-// or
+// or shorter
 User.select.where(\User.$email == "john.smith@gmail.com")
 ```
 
@@ -111,18 +110,15 @@ User.select.where(\User.$email == "john.smith@gmail.com")
 
 > TIP: It is simpler and more powerful with [Bridges](https://github.com/SwifQL/Bridges)
 
-#### Your database models should be conformed to `Tableable` protocol.
+Of course you have to import the lib
 ```swift
-extension YourModel: Tableable {}
+import SwifQL
 ```
 
-#### With Vapor
-
-`import SwifQLVapor` and `import SwifQL` together cause Swift won't export predicates from `SwifQL` through `SwifQLVapor`, unfortunately.
-
-#### Pure Swift
-
-Just `import SwifQL`
+#### Your table models should be conformed to `Tableable` protocol
+```swift
+extension MyTable: Tableable {}
+```
 
 ### How to build query
 
@@ -134,62 +130,70 @@ let query = SwifQL.select(\User.email, \User.name, \User.role)
                   .orderBy(.asc(\User.name))
                   .limit(10)
 ```
+or with SwifQL + [Bridges](https://github.com/SwifQL/Bridges)
+```swift
+let query = SwifQL.select(\User.$email, \User.$name, \User.$role)
+                  .from(User.table)
+                  .orderBy(.asc(\User.$name))
+                  .limit(10)
+// or shorter
+User.select(\.$email, \.$name, \.$role).orderBy(.asc(\User.$name)).limit(10)
+```
 
-### How to get raw query string (common case for pure Swift usage)
+### How to print raw query
 
-##### You can either get unsafe raw SQL string
+There are two options
+
+##### 1. Get just plain query
 ```swift
 let rawSQLString = query.prepare(.psql).plain
 ```
 
-##### or get splitted object into formatted raw SQL string with $ symbols and separated array of unsafe values
+##### 2. Get object splitted into: formatted raw SQL string with $ symbols, and separated array with values
 ```swift
 let splittedQuery = query.prepare(.psql).splitted
 let formattedSQLQuery = splittedQuery.query // formatted raw SQL string with $ symbols instead of values
 let values = splittedQuery.values // an array of [Encodable] values
 ```
 
-Then just put it into your database driver somehow 🙂
+Then just put it into your database driver somehow 🙂 or use [Bridges](https://github.com/SwifQL/Bridges)
 
-### How to execute and decode it with Vapor's PostgreSQL or MySQL drivers
+### How to execute query?
 
-##### In case if you have a `Container` like `req: Request` or `app: Application`
+SwifQL is only about building queries. For execution you have to use your favourite database driver.
+
+Below you can see an example for SwifQL + Vapor4 + [Bridges](https://github.com/SwifQL/Bridges) + PostgreSQL
+
+> 💡 You can get connection on both `Application` and `Request` objects.
+
+Example for `Application` object e.g. for `configure.swift` file
 ```swift
-query.execute(on: req, as: .psql) //for PostgreSQL
-query.execute(on: req, as: .mysql) //for MySQL
+// Called before your application initializes.
+public func configure(_ app: Application) throws {
+    app.postgres.connection(to: .myDb1) { conn in
+        SwifQL.select(User.table.*).from(User.table).execute(on: conn).all(decoding: User.self).flatMap { rows in
+            print("yaaay it works and returned \(rows.count) rows!")
+        }
+    }.whenComplete {
+        switch $0 {
+        case .success: print("query was successful")
+        case .failure(let error): print("query failed: \(error)")
+        }
+    }
+}
 ```
-
-##### In case if you want to execute it directly on `SQLConnection`
+Example for `Request` object
 ```swift
-query.execute(on: connection)
-```
-
-Anyway it will return you a `Future<SQLRawBuilder>` which can be easily used for results decoding.
-
-##### Decoding
-Vapor's `SQLRawBuilder` provides you with ability to decode all queried rows or only a first one
-
-```swift
-query.execute(on: connection).all(decoding: User.self) // returns Future<[User]>
-query.execute(on: connection).first(decoding: User.self) // returns Future<User?>
-query.execute(on: connection).first(decoding: User.self).unwrap(or: Abort(.notFound)) // throws or returns Future<User>
-```
-
-So, let's write a full simple example for querying current `User` model, e.g. for PostgreSQL:
-
-```swift
-func oneUser(_ req: Request) throws -> Future<User> {
-    let user: User = try req.requireAuthenticated()
-    return try SwifQL.select(\User.email, \User.name, \User.role)
-                     .from(User.table)
-                     .where(\User.id == user.requireID())
-                     .execute(on: req, as: .psql)
-                     .first(decoding: User.self)
-                     .unwrap(or: Abort(.notFound, reason: "User not found"))
+func routes(_ app: Application) throws {
+    app.get("users") { req -> EventLoopFuture<[User]> in
+        req.postgres.connection(to: .myDb1) { conn in
+            SwifQL.select(User.table.*).from(User.table).execute(on: conn).all(decoding: User.self)
+        }
+    }
 }
 ```
 
-I believe that it looks good 😊
+> 💡 In examples above we use `.all(decoding: User.self)` for decoding results, but we also can use `.first(decoding: User.self).unwrap(or: Abort(.notFound))` to get only first row and unwrap it since it may be nil.
 
 ## Insert Into
 
@@ -202,6 +206,10 @@ SwifQL representation
 ```swift
 SwifQL.insertInto(User.table, fields: \User.email, \User.name).values("john@gmail.com", "John Doe")
 ```
+or with SwifQL + [Bridges](https://github.com/SwifQL/Bridges)
+```swift
+User(email: "john@gmail.com", name: "John Doe").insert(on: conn)
+```
 
 ### Batch
 SQL example
@@ -212,10 +220,17 @@ SwifQL representation
 ```swift
 SwifQL.insertInto(User.table, fields: \User.email, \User.name).values(array: ["john@gmail.com", "John Doe"], ["sam@gmail.com", "Samuel Jackson"])
 ```
+or with SwifQL + [Bridges](https://github.com/SwifQL/Bridges)
+```swift
+let user1 = User(email: "hello@gmail.com", name: "John")
+let user2 = User(email: "byebye@gmail.com", name: "Amily")
+let user3 = User(email: "trololo@gmail.com", name: "Trololo")
+[user1, user2, user3].batchInsert(on: conn)
+```
 
 ## Builders
 
-For now I implemented only one builder
+For now there are only one implemented builder
 
 ### Select builder
 
@@ -236,6 +251,12 @@ return query.execute(on: req, as: .psql)
 So it will build query like: `SELECT "User".* FROM "User" WHERE "User"."id" = 1 LIMIT 1`.
 
 As you can see you shouldn't worry about parts ordering, it will sort them the right way before building.
+
+### More builders
+
+Feel free to make your own builders and send pull request with it here!
+
+Also more conveniences are available in [Bridges](https://github.com/SwifQL/Bridges) lib which is created on top of SwifQL and support all its flexibility
 
 ## More query examples
 
@@ -366,7 +387,9 @@ END
 ```
 SwifQL representation
 ```swift
-Case(when: \User.email == nil, then: nil, else: \User.email)
+Case.when(\User.email == nil).then(nil).else(\User.email).end
+// or as many cases as needed
+Case.when(...).then(...).when(...).then(...).when(...).then(...).else(...).end
 ```
 
 ## Brackets
@@ -386,22 +409,22 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 ```
 
 ## Keypaths
-| SQL  | Swift |
-| ------- | -------------- |
-| `"User"` | `User.table` |
-| `"User" as u` | `User.as("u")` you could declare it as `let u = User.as("u")` |
-| `"User".*` | `User.table.*` |
-| `u.*` | `u.*` |
-| `"User"."email"` | `\User.email` |
-| `u."email"` | `u~\.email` |
-| `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` |
-| `"User"."jsonObject"->"jsonField"` | `SwifQLPartKeyPath(table: "User", paths: "jsonObject", "jsonField")` |
+| SQL | SwiftQL | SwiftQL + Bridges |
+| ------- | -------------- | -------------- |
+| `"User"` | `User.table` | `the same` |
+| `"User" as u` | `User.as("u")` you could declare it as `let u = User.as("u")` | `the same` |
+| `"User".*` | `User.table.*` | `the same` |
+| `u.*` | `u.*` | `the same` |
+| `"User"."email"` | `\User.email` | `\User.$email` |
+| `u."email"` | `u~\.email` | `u~\.$email` |
+| `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` | `only through full path for now` |
+| `"User"."jsonObject"->"jsonField"` | `Path.Table("User").column("jsonObject", "jsonField")` | `the same` |
 
 ## Tests
 
-For now tests coverage is maybe around 25%. If you have timе and interest please feel free to send pull requests with more tests.
+For now tests coverage is maybe around 70%. If you have timе and interest please feel free to send pull requests with more tests.
 
-You could find tests in `Tests/SwifQLTests/SwifQLTests.swift`
+You could find tests in `Tests` folder
 
 ### How it works under the hood
 
@@ -445,12 +468,3 @@ This way gives you almost absolute flexibility in building queries. More than th
 ## Contributing
 
 Please feel free to contribute!
-
-## TODO
-
-I have a few todos in my list for PostgreSQL:
-
-- [Conditional Expressions](https://www.postgresql.org/docs/current/functions-conditional.html)
-- [Geometric Functions and Operators](https://www.postgresql.org/docs/current/functions-geometry.html)
-- [Range Functions and Operators](https://www.postgresql.org/docs/current/functions-range.html)
-- [Array Functions and Operators](https://www.postgresql.org/docs/current/functions-array.html)
