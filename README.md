@@ -108,7 +108,7 @@ User.select.where(\User.$email == "john.smith@gmail.com")
 
 ### Preparation
 
-> TIP: It is simpler and more powerful with [Bridges](https://github.com/SwifQL/Bridges)
+> 💡 TIP: It is simpler and more powerful with [Bridges](https://github.com/SwifQL/Bridges)
 
 Of course you have to import the lib
 ```swift
