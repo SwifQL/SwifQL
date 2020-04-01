@@ -2,6 +2,19 @@ import XCTest
 @testable import SwifQL
 
 final class FnTests: SwifQLTestCase {
+    // MARK: - Fn.array_remove
+    
+    func testFn_array_remove() {
+        let query = SwifQL.select(Fn.array_remove(PgArray(1,2,3,2), 2))
+        let pg = """
+        SELECT array_remove(ARRAY[1, 2, 3, 2], 2)
+        """
+        let mySQL = """
+        SELECT array_remove(ARRAY[1, 2, 3, 2], 2)
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
+    
     // MARK: - Concat
     
     func testConcat() {
