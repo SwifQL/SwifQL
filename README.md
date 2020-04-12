@@ -303,7 +303,7 @@ And then keypaths will work like
 
 ```swift
 let u = User.as("u")
-let emailKeypath = u~\.email
+let emailKeypath = u.email
 ```
 
 ## Type casting
@@ -421,7 +421,7 @@ let where = \User.role == .admin || |\User.role == .user && \User.age >= 21|
 | `"User".*` | `User.table.*` | `the same` |
 | `u.*` | `u.*` | `the same` |
 | `"User"."email"` | `\User.email` | `\User.$email` |
-| `u."email"` | `u~\.email` | `u~\.$email` |
+| `u."email"` | `u.email` | `u.$email` |
 | `"User"."jsonObject"->"jsonField"` | `\User.jsonObject.jsonField` | `only through full path for now` |
 | `"User"."jsonObject"->"jsonField"` | `Path.Table("User").column("jsonObject", "jsonField")` | `the same` |
 

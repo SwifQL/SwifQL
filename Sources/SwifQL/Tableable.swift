@@ -7,21 +7,38 @@
 
 import Foundation
 
-public protocol Tableable: Codable {
+public protocol AnyTableable: Codable {
     /// This model's unique name. By default, this property is set to a `String` describing the type.
-    /// Override this property to change the model's table / collection name for all of Fluent.
     static var tableName: String { get }
 }
 
-// MARK: Optional
-
-extension Tableable {
-    /// See `SwifQLTable`.
+extension AnyTableable {
     public static var tableName: String {
         String(describing: Self.self)
     }
     
-    public static func column(_ paths: String...) -> Path.TableWithColumn {
-        Path.Table(tableName).column(paths)
+    public static func column(_ paths: String...) -> Path.SchemaWithTableAndColumn {
+        Path.Schema((Self.self as? Schemable.Type)?.schemaName).table(tableName).column(paths)
+    }
+    
+    public static func inSchema(_ name: String) -> Schema<Self> {
+        .init(name)
+    }
+    
+    public static func inSchema(_ schema: Schemable.Type) -> Schema<Self> {
+        .init(schema.schemaName)
+    }
+}
+
+@dynamicMemberLookup
+public protocol Tableable: AnyTableable {
+    static subscript<V>(dynamicMember keyPath: KeyPath<Self, V>) -> SwifQLable { get }
+}
+
+extension Tableable {
+    public static subscript<V>(dynamicMember keyPath: KeyPath<Self, V>) -> SwifQLable {
+        guard let k = keyPath as? Keypathable else { return "<keyPath should conform to Keypathable>" }
+        let schema: String? = (Self.self as? Schemable.Type)?.schemaName
+        return SwifQLPartKeyPath(schema: schema, table: Self.tableName, paths: k.paths)
     }
 }
