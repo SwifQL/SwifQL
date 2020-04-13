@@ -8,6 +8,10 @@
 import Foundation
 
 class PostgreSQLDialect: SQLDialect {
+    override var id: String? { "psql" }
+    
+    override func schemaName(_ value: String) -> String { value.doubleQuotted }
+    
     override func tableName(_ value: String) -> String { value.doubleQuotted }
     
     override func alias(_ value: String) -> String { value.doubleQuotted }
@@ -18,7 +22,13 @@ class PostgreSQLDialect: SQLDialect {
     
     override func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
         var result = ""
+        if let schema = keyPath.schema {
+            result.append(schemaName(schema))
+        }
         if let table = keyPath.table {
+            if result.count > 0 {
+                result.append(".")
+            }
             result.append(tableName(table))
         }
         for (i, v) in keyPath.paths.enumerated() {

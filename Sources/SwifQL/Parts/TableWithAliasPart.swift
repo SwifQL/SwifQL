@@ -8,9 +8,11 @@
 import Foundation
 
 public struct SwifQLPartTableWithAlias: SwifQLPart {
-    public var table: String
-    public var alias: String
-    public init (_ table: String, _ alias: String) {
+    public var schema: String?
+    public var table, alias: String
+    
+    public init (schema: String?, table: String, alias: String) {
+        self.schema = schema
         self.table = table
         self.alias = alias
     }

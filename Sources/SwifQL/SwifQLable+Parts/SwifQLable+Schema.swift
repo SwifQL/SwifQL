@@ -1,26 +1,26 @@
 //
-//  SwifQLable+Table.swift
-//  
+//  SwifQLable+Schema.swift
+//  SwifQL
 //
-//  Created by Mihael Isaev on 25.01.2020.
+//  Created by Mihael Isaev on 12.04.2020.
 //
 
 import Foundation
 
 extension SwifQLable {
-    public var table: SwifQLable {
+    public var schema: SwifQLable {
         var parts: [SwifQLPart] = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .table)
+        parts.append(o: .schema)
         return SwifQLableParts(parts: parts)
     }
     
-    public func table(_ name: String) -> SwifQLable {
+    public func schema(_ name: String) -> SwifQLable {
         var parts: [SwifQLPart] = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .table)
+        parts.append(o: .schema)
         parts.append(o: .space)
-        parts.append(SwifQLPartTable(name))
+        parts.append(SwifQLPartSchema(name))
         return SwifQLableParts(parts: parts)
     }
 }

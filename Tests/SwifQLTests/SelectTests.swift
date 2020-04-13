@@ -39,6 +39,14 @@ final class SelectTests: SwifQLTestCase {
             """)
     }
     
+    func testSelectColumnWithTableAndSchema() {
+        checkAllDialects(SwifQL.select(Path.Schema("test").table("CarBrands").column("id")), pg: """
+            SELECT "test"."CarBrands"."id"
+            """, mySQL: """
+            SELECT test.CarBrands.id
+            """)
+    }
+    
     func testSelectColumnWithoutTable() {
         checkAllDialects(SwifQL.select(Path.Column("id")), pg: """
             SELECT "id"
@@ -52,6 +60,23 @@ final class SelectTests: SwifQLTestCase {
             SELECT "CarBrands"."id"
             """, mySQL: """
             SELECT CarBrands.id
+            """)
+    }
+    
+    func testSelectSchemableCarBrands() {
+        checkAllDialects(SwifQL.select(SchemableCarBrands.column("id")), pg: """
+            SELECT "public"."CarBrands"."id"
+            """, mySQL: """
+            SELECT public.CarBrands.id
+            """)
+    }
+    
+    func testSelectCarBrandsInCustomSchema() {
+        let cb = Schema<CarBrands>("hello")
+        checkAllDialects(SwifQL.select(cb.column("id")), pg: """
+            SELECT "hello"."CarBrands"."id"
+            """, mySQL: """
+            SELECT hello.CarBrands.id
             """)
     }
     

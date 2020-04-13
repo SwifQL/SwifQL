@@ -34,7 +34,7 @@ public class PostgresJsonObject: SwifQLable {
             case .default:
                 body.append(contentsOf: v.key.parts)
             case .keyPath:
-                if let key = v.key as? FQUniversalKeyPathSimple {
+                if let key = v.key as? SwifQLUniversalKeyPathSimple {
                     body.append(o: .custom(key.lastPath.singleQuotted))
                 } else {
                     body.append(o: .custom(String(describing: v.key).singleQuotted))

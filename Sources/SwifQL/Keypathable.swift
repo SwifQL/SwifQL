@@ -8,9 +8,9 @@
 import Foundation
 
 public protocol Keypathable {
+    var schema: String? { get }
+    var table: String { get }
     var paths: [String] { get }
     var shortPath: String { get }
     var lastPath: String { get }
-    
-    func fullPath(table: String) -> String
 }

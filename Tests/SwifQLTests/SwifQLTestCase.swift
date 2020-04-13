@@ -2,6 +2,18 @@ import XCTest
 @testable import SwifQL
 
 class SwifQLTestCase: XCTestCase {
+    struct DeletedSchema: Schemable {
+        static var schemaName: String { "deleted" }
+    }
+    
+    struct SchemableCarBrands: Codable, Tableable, Schemable {
+        static var tableName: String { "CarBrands" }
+        
+        var id: UUID
+        var name: String
+        var createdAt: Date
+    }
+    
     struct CarBrands: Codable, Tableable {
         var id: UUID
         var name: String
