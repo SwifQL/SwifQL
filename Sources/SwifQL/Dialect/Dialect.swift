@@ -8,6 +8,8 @@
 import Foundation
 
 open class SQLDialect {
+    open var id: String? { nil }
+    
     public static var mysql: SQLDialect {
         MySQLDialect()
     }
@@ -26,6 +28,8 @@ open class SQLDialect {
     open func boolValue(_ value: Bool) -> String {
         value ? "TRUE" : "FALSE"
     }
+    
+    open func schemaName(_ value: String) -> String { value }
     
     open func tableName(_ value: String) -> String { value }
     
@@ -81,4 +85,10 @@ open class SQLDialect {
     open var bindSymbol: String { "§§§" }
     
     open func bindKey(_ i: Int) -> String { "?" }
+}
+
+extension SQLDialect: Equatable {
+    public static func == (lhs: SQLDialect, rhs: SQLDialect) -> Bool {
+        lhs.id == rhs.id
+    }
 }

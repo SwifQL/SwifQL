@@ -28,6 +28,7 @@ public struct SwifQLableParts: SwifQLable {
 public protocol SwifQLPart {}
 
 public protocol SwifQLKeyPathable: SwifQLPart {
+    var schema: String? { get }
     var table: String? { get }
     var paths: [String] { get }
 }
@@ -45,9 +46,18 @@ extension SwifQLable {
             switch part {
             case let v as SwifQLPartBool:
                 return dialect.boolValue(v.value)
+            case let v as SwifQLPartSchema:
+                guard let schema = v.schema else { return "" }
+                return dialect.schemaName(schema)
             case let v as SwifQLPartTable:
+                if let schema = v.schema {
+                    return dialect.schemaName(schema) + "." + dialect.tableName(v.table)
+                }
                 return dialect.tableName(v.table)
             case let v as SwifQLPartTableWithAlias:
+                if let schema = v.schema {
+                    return dialect.schemaName(schema) + "." + dialect.tableName(v.table, andAlias: v.alias)
+                }
                 return dialect.tableName(v.table, andAlias: v.alias)
             case let v as SwifQLPartAlias:
                 return dialect.alias(v.alias)
