@@ -15,18 +15,16 @@ extension String: KeyPathLastPath {
     public var lastPath: String { self }
 }
 
-public protocol FQUniversalKeyPathSimple: KeyPathLastPath {
-    var queryValue: String { get }
+public protocol SwifQLUniversalKeyPathSimple: KeyPathLastPath {
     var path: String { get }
     var lastPath: String { get }
 }
 
-public protocol FQUniversalKeyPath {
+public protocol SwifQLUniversalKeyPath {
     associatedtype AType
     associatedtype AModel: Decodable
     associatedtype ARoot
     
-    var queryValue: String { get }
     var path: String { get }
     var lastPath: String { get }
     var originalKeyPath: KeyPath<AModel, AType> { get }
@@ -48,8 +46,10 @@ public func => (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     parts.append(o: .space)
     parts.append(o: .as)
     parts.append(o: .space)
-    if let rhs = rhs as? FQUniversalKeyPathSimple {
+    if let rhs = rhs as? SwifQLUniversalKeyPathSimple {
         parts.append(SwifQLPartAlias(rhs.lastPath))
+    } else if let rhs = rhs as? SwifQLAlias {
+        parts.append(contentsOf: rhs.parts)
     } else {
         parts.append(SwifQLPartAlias(String(describing: rhs)))
     }
@@ -63,14 +63,6 @@ public prefix func => (rhs: String) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartAlias(rhs))
     return SwifQLableParts(parts: parts)
-}
-
-/// Getting keypath with alias
-/// e.g. you have `User` table with `email` field, and normally you can just write \User.email
-/// but in case of alias e.g. `let u = User.alias("u")` you should call it like `u~\.email`
-infix operator ~: AdditionPrecedence
-public func ~ <K, T, V>(lhs: SwifQLTableAlias<T>, rhs: K) -> AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, K: Keypathable, T: Decodable {
-    return AliasedKeyPath(lhs.alias, rhs)
 }
 
 //MARK: - Basic arithmetic functions

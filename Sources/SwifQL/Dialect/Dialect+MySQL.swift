@@ -8,10 +8,18 @@
 import Foundation
 
 class MySQLDialect: SQLDialect {
+    override var id: String? { "mysql" }
+    
     override func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
         var result = ""
+        if let schema = keyPath.schema {
+            result.append(schemaName(schema))
+        }
         if let table = keyPath.table {
-            result.append(table)
+            if result.count > 0 {
+                result.append(".")
+            }
+            result.append(tableName(table))
         }
         if let lastPath = keyPath.paths.last {
             if result.count > 0 {
