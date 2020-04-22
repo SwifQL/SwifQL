@@ -14,7 +14,7 @@ extension Decodable {
             parts.append(SwifQLPartSchema(schema.schemaName))
             parts.append(o: .custom("."))
         }
-        if let model = Self.self as? AnyTableable.Type {
+        if let model = Self.self as? AnyTable.Type {
             parts.append(SwifQLPartTable(model.tableName))
         } else {
             parts.append(SwifQLPartTable(String(describing: Self.self)))

@@ -1,5 +1,5 @@
 //
-//  SwifQLTableAlias.swift
+//  TableAlias.swift
 //  SwifQL
 //
 //  Created by Mihael Isaev on 11/11/2018.
@@ -7,12 +7,29 @@
 
 import Foundation
 
-protocol SwifQLTableAliasable {
+@dynamicMemberLookup
+public class TableAlias: SwifQLable {
+    public var name: String
+
+    public init (_ name: String) {
+        self.name = name
+    }
+    
+    public subscript(dynamicMember path: String) -> SwifQLable {
+        Path.Table(name).column(path)
+    }
+    
+    public var parts: [SwifQLPart] {
+        [SwifQLPartAlias(name)]
+    }
+}
+
+protocol AnyGenericTableAlias {
     var alias: String { get }
 }
 
 @dynamicMemberLookup
-public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
+public class GenericTableAlias<M: Decodable>: SwifQLable, AnyGenericTableAlias {
     public typealias Model = M
     
     public var parts: [SwifQLPart] {
@@ -24,7 +41,7 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
     }
     
     var name: String {
-        if let mmm = M.self as? AnyTableable.Type {
+        if let mmm = M.self as? AnyTable.Type {
             return mmm.tableName
         }
         return String(describing: M.self)
@@ -50,14 +67,14 @@ public class SwifQLTableAlias<M: Decodable>: SwifQLable, SwifQLTableAliasable {
 }
 
 postfix operator *
-postfix public func *<T: Decodable>(table: SwifQLTableAlias<T>) -> SwifQLable {
+postfix public func *<T: Decodable>(table: GenericTableAlias<T>) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartTable(table.alias))
     parts.append(o: .custom(".*"))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)
 }
-postfix public func *(table: AnyTableable.Type) -> SwifQLable {
+postfix public func *(table: AnyTable.Type) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartTable(table.tableName))
     parts.append(o: .custom(".*"))
@@ -68,8 +85,8 @@ postfix public func *(table: AnyTableable.Type) -> SwifQLable {
 //MARK: Decodable extension
 
 extension Decodable {
-    public static func `as`(_ alias: String) -> SwifQLTableAlias<Self> {
-        SwifQLTableAlias(alias, schema: nil)
+    public static func `as`(_ alias: String) -> GenericTableAlias<Self> {
+        .init(alias, schema: nil)
     }
 }
 

@@ -8,7 +8,7 @@
 import Foundation
 
 @dynamicMemberLookup
-public struct Schema<T: AnyTableable> {
+public struct Schema<T: AnyTable> {
     let name: String
     
     public init (_ name: String) {
@@ -32,15 +32,7 @@ public struct Schema<T: AnyTableable> {
         .init(schema: name, table: T.tableName, paths: paths)
     }
     
-    public func `as`(_ alias: String) -> SwifQLTableAlias<T> {
-        SwifQLTableAlias(alias, schema: name)
+    public func `as`(_ alias: String) -> GenericTableAlias<T> {
+        .init(alias, schema: name)
     }
 }
-
-//@dynamicMemberLookup
-//extension KeyPath where Value: Tableable {
-//    public subscript<V>(dynamicMember keyPath: KeyPath<Value, V>) -> String {
-//        guard let k = keyPath as? Keypathable else { return "<keyPath should conform to Keypathable>" }
-//        return k.fullPath(schema: name, table: T.tableName)
-//    }
-//}

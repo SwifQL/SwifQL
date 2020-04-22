@@ -48,7 +48,9 @@ public func => (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
     parts.append(o: .space)
     if let rhs = rhs as? SwifQLUniversalKeyPathSimple {
         parts.append(SwifQLPartAlias(rhs.lastPath))
-    } else if let rhs = rhs as? SwifQLAlias {
+    } else if let _ = rhs as? _AliasKeyPath {
+        parts.append(contentsOf: rhs.parts)
+    } else if let _ = rhs as? TableAlias {
         parts.append(contentsOf: rhs.parts)
     } else {
         parts.append(SwifQLPartAlias(String(describing: rhs)))

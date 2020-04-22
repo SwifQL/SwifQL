@@ -18,6 +18,10 @@ open class SQLDialect {
         PostgreSQLDialect()
     }
     
+    public static var all: [SQLDialect] {
+        [.psql, .mysql]
+    }
+    
     /// Good choice only for super short and universal queries like `BEGIN;`, `ROLLBACK;`, `COMMIT;`
     public static var any: SQLDialect {
         .init()

@@ -14,12 +14,12 @@ public struct FormattedKeyPath {
     let _table: String
     let _paths: [String]
     
-    public init <T: Tableable>(_ table: T.Type, _ paths: String...) {
+    public init <T: Table>(_ table: T.Type, _ paths: String...) {
         _table = table.tableName
         _paths = paths
     }
     
-    public init <T: Tableable>(_ table: T.Type, _ paths: [String]) {
+    public init <T: Table>(_ table: T.Type, _ paths: [String]) {
         _table = table.tableName
         _paths = paths
     }
@@ -45,7 +45,7 @@ extension FormattedKeyPath: KeyPathLastPath {
     public var lastPath: String { _paths.last ?? "" }
 }
 
-extension Tableable {
+extension Table {
     /// Manual key path. Alias to `\User.something`
     public static func manualKeyPath(_ paths: String...) -> FormattedKeyPath {
         manualKeyPath(paths)
