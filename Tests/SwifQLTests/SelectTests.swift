@@ -3,329 +3,524 @@ import XCTest
 
 final class SelectTests: SwifQLTestCase {
     func testSelect() {
-        checkAllDialects(SwifQL.select(), pg: "SELECT ", mySQL: "SELECT ")
-        checkAllDialects(SwifQL.select, pg: "SELECT", mySQL: "SELECT")
+        check(SwifQL.select, all: "SELECT")
+        check(SwifQL.select(), all: "SELECT ")
     }
     
     func testSelectString() {
-        checkAllDialects(SwifQL.select("hello"), pg: "SELECT 'hello'", mySQL: "SELECT 'hello'")
+        check(
+            SwifQL.select("hello"),
+            .psql("SELECT 'hello'"),
+            .mysql("SELECT 'hello'")
+        )
     }
     
     func testSelectInt() {
-        checkAllDialects(SwifQL.select(1), pg: "SELECT 1", mySQL: "SELECT 1")
+        check(
+            SwifQL.select(1),
+            .psql("SELECT 1"),
+            .mysql("SELECT 1")
+        )
     }
     
     func testSelectDouble() {
-        checkAllDialects(SwifQL.select(1.234), pg: "SELECT 1.234", mySQL: "SELECT 1.234")
+        check(
+            SwifQL.select(1.234),
+            .psql("SELECT 1.234"),
+            .mysql("SELECT 1.234")
+        )
     }
     
     func testSelectSeveralSimpleValues() {
-        checkAllDialects(SwifQL.select("hello", 1, 1.234), pg: "SELECT 'hello', 1, 1.234", mySQL: "SELECT 'hello', 1, 1.234")
+        check(
+            SwifQL.select("hello", 1, 1.234),
+            .psql("SELECT 'hello', 1, 1.234"),
+            .mysql("SELECT 'hello', 1, 1.234")
+        )
     }
     
-    func testSelectColumn() {
-        checkAllDialects(SwifQL.select(Path.Column("id")), pg: """
-            SELECT "id"
-            """, mySQL: """
-            SELECT id
-            """)
+    func testSelectColumn_path() {
+        check(
+            SwifQL.select(Path.Column("id")),
+            .psql(#"SELECT "id""#),
+            .mysql("SELECT id")
+        )
+    }
+    
+    func testSelectColumn_keyPath() {
+        check(
+            SwifQL.select(\CarBrands.$id),
+            .psql(#"SELECT "CarBrands"."id""#),
+            .mysql("SELECT CarBrands.id")
+        )
+    }
+    
+    func testSelectColumn_keyPath_alias_simple() {
+        check(
+            SwifQL.select(\CarBrands.$id => "ident"),
+            .psql(#"SELECT "CarBrands"."id" as "ident""#),
+            .mysql("SELECT CarBrands.id as ident")
+        )
+    }
+    
+    func testSelectColumn_keyPath_alias_keyPath() {
+        struct Result: Aliasable {
+            @Alias("ident") var abc: UUID
+            init () {}
+        }
+        check(
+            SwifQL.select(\CarBrands.$id => \Result.$abc),
+            .psql(#"SELECT "CarBrands"."id" as "ident""#),
+            .mysql("SELECT CarBrands.id as ident")
+        )
     }
     
     func testSelectColumnWithTable() {
-        checkAllDialects(SwifQL.select(Path.Table("CarBrands").column("id")), pg: """
-            SELECT "CarBrands"."id"
-            """, mySQL: """
-            SELECT CarBrands.id
-            """)
+        check(
+            SwifQL.select(Path.Table("CarBrands").column("id")),
+            .psql(#"SELECT "CarBrands"."id""#),
+            .mysql("SELECT CarBrands.id")
+        )
     }
     
     func testSelectColumnWithTableAndSchema() {
-        checkAllDialects(SwifQL.select(Path.Schema("test").table("CarBrands").column("id")), pg: """
-            SELECT "test"."CarBrands"."id"
-            """, mySQL: """
-            SELECT test.CarBrands.id
-            """)
+        check(
+            SwifQL.select(Path.Schema("test").table("CarBrands").column("id")),
+            .psql(#"SELECT "test"."CarBrands"."id""#),
+            .mysql("SELECT test.CarBrands.id")
+        )
     }
     
     func testSelectColumnWithoutTable() {
-        checkAllDialects(SwifQL.select(Path.Column("id")), pg: """
-            SELECT "id"
-            """, mySQL: """
-            SELECT id
-            """)
+        check(
+            SwifQL.select(Path.Column("id")),
+            .psql(#"SELECT "id""#),
+            .mysql("SELECT id")
+        )
+    }
+    
+    func testGenericSelector_all() {
+        check(
+            CarBrands.select,
+            .psql(#"SELECT "CarBrands".* FROM "CarBrands""#),
+            .mysql("SELECT CarBrands.* FROM CarBrands")
+        )
     }
     
     func testSelectCarBrands() {
-        checkAllDialects(SwifQL.select(CarBrands.column("id")), pg: """
-            SELECT "CarBrands"."id"
-            """, mySQL: """
-            SELECT CarBrands.id
-            """)
+        check(
+            SwifQL.select(CarBrands.column("id")),
+            .psql(#"SELECT "CarBrands"."id""#),
+            .mysql("SELECT CarBrands.id")
+        )
     }
     
     func testSelectSchemableCarBrands() {
-        checkAllDialects(SwifQL.select(SchemableCarBrands.column("id")), pg: """
-            SELECT "public"."CarBrands"."id"
-            """, mySQL: """
-            SELECT public.CarBrands.id
-            """)
+        check(
+            SwifQL.select(SchemableCarBrands.column("id")),
+            .psql(#"SELECT "public"."CarBrands"."id""#),
+            .mysql("SELECT public.CarBrands.id")
+        )
     }
     
     func testSelectCarBrandsInCustomSchema() {
         let cb = Schema<CarBrands>("hello")
-        checkAllDialects(SwifQL.select(cb.column("id")), pg: """
-            SELECT "hello"."CarBrands"."id"
-            """, mySQL: """
-            SELECT hello.CarBrands.id
-            """)
+        check(
+            SwifQL.select(cb.column("id")),
+            .psql(#"SELECT "hello"."CarBrands"."id""#),
+            .mysql("SELECT hello.CarBrands.id")
+        )
     }
     
     func testSelectCarBrandsSeveralFields() {
-        checkAllDialects(SwifQL.select(CarBrands.column("id"), CarBrands.column("name")), pg: """
-            SELECT "CarBrands"."id", "CarBrands"."name"
-            """, mySQL: """
-            SELECT CarBrands.id, CarBrands.name
-            """)
+        check(
+            SwifQL.select(CarBrands.column("id"), CarBrands.column("name")),
+            .psql(#"SELECT "CarBrands"."id", "CarBrands"."name""#),
+            .mysql("SELECT CarBrands.id, CarBrands.name")
+        )
     }
     
     func testSelectCarBrandsWithAlias() {
-        checkAllDialects(SwifQL.select(cb.column("id")), pg: """
-            SELECT "cb"."id"
-            """, mySQL: """
-            SELECT cb.id
-            """)
+        check(
+            SwifQL.select(cb.column("id")),
+            .psql(#"SELECT "cb"."id""#),
+            .mysql("SELECT cb.id")
+        )
     }
     
     func testSelectCarBrandsWithAliasSeveralFields() {
-        checkAllDialects(SwifQL.select(cb.column("id"), cb.column("name")), pg: """
-            SELECT "cb"."id", "cb"."name"
-            """, mySQL: """
-            SELECT cb.id, cb.name
-            """)
+        check(
+            SwifQL.select(cb.column("id"), cb.column("name")),
+            .psql(#"SELECT "cb"."id", "cb"."name""#),
+            .mysql("SELECT cb.id, cb.name")
+        )
     }
     
     func testSelectCarBrandsSeveralFieldsMixed() {
-        checkAllDialects(SwifQL.select(CarBrands.column("id"), cb.column("name"), CarBrands.column("createdAt")), pg: """
-            SELECT "CarBrands"."id", "cb"."name", "CarBrands"."createdAt"
-            """, mySQL: """
-            SELECT CarBrands.id, cb.name, CarBrands.createdAt
-            """)
+        check(
+            SwifQL.select(CarBrands.column("id"), cb.column("name"), CarBrands.column("createdAt")),
+            .psql(#"SELECT "CarBrands"."id", "cb"."name", "CarBrands"."createdAt""#),
+            .mysql("SELECT CarBrands.id, cb.name, CarBrands.createdAt")
+        )
     }
     
     //MARK: PostgreSQL Functions
     
     func testSelectFnAbs() {
-        checkAllDialects(SwifQL.select(Fn.abs(1)), pg: "SELECT abs(1)", mySQL: "SELECT abs(1)")
+        check(
+            SwifQL.select(Fn.abs(1)),
+            .psql("SELECT abs(1)"),
+            .mysql("SELECT abs(1)")
+        )
     }
     
     func testSelectFnAvg() {
-        checkAllDialects(SwifQL.select(Fn.avg(1)), pg: "SELECT avg(1)", mySQL: "SELECT avg(1)")
+        check(
+            SwifQL.select(Fn.avg(1)),
+            .psql("SELECT avg(1)"),
+            .mysql("SELECT avg(1)")
+        )
     }
     
     func testSelectFnBitLength() {
-        checkAllDialects(SwifQL.select(Fn.bit_length("hello")), pg: "SELECT bit_length('hello')", mySQL: "SELECT bit_length('hello')")
+        check(
+            SwifQL.select(Fn.bit_length("hello")),
+            .psql("SELECT bit_length('hello')"),
+            .mysql("SELECT bit_length('hello')")
+        )
     }
     
     func testSelectFnBtrim() {
-        checkAllDialects(SwifQL.select(Fn.btrim("hello", "ll")), pg: "SELECT btrim('hello', 'll')", mySQL: "SELECT btrim('hello', 'll')")
+        check(
+            SwifQL.select(Fn.btrim("hello", "ll")),
+            .psql("SELECT btrim('hello', 'll')"),
+            .mysql("SELECT btrim('hello', 'll')")
+        )
     }
     
     func testSelectFnCeil() {
-        checkAllDialects(SwifQL.select(Fn.ceil(1.5)), pg: "SELECT ceil(1.5)", mySQL: "SELECT ceil(1.5)")
+        check(
+            SwifQL.select(Fn.ceil(1.5)),
+            .psql("SELECT ceil(1.5)"),
+            .mysql("SELECT ceil(1.5)")
+        )
     }
     
     func testSelectFnCeiling() {
-        checkAllDialects(SwifQL.select(Fn.ceiling(1.5)), pg: "SELECT ceiling(1.5)", mySQL: "SELECT ceiling(1.5)")
+        check(
+            SwifQL.select(Fn.ceiling(1.5)),
+            .psql("SELECT ceiling(1.5)"),
+            .mysql("SELECT ceiling(1.5)")
+        )
     }
     
     func testSelectFnCharLength() {
-        checkAllDialects(SwifQL.select(Fn.char_length("hello")), pg: "SELECT char_length('hello')", mySQL: "SELECT char_length('hello')")
+        check(
+            SwifQL.select(Fn.char_length("hello")),
+            .psql("SELECT char_length('hello')"),
+            .mysql("SELECT char_length('hello')")
+        )
     }
     
     func testSelectFnCharacter_length() {
-        checkAllDialects(SwifQL.select(Fn.character_length("hello")), pg: "SELECT character_length('hello')", mySQL: "SELECT character_length('hello')")
+        check(
+            SwifQL.select(Fn.character_length("hello")),
+            .psql("SELECT character_length('hello')"),
+            .mysql("SELECT character_length('hello')")
+        )
     }
     
     func testSelectFnInitcap() {
-        checkAllDialects(SwifQL.select(Fn.initcap("hello")), pg: "SELECT initcap('hello')", mySQL: "SELECT initcap('hello')")
+        check(
+            SwifQL.select(Fn.initcap("hello")),
+            .psql("SELECT initcap('hello')"),
+            .mysql("SELECT initcap('hello')")
+        )
     }
     
     func testSelectFnLength() {
-        checkAllDialects(SwifQL.select(Fn.length("hello")), pg: "SELECT length('hello')", mySQL: "SELECT length('hello')")
+        check(
+            SwifQL.select(Fn.length("hello")),
+            .psql("SELECT length('hello')"),
+            .mysql("SELECT length('hello')")
+        )
     }
     
     func testSelectFnLower() {
-        checkAllDialects(SwifQL.select(Fn.lower("hello")), pg: "SELECT lower('hello')", mySQL: "SELECT lower('hello')")
+        check(
+            SwifQL.select(Fn.lower("hello")),
+            .psql("SELECT lower('hello')"),
+            .mysql("SELECT lower('hello')")
+        )
     }
     
     func testSelectFnLpad() {
-        checkAllDialects(SwifQL.select(Fn.lpad("hello", 3, "lo")), pg: "SELECT lpad('hello', 3, 'lo')", mySQL: "SELECT lpad('hello', 3, 'lo')")
+        check(
+            SwifQL.select(Fn.lpad("hello", 3, "lo")),
+            .psql("SELECT lpad('hello', 3, 'lo')"),
+            .mysql("SELECT lpad('hello', 3, 'lo')")
+        )
     }
     
     func testSelectFnLtrim() {
-        checkAllDialects(SwifQL.select(Fn.ltrim("hello", "he")), pg: "SELECT ltrim('hello', 'he')", mySQL: "SELECT ltrim('hello', 'he')")
+        check(
+            SwifQL.select(Fn.ltrim("hello", "he")),
+            .psql("SELECT ltrim('hello', 'he')"),
+            .mysql("SELECT ltrim('hello', 'he')")
+        )
     }
     
     func testSelectFnPosition() {
-        checkAllDialects(SwifQL.select(Fn.position("el", in: "hello")), pg: "SELECT position('el' IN 'hello')", mySQL: "SELECT position('el' IN 'hello')")
+        check(
+            SwifQL.select(Fn.position("el", in: "hello")),
+            .psql("SELECT position('el' IN 'hello')"),
+            .mysql("SELECT position('el' IN 'hello')")
+        )
     }
     
     func testSelectFnRepeat() {
-        checkAllDialects(SwifQL.select(Fn.repeat("hello", 2)), pg: "SELECT repeat('hello', 2)", mySQL: "SELECT repeat('hello', 2)")
+        check(
+            SwifQL.select(Fn.repeat("hello", 2)),
+            .psql("SELECT repeat('hello', 2)"),
+            .mysql("SELECT repeat('hello', 2)")
+        )
     }
     
     func testSelectFnReplace() {
-        checkAllDialects(SwifQL.select(Fn.replace("hello", "el", "ol")), pg: "SELECT replace('hello', 'el', 'ol')", mySQL: "SELECT replace('hello', 'el', 'ol')")
+        check(
+            SwifQL.select(Fn.replace("hello", "el", "ol")),
+            .psql("SELECT replace('hello', 'el', 'ol')"),
+            .mysql("SELECT replace('hello', 'el', 'ol')")
+        )
     }
     
     func testSelectFnRpad() {
-        checkAllDialects(SwifQL.select(Fn.rpad("hello", 2, "ho")), pg: "SELECT rpad('hello', 2, 'ho')", mySQL: "SELECT rpad('hello', 2, 'ho')")
+        check(
+            SwifQL.select(Fn.rpad("hello", 2, "ho")),
+            .psql("SELECT rpad('hello', 2, 'ho')"),
+            .mysql("SELECT rpad('hello', 2, 'ho')")
+        )
     }
     
     func testSelectFnRtrim() {
-        checkAllDialects(SwifQL.select(Fn.rtrim(" hello ", " ")), pg: "SELECT rtrim(' hello ', ' ')", mySQL: "SELECT rtrim(' hello ', ' ')")
+        check(
+            SwifQL.select(Fn.rtrim(" hello ", " ")),
+            .psql("SELECT rtrim(' hello ', ' ')"),
+            .mysql("SELECT rtrim(' hello ', ' ')")
+        )
     }
     
     func testSelectFnStrpos() {
-        checkAllDialects(SwifQL.select(Fn.strpos("hello", "ll")), pg: "SELECT strpos('hello', 'll')", mySQL: "SELECT strpos('hello', 'll')")
+        check(
+            SwifQL.select(Fn.strpos("hello", "ll")),
+            .psql("SELECT strpos('hello', 'll')"),
+            .mysql("SELECT strpos('hello', 'll')")
+        )
     }
     
     func testSelectFnSubstring() {
-        checkAllDialects(SwifQL.select(Fn.substring("hello", from: 1)), pg: "SELECT substring('hello' FROM 1)", mySQL: "SELECT substring('hello' FROM 1)")
-        checkAllDialects(SwifQL.select(Fn.substring("hello", for: 4)), pg: "SELECT substring('hello' FOR 4)", mySQL: "SELECT substring('hello' FOR 4)")
-        checkAllDialects(SwifQL.select(Fn.substring("hello", from: 1, for: 4)), pg: "SELECT substring('hello' FROM 1 FOR 4)", mySQL: "SELECT substring('hello' FROM 1 FOR 4)")
+        check(
+            SwifQL.select(Fn.substring("hello", from: 1)),
+            .psql("SELECT substring('hello' FROM 1)"),
+            .mysql("SELECT substring('hello' FROM 1)")
+        )
+        check(
+            SwifQL.select(Fn.substring("hello", for: 4)),
+            .psql("SELECT substring('hello' FOR 4)"),
+            .mysql("SELECT substring('hello' FOR 4)")
+        )
+        check(
+            SwifQL.select(Fn.substring("hello", from: 1, for: 4)),
+            .psql("SELECT substring('hello' FROM 1 FOR 4)"),
+            .mysql("SELECT substring('hello' FROM 1 FOR 4)")
+        )
     }
     
     func testSelectFnTranslate() {
-        checkAllDialects(SwifQL.select(Fn.translate("hola", "hola", "hello")), pg: "SELECT translate('hola', 'hola', 'hello')", mySQL: "SELECT translate('hola', 'hola', 'hello')")
+        check(
+            SwifQL.select(Fn.translate("hola", "hola", "hello")),
+            .psql("SELECT translate('hola', 'hola', 'hello')"),
+            .mysql("SELECT translate('hola', 'hola', 'hello')")
+        )
     }
     
     func testSelectFnLTrim() {
-        checkAllDialects(SwifQL.select(Fn.ltrim("hello", "he")), pg: "SELECT ltrim('hello', 'he')", mySQL: "SELECT ltrim('hello', 'he')")
+        check(
+            SwifQL.select(Fn.ltrim("hello", "he")),
+            .psql("SELECT ltrim('hello', 'he')"),
+            .mysql("SELECT ltrim('hello', 'he')")
+        )
     }
     
     func testSelectFnUpper() {
-        checkAllDialects(SwifQL.select(Fn.upper("hello")), pg: "SELECT upper('hello')", mySQL: "SELECT upper('hello')")
+        check(
+            SwifQL.select(Fn.upper("hello")),
+            .psql("SELECT upper('hello')"),
+            .mysql("SELECT upper('hello')")
+        )
     }
     
     func testSelectFnCount() {
-        checkAllDialects(SwifQL.select(Fn.count(CarBrands.column("id"))), pg: """
-            SELECT count("CarBrands"."id")
-            """, mySQL: """
-            SELECT count(CarBrands.id)
-            """)
-        checkAllDialects(SwifQL.select(Fn.count(cb.column("id"))), pg: """
-            SELECT count("cb"."id")
-            """, mySQL: """
-            SELECT count(cb.id)
-            """)
+        check(
+            SwifQL.select(Fn.count(CarBrands.column("id"))),
+            .psql(#"SELECT count("CarBrands"."id")"#),
+            .mysql("SELECT count(CarBrands.id)")
+        )
+        check(
+            SwifQL.select(Fn.count(cb.column("id"))),
+            .psql(#"SELECT count("cb"."id")"#),
+            .mysql("SELECT count(cb.id)")
+        )
     }
     
     func testSelectFnDiv() {
-        checkAllDialects(SwifQL.select(Fn.div(12, 4)), pg: "SELECT div(12, 4)", mySQL: "SELECT div(12, 4)")
+        check(
+            SwifQL.select(Fn.div(12, 4)),
+            .psql("SELECT div(12, 4)"),
+            .mysql("SELECT div(12, 4)")
+        )
     }
     
     func testSelectFnExp() {
-        checkAllDialects(SwifQL.select(Fn.exp(12, 4)), pg: "SELECT exp(12, 4)", mySQL: "SELECT exp(12, 4)")
+        check(
+            SwifQL.select(Fn.exp(12, 4)),
+            .psql("SELECT exp(12, 4)"),
+            .mysql("SELECT exp(12, 4)")
+        )
     }
     
     func testSelectFnFloor() {
-        checkAllDialects(SwifQL.select(Fn.floor(12)), pg: "SELECT floor(12)", mySQL: "SELECT floor(12)")
+        check(
+            SwifQL.select(Fn.floor(12)),
+            .psql("SELECT floor(12)"),
+            .mysql("SELECT floor(12)")
+        )
     }
     
     func testSelectFnMax() {
-        checkAllDialects(SwifQL.select(Fn.max(CarBrands.column("id"))), pg: """
-            SELECT max("CarBrands"."id")
-            """, mySQL: """
-            SELECT max(CarBrands.id)
-            """)
-        checkAllDialects(SwifQL.select(Fn.max(cb.column("id"))), pg: """
-            SELECT max("cb"."id")
-            """, mySQL: """
-            SELECT max(cb.id)
-            """)
+        check(
+            SwifQL.select(Fn.max(CarBrands.column("id"))),
+            .psql(#"SELECT max("CarBrands"."id")"#),
+            .mysql("SELECT max(CarBrands.id)")
+        )
+        check(
+            SwifQL.select(Fn.max(cb.column("id"))),
+            .psql(#"SELECT max("cb"."id")"#),
+            .mysql("SELECT max(cb.id)")
+        )
     }
     
     func testSelectFnMin() {
-        checkAllDialects(SwifQL.select(Fn.min(CarBrands.column("id"))), pg: """
-            SELECT min("CarBrands"."id")
-            """, mySQL: """
-            SELECT min(CarBrands.id)
-            """)
-        checkAllDialects(SwifQL.select(Fn.min(cb.column("id"))), pg: """
-            SELECT min("cb"."id")
-            """, mySQL: """
-            SELECT min(cb.id)
-            """)
+        check(
+            SwifQL.select(Fn.min(CarBrands.column("id"))),
+            .psql(#"SELECT min("CarBrands"."id")"#),
+            .mysql("SELECT min(CarBrands.id)")
+        )
+        check(
+            SwifQL.select(Fn.min(cb.column("id"))),
+            .psql(#"SELECT min("cb"."id")"#),
+            .mysql("SELECT min(cb.id)")
+        )
     }
     
     func testSelectFnMod() {
-        checkAllDialects(SwifQL.select(Fn.mod(12, 4)), pg: "SELECT mod(12, 4)", mySQL: "SELECT mod(12, 4)")
+        check(
+            SwifQL.select(Fn.mod(12, 4)),
+            .psql("SELECT mod(12, 4)"),
+            .mysql("SELECT mod(12, 4)")
+        )
     }
     
     func testSelectFnPower() {
-        checkAllDialects(SwifQL.select(Fn.power(12, 4)), pg: "SELECT power(12, 4)", mySQL: "SELECT power(12, 4)")
+        check(
+            SwifQL.select(Fn.power(12, 4)),
+            .psql("SELECT power(12, 4)"),
+            .mysql("SELECT power(12, 4)")
+        )
     }
     
     func testSelectFnRandom() {
-        checkAllDialects(SwifQL.select(Fn.random()), pg: "SELECT random()", mySQL: "SELECT random()")
+        check(
+            SwifQL.select(Fn.random()),
+            .psql("SELECT random()"),
+            .mysql("SELECT random()")
+        )
     }
     
     func testSelectFnRound() {
-        checkAllDialects(SwifQL.select(Fn.round(12.43)), pg: "SELECT round(12.43)", mySQL: "SELECT round(12.43)")
-        checkAllDialects(SwifQL.select(Fn.round(12.43, 1)), pg: "SELECT round(12.43, 1)", mySQL: "SELECT round(12.43, 1)")
+        check(
+            SwifQL.select(Fn.round(12.43)),
+            .psql("SELECT round(12.43)"),
+            .mysql("SELECT round(12.43)")
+        )
+        check(
+            SwifQL.select(Fn.round(12.43, 1)),
+            .psql("SELECT round(12.43, 1)"),
+            .mysql("SELECT round(12.43, 1)")
+        )
     }
     
     func testSelectFnSetSeed() {
-        checkAllDialects(SwifQL.select(Fn.setseed(12)), pg: "SELECT setseed(12)", mySQL: "SELECT setseed(12)")
+        check(
+            SwifQL.select(Fn.setseed(12)),
+            .psql("SELECT setseed(12)"),
+            .mysql("SELECT setseed(12)")
+        )
     }
     
     func testSelectFnSign() {
-        checkAllDialects(SwifQL.select(Fn.sign(12)), pg: "SELECT sign(12)", mySQL: "SELECT sign(12)")
+        check(
+            SwifQL.select(Fn.sign(12)),
+            .psql("SELECT sign(12)"),
+            .mysql("SELECT sign(12)")
+        )
     }
     
     func testSelectFnSqrt() {
-        checkAllDialects(SwifQL.select(Fn.sqrt(16)), pg: "SELECT sqrt(16)", mySQL: "SELECT sqrt(16)")
+        check(
+            SwifQL.select(Fn.sqrt(16)),
+            .psql("SELECT sqrt(16)"),
+            .mysql("SELECT sqrt(16)")
+        )
     }
     
     func testSelectFnSum() {
-        checkAllDialects(SwifQL.select(Fn.sum(CarBrands.column("id"))), pg: """
-            SELECT sum("CarBrands"."id")
-            """, mySQL: """
-            SELECT sum(CarBrands.id)
-            """)
-        checkAllDialects(SwifQL.select(Fn.sum(cb.column("id"))), pg: """
-            SELECT sum("cb"."id")
-            """, mySQL: """
-            SELECT sum(cb.id)
-            """)
+        check(
+            SwifQL.select(Fn.sum(CarBrands.column("id"))),
+            .psql(#"SELECT sum("CarBrands"."id")"#),
+            .mysql("SELECT sum(CarBrands.id)")
+        )
+        check(
+            SwifQL.select(Fn.sum(cb.column("id"))),
+            .psql(#"SELECT sum("cb"."id")"#),
+            .mysql("SELECT sum(cb.id)")
+        )
     }
 
     func testSelectFnStringAgg() {
-        checkAllDialects(SwifQL.select(Fn.string_agg(CarBrands.column("name"), ", ")), pg: """
-            SELECT string_agg("CarBrands"."name", ', ')
-            """, mySQL: """
-            SELECT string_agg(CarBrands.name, ', ')
-            """)
+        check(
+            SwifQL.select(Fn.string_agg(CarBrands.column("name"), ", ")),
+            .psql(#"SELECT string_agg("CarBrands"."name", ', ')"#),
+            .mysql("SELECT string_agg(CarBrands.name, ', ')")
+        )
     }
 
     func testSelectFnRegexpReplace() {
-        checkAllDialects(SwifQL.select(Fn.regexp_replace("/full/path/to/filename", "^.+/", "")), pg: """
-            SELECT regexp_replace('/full/path/to/filename', '^.+/', '')
-            """, mySQL: """
-            SELECT regexp_replace('/full/path/to/filename', '^.+/', '')
-            """)
+        check(
+            SwifQL.select(Fn.regexp_replace("/full/path/to/filename", "^.+/", "")),
+            .psql(#"SELECT regexp_replace('/full/path/to/filename', '^.+/', '')"#),
+            .mysql("SELECT regexp_replace('/full/path/to/filename', '^.+/', '')")
+        )
     }
     
     // MARK: - SELECT with alias in select params
     
     func testSelectWithAliasInSelectParams() {
-        let query = SwifQL.select("hello", =>"aaa").from(|SwifQL.select(CarBrands.column("name")).from(CarBrands.table))| => "aaa"
-        checkAllDialects(query, pg: """
-        SELECT 'hello', "aaa" FROM (SELECT "CarBrands"."name" FROM "CarBrands") as "aaa"
-        """, mySQL: """
-        SELECT 'hello', aaa FROM (SELECT CarBrands.name FROM CarBrands) as aaa
-        """)
+        check(
+            SwifQL.select("hello", =>"aaa").from(|SwifQL.select(CarBrands.column("name")).from(CarBrands.table))| => "aaa",
+            .psql(#"SELECT 'hello', "aaa" FROM (SELECT "CarBrands"."name" FROM "CarBrands") as "aaa""#),
+            .mysql("SELECT 'hello', aaa FROM (SELECT CarBrands.name FROM CarBrands) as aaa")
+        )
     }
     
     static var allTests = [
@@ -334,7 +529,10 @@ final class SelectTests: SwifQLTestCase {
         ("testSelectInt", testSelectInt),
         ("testSelectDouble", testSelectDouble),
         ("testSelectSeveralSimpleValues", testSelectSeveralSimpleValues),
-        ("testSelectColumn", testSelectColumn),
+        ("testSelectColumn_path", testSelectColumn_path),
+        ("testSelectColumn_keyPath", testSelectColumn_keyPath),
+        ("testSelectColumn_keyPath_alias_simple", testSelectColumn_keyPath_alias_simple),
+        ("testSelectColumn_keyPath_alias_keyPath", testSelectColumn_keyPath_alias_keyPath),
         ("testSelectColumnWithTable", testSelectColumnWithTable),
         ("testSelectCarBrands", testSelectCarBrands),
         ("testSelectCarBrandsSeveralFields", testSelectCarBrandsSeveralFields),

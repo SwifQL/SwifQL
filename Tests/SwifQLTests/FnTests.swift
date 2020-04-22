@@ -5,151 +5,117 @@ final class FnTests: SwifQLTestCase {
     // MARK: - Fn.array_remove
     
     func testFn_array_remove() {
-        let query = SwifQL.select(Fn.array_remove(PgArray(1,2,3,2), 2))
-        let pg = """
-        SELECT array_remove(ARRAY[1, 2, 3, 2], 2)
-        """
-        let mySQL = """
-        SELECT array_remove(ARRAY[1, 2, 3, 2], 2)
-        """
-        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        check(
+            SwifQL.select(Fn.array_remove(PgArray(1,2,3,2), 2)),
+            .psql("SELECT array_remove(ARRAY[1, 2, 3, 2], 2)"),
+            .mysql("SELECT array_remove(ARRAY[1, 2, 3, 2], 2)")
+        )
     }
     
     // MARK: - Concat
     
     func testConcat() {
-        let query = Fn.concat("Hello ", CarBrands.column("name"))
-        let pg = """
-        concat('Hello ', "CarBrands"."name")
-        """
-        let mySQL = """
-        concat('Hello ', CarBrands.name)
-        """
-        checkAllDialects(query, pg: pg, mySQL: mySQL)
-        let query2 = Fn.concat_ws(", ", "Hello", CarBrands.column("name"))
-        let pg2 = """
-        concat_ws(', ', 'Hello', "CarBrands"."name")
-        """
-        let mySQL2 = """
-        concat_ws(', ', 'Hello', CarBrands.name)
-        """
-        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+        check(
+            Fn.concat("Hello ", CarBrands.column("name")),
+            .psql(#"concat('Hello ', "CarBrands"."name")"#),
+            .mysql("concat('Hello ', CarBrands.name)")
+        )
+        check(
+            Fn.concat_ws(", ", "Hello", CarBrands.column("name")),
+            .psql(#"concat_ws(', ', 'Hello', "CarBrands"."name")"#),
+            .mysql("concat_ws(', ', 'Hello', CarBrands.name)")
+        )
     }
     
     // MARK: - Fn.to_tsvector
     
     func testFn_to_tsvector() {
-        let query = SwifQL.select(Fn.to_tsvector("english", "a fat  cat sat on a mat - it ate a fat rats"))
-        let pg = """
-        SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')
-        """
-        let mySQL = """
-        SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')
-        """
-        checkAllDialects(query, pg: pg, mySQL: mySQL)
-        let query2 = SwifQL.select(Fn.to_tsvector("english"))
-        let pg2 = """
-        SELECT to_tsvector('english')
-        """
-        let mySQL2 = """
-        SELECT to_tsvector('english')
-        """
-        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+        check(
+            SwifQL.select(Fn.to_tsvector("english", "a fat  cat sat on a mat - it ate a fat rats")),
+            .psql(#"SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')"#),
+            .mysql("SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')")
+        )
+        check(
+            SwifQL.select(Fn.to_tsvector("english")),
+            .psql("SELECT to_tsvector('english')"),
+            .mysql("SELECT to_tsvector('english')")
+        )
     }
     
     // MARK: - Fn.to_tsquery
     
     func testFn_to_tsquery() {
-        let query = SwifQL.select(Fn.to_tsquery("english", "The & Fat & Rats"))
-        let pg = """
-        SELECT to_tsquery('english', 'The & Fat & Rats')
-        """
-        let mySQL = """
-        SELECT to_tsquery('english', 'The & Fat & Rats')
-        """
-        checkAllDialects(query, pg: pg, mySQL: mySQL)
-        let query2 = SwifQL.select(Fn.to_tsquery("english"))
-        let pg2 = """
-        SELECT to_tsquery('english')
-        """
-        let mySQL2 = """
-        SELECT to_tsquery('english')
-        """
-        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+        check(
+            SwifQL.select(Fn.to_tsquery("english", "The & Fat & Rats")),
+            .psql("SELECT to_tsquery('english', 'The & Fat & Rats')"),
+            .mysql("SELECT to_tsquery('english', 'The & Fat & Rats')")
+        )
+        check(
+            SwifQL.select(Fn.to_tsquery("english")),
+            .psql("SELECT to_tsquery('english')"),
+            .mysql("SELECT to_tsquery('english')")
+        )
     }
     
     // MARK: - Fn.plainto_tsquery
     
     func testFn_plainto_tsquery() {
-        let query = SwifQL.select(Fn.plainto_tsquery("english", "The Fat Rats"))
-        let pg = """
-        SELECT plainto_tsquery('english', 'The Fat Rats')
-        """
-        let mySQL = """
-        SELECT plainto_tsquery('english', 'The Fat Rats')
-        """
-        checkAllDialects(query, pg: pg, mySQL: mySQL)
-        let query2 = SwifQL.select(Fn.plainto_tsquery("english"))
-        let pg2 = """
-        SELECT plainto_tsquery('english')
-        """
-        let mySQL2 = """
-        SELECT plainto_tsquery('english')
-        """
-        checkAllDialects(query2, pg: pg2, mySQL: mySQL2)
+        check(
+            SwifQL.select(Fn.plainto_tsquery("english", "The Fat Rats")),
+            .psql("SELECT plainto_tsquery('english', 'The Fat Rats')"),
+            .mysql("SELECT plainto_tsquery('english', 'The Fat Rats')")
+        )
+        check(
+            SwifQL.select(Fn.plainto_tsquery("english")),
+            .psql("SELECT plainto_tsquery('english')"),
+            .mysql("SELECT plainto_tsquery('english')")
+        )
     }
     
     // MARK: - Fn.ts_rank_cd
     
     func testFn_ts_rank_cd() {
-        let query = SwifQL.select(Fn.ts_rank_cd(FormattedKeyPath(CarBrands.self, "id"), Fn.to_tsquery("The Fat Rats")))
-        let pg = """
-        SELECT ts_rank_cd("CarBrands"."id", to_tsquery('The Fat Rats'))
-        """
-        let mySQL = """
-        SELECT ts_rank_cd(CarBrands.id, to_tsquery('The Fat Rats'))
-        """
-        checkAllDialects(query, pg: pg, mySQL: mySQL)
+        check(
+            SwifQL.select(Fn.ts_rank_cd(FormattedKeyPath(CarBrands.self, "id"), Fn.to_tsquery("The Fat Rats"))),
+            .psql(#"SELECT ts_rank_cd("CarBrands"."id", to_tsquery('The Fat Rats'))"#),
+            .mysql("SELECT ts_rank_cd(CarBrands.id, to_tsquery('The Fat Rats'))")
+        )
     }
     
     // MARK - Generate Series
     
     func testGenerateSeriesNumbers() {
-        checkAllDialects(SwifQL.select(Fn.generate_series(1, 4)), pg: "SELECT generate_series(1, 4)", mySQL: "SELECT generate_series(1, 4)")
-        checkAllDialects(SwifQL.select(Fn.generate_series(1, 4, 2)), pg: "SELECT generate_series(1, 4, 2)", mySQL: "SELECT generate_series(1, 4, 2)")
+        check(
+            SwifQL.select(Fn.generate_series(1, 4)),
+            .psql("SELECT generate_series(1, 4)"),
+            .mysql("SELECT generate_series(1, 4)")
+        )
+        check(
+            SwifQL.select(Fn.generate_series(1, 4, 2)),
+            .psql("SELECT generate_series(1, 4, 2)"),
+            .mysql("SELECT generate_series(1, 4, 2)")
+        )
     }
     
     func testGenerateSeriesDates() {
-        let queryString = SwifQL.select(Fn.generate_series("2019-10-01", "2019-10-04", "1 day"))
-        let pgString = """
-        SELECT generate_series('2019-10-01', '2019-10-04', '1 day')
-        """
-        let mySQLString = """
-        SELECT generate_series('2019-10-01', '2019-10-04', '1 day')
-        """
-        checkAllDialects(queryString, pg: pgString, mySQL: mySQLString)
-        
-        let queryStringCast = SwifQL.select(Fn.generate_series("2019-10-01" => .date, "2019-10-04" => .date, "1 day"))
-        let pgStringCast = """
-        SELECT generate_series('2019-10-01'::date, '2019-10-04'::date, '1 day')
-        """
-        let mySQLStringCast = """
-        SELECT generate_series('2019-10-01'::date, '2019-10-04'::date, '1 day')
-        """
-        checkAllDialects(queryStringCast, pg: pgStringCast, mySQL: mySQLStringCast)
-        
+        check(
+            SwifQL.select(Fn.generate_series("2019-10-01", "2019-10-04", "1 day")),
+            .psql("SELECT generate_series('2019-10-01', '2019-10-04', '1 day')"),
+            .mysql("SELECT generate_series('2019-10-01', '2019-10-04', '1 day')")
+        )
+        check(
+            SwifQL.select(Fn.generate_series("2019-10-01" => .date, "2019-10-04" => .date, "1 day")),
+            .psql("SELECT generate_series('2019-10-01'::date, '2019-10-04'::date, '1 day')"),
+            .mysql("SELECT generate_series('2019-10-01'::date, '2019-10-04'::date, '1 day')")
+        )
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = TimeZone(secondsFromGMT: 0)
-        
-        let queryDate = SwifQL.select(Fn.generate_series(df.date(from: "2019-10-01 00:00:00")!, df.date(from: "2019-10-04 00:00:00")!, "1 day"))
-        let pgDate = """
-        SELECT generate_series((TIMESTAMP 'EPOCH' + make_interval(secs => 1569888000.0)), (TIMESTAMP 'EPOCH' + make_interval(secs => 1570147200.0)), '1 day')
-        """
-        let mySQLDate = """
-        SELECT generate_series(FROM_UNIXTIME(1569888000.0), FROM_UNIXTIME(1570147200.0), '1 day')
-        """
-        checkAllDialects(queryDate, pg: pgDate, mySQL: mySQLDate)
+        check(
+            SwifQL.select(Fn.generate_series(df.date(from: "2019-10-01 00:00:00")!, df.date(from: "2019-10-04 00:00:00")!, "1 day")),
+            .psql("SELECT generate_series((TIMESTAMP 'EPOCH' + make_interval(secs => 1569888000.0)), (TIMESTAMP 'EPOCH' + make_interval(secs => 1570147200.0)), '1 day')"),
+            .mysql("SELECT generate_series(FROM_UNIXTIME(1569888000.0), FROM_UNIXTIME(1570147200.0), '1 day')")
+        )
     }
     
     static var allTests = [
