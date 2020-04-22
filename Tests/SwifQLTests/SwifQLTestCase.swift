@@ -6,28 +6,54 @@ class SwifQLTestCase: XCTestCase {
         static var schemaName: String { "deleted" }
     }
     
-    struct SchemableCarBrands: Codable, Tableable, Schemable {
+    struct SchemableCarBrands: Table, Schemable {
         static var tableName: String { "CarBrands" }
         
+        @Column("id")
         var id: UUID
+        @Column("name")
         var name: String
+        @Column("createdAt")
         var createdAt: Date
+        
+        init() {}
     }
     
-    struct CarBrands: Codable, Tableable {
+    struct CarBrands: Table {
+        @Column("id")
         var id: UUID
+        @Column("name")
         var name: String
+        @Column("createdAt")
         var createdAt: Date
+        
+        init() {}
     }
     
     let cb = CarBrands.as("cb")
     
-    func checkAllDialects(_ query: SwifQLable, pg: String? = nil, mySQL: String? = nil) {
-        if let pg = pg {
-            XCTAssertEqual(query.prepare(.psql).plain, pg)
+    struct QueryWithDialect {
+        let dialect: SQLDialect
+        let query: String
+        
+        static func psql(_ query: String) -> Self {
+            .init(dialect: .psql, query: query)
         }
-        if let mySQL = mySQL {
-            XCTAssertEqual(query.prepare(.mysql).plain, mySQL)
+        
+        static func mysql(_ query: String) -> Self {
+            .init(dialect: .mysql, query: query)
+        }
+    }
+    
+    func check(_ query: SwifQLable, _ dialects: QueryWithDialect...) {
+        dialects.forEach {
+            XCTAssertEqual(query.prepare($0.dialect).plain, $0.query)
+        }
+    }
+    
+    func check(_ query: SwifQLable, all rawQuery: String) {
+        SQLDialect.all.forEach {
+            XCTAssertEqual(query.prepare($0).plain, rawQuery)
         }
     }
 }

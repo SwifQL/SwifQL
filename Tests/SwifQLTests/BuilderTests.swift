@@ -2,15 +2,14 @@ import XCTest
 @testable import SwifQL
 
 final class BuilderTests: SwifQLTestCase {
-        func testSelectBuilderLimitShort() {
+    func testSelectBuilderLimitShort() {
         let builder = SwifQLSelectBuilder()
         let query = builder.select(CarBrands.table.*).from(CarBrands.table).limit(0, 10).build()
-        
-        checkAllDialects(query, pg: """
-            SELECT "CarBrands".* FROM "CarBrands" LIMIT 10 OFFSET 0
-            """, mySQL: """
-            SELECT CarBrands.* FROM CarBrands LIMIT 10 OFFSET 0
-            """)
+        check(
+            query,
+            .psql(#"SELECT "CarBrands".* FROM "CarBrands" LIMIT 10 OFFSET 0"#),
+            .mysql("SELECT CarBrands.* FROM CarBrands LIMIT 10 OFFSET 0")
+        )
     }
     
     func testSelectBuilderCopy() {

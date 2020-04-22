@@ -5,51 +5,59 @@ final class FromTests: SwifQLTestCase {
     //MARK: - FROM
     
     func testSelectFrom() {
-        checkAllDialects(SwifQL.select(1).from(), pg: "SELECT 1 FROM ", mySQL: "SELECT 1 FROM ")
+        check(
+            SwifQL.select(1).from(),
+            .psql("SELECT 1 FROM "),
+            .mysql("SELECT 1 FROM ")
+        )
     }
     
     func testFrom() {
-        checkAllDialects(SwifQL.from(), pg: "FROM ", mySQL: "FROM ")
+        check(
+            SwifQL.from(),
+            .psql("FROM "),
+            .mysql("FROM ")
+        )
     }
     
     func testFromOneTable() {
-        checkAllDialects(SwifQL.from(CarBrands.table), pg: """
-            FROM "CarBrands"
-            """, mySQL: """
-            FROM CarBrands
-            """)
+        check(
+            SwifQL.from(CarBrands.table),
+            .psql(#"FROM "CarBrands""#),
+            .mysql("FROM CarBrands")
+        )
     }
     
     func testFromTwoTables() {
-        checkAllDialects(SwifQL.from(CarBrands.table, CarBrands.table), pg: """
-            FROM "CarBrands", "CarBrands"
-            """, mySQL: """
-            FROM CarBrands, CarBrands
-            """)
+        check(
+            SwifQL.from(CarBrands.table, CarBrands.table),
+            .psql(#"FROM "CarBrands", "CarBrands""#),
+            .mysql("FROM CarBrands, CarBrands")
+        )
     }
     
     func testFromOneTableAlias() {
-        checkAllDialects(SwifQL.from(cb.table), pg: """
-            FROM "CarBrands" AS "cb"
-            """, mySQL: """
-            FROM CarBrands AS cb
-            """)
+        check(
+            SwifQL.from(cb.table),
+            .psql(#"FROM "CarBrands" AS "cb""#),
+            .mysql("FROM CarBrands AS cb")
+        )
     }
     
     func testFromTwoTableAliases() {
-        checkAllDialects(SwifQL.from(cb.table, cb.table), pg: """
-            FROM "CarBrands" AS "cb", "CarBrands" AS "cb"
-            """, mySQL: """
-            FROM CarBrands AS cb, CarBrands AS cb
-            """)
+        check(
+            SwifQL.from(cb.table, cb.table),
+            .psql(#"FROM "CarBrands" AS "cb", "CarBrands" AS "cb""#),
+            .mysql("FROM CarBrands AS cb, CarBrands AS cb")
+        )
     }
     
     func testFromTableAndTableAlias() {
-        checkAllDialects(SwifQL.from(CarBrands.table, cb.table), pg: """
-            FROM "CarBrands", "CarBrands" AS "cb"
-            """, mySQL: """
-            FROM CarBrands, CarBrands AS cb
-            """)
+        check(
+            SwifQL.from(CarBrands.table, cb.table),
+            .psql(#"FROM "CarBrands", "CarBrands" AS "cb""#),
+            .mysql("FROM CarBrands, CarBrands AS cb")
+        )
     }
     
     static var allTests = [

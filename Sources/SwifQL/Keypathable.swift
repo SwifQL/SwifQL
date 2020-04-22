@@ -14,3 +14,25 @@ public protocol Keypathable {
     var shortPath: String { get }
     var lastPath: String { get }
 }
+
+extension KeyPath: Keypathable where Root: Table, Value: ColumnRepresentable {
+    public var schema: String? {
+        (Root.self as? Schemable.Type)?.schemaName
+    }
+    
+    public var table: String {
+        Root.tableName
+    }
+    
+    public var paths: [String] {
+        [Root.key(for: self)]
+    }
+    
+    public var shortPath: String {
+        Root.key(for: self)
+    }
+    
+    public var lastPath: String {
+        Root.key(for: self)
+    }
+}
