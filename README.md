@@ -154,6 +154,12 @@ There are two options
 let rawSQLString = query.prepare(.psql).plain
 ```
 
+or when using SwifQLSelectBuilder() - see below
+
+```swift
+let rawSQLBuilderString = query.build().prepare(.psql).plain
+```
+
 ##### 2. Get object splitted into: formatted raw SQL string with $ symbols, and separated array with values
 ```swift
 let splittedQuery = query.prepare(.psql).splitted
