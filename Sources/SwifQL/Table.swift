@@ -30,6 +30,8 @@ extension AnyTable {
     }
 }
 
+public protocol KeyPathEncodable {}
+
 @dynamicMemberLookup
 public protocol Table: AnyTable, ColumnRoot {
     init ()
@@ -45,8 +47,23 @@ extension Table {
     }
 }
 
+public struct ColumnInfo {
+    public struct Name {
+        public let label, keyPath: String
+    }
+    public let name: Name
+    public let property: AnyColumn
+}
+
+extension String {
+    fileprivate var withoutLeadingUnderscore: String {
+        guard hasPrefix("_") else { return self }
+        return String(self.dropFirst())
+    }
+}
+
 extension Table {
-    public var columns: [(String, AnyColumn)] {
+    public var columns: [ColumnInfo] {
         return Mirror(reflecting: self)
             .children
             .compactMap { child in
@@ -54,7 +71,7 @@ extension Table {
                     return nil
                 }
                 // remove underscore
-                return (property.name, property)
+                return .init(name: .init(label: property.name, keyPath: child.label?.withoutLeadingUnderscore ?? property.name), property: property)
             }
     }
     
@@ -63,17 +80,24 @@ extension Table {
     public init(from decoder: Decoder) throws {
         self.init()
         let container = try decoder.container(keyedBy: TableCodingKey.self)
-        try self.columns.forEach { label, property in
-            let decoder = TableContainerDecoder(container: container, key: .string(label))
-            try property.decode(from: decoder)
+        try self.columns.forEach {
+            let decoder = TableContainerDecoder(container: container, key: .string($0.name.label))
+            try $0.property.decode(from: decoder)
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         let container = encoder.container(keyedBy: TableCodingKey.self)
-        try self.columns.forEach { label, property in
-            let encoder = ContainerEncoder(container: container, key: .string(label))
-            try property.encode(to: encoder)
+        try self.columns.forEach {
+            let key: TableCodingKey
+            switch self {
+            case _ as KeyPathEncodable:
+                key = .string($0.name.keyPath)
+            default:
+                key = .string($0.name.label)
+            }
+            let encoder = ContainerEncoder(container: container, key: key)
+            try $0.property.encode(to: encoder)
         }
     }
 }
