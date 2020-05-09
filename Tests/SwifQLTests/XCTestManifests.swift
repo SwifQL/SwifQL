@@ -14,7 +14,8 @@ public func allTests() -> [XCTestCaseEntry] {
         testCase(SelectTests.allTests),
         testCase(SubqueryTests.allTests),
         testCase(SwifQLTests.allTests),
-        testCase(WithTests.allTests)
+        testCase(WithTests.allTests),
+        testCase(TableEncoding.allTests)
     ]
 }
 #endif
