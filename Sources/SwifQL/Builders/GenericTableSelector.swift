@@ -692,7 +692,7 @@ public class TableSelector<T: Table>: SwifQLable {
         var query = SwifQL
         if columns.count == 0 {
             if exceptColumns.count > 0 {
-                var cols = T.init().columns.map { $0.0 }
+                var cols = T.init().columns.map { $0.name.label }
                 if exceptColumns.count > 0 {
                     cols = cols.filter { !exceptColumns.contains($0) }
                 }
