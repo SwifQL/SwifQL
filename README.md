@@ -120,9 +120,14 @@ Of course you have to import the lib
 import SwifQL
 ```
 
-#### Your table models should be conformed to `Tableable` protocol
+#### For v1 Your table models should be conformed to `Tableable` protocol
 ```swift
 extension MyTable: Tableable {}
+```
+
+#### For v2 Your table models should be conformed to `Table` protocol
+```swift
+extension MyTable: Table {}
 ```
 
 ### How to build query
