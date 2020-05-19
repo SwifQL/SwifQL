@@ -7,16 +7,11 @@
 
 import Foundation
 
-public class SwifQLSelectBuilder {
+public class SwifQLSelectBuilder: QueryBuilderable {
     var select: [SwifQLable] = []
     var froms: [SwifQLable] = []
-    var joins: [SwifQLJoinBuilder] = []
-    var wheres: [SwifQLable] = []
-    var groupBy: [SwifQLable] = []
-    var havings: [SwifQLable] = []
-    var orderBy: [OrderByItem] = []
-    var offset: Int?
-    var limit: Int?
+    
+    public var queryParts = QueryParts()
     
     public init() {}
     
@@ -25,21 +20,16 @@ public class SwifQLSelectBuilder {
         
         copy.select = select
         copy.froms = froms
-        copy.joins = joins
-        copy.wheres = wheres
-        copy.groupBy = groupBy
-        copy.havings = havings
-        copy.orderBy = orderBy
-        copy.offset = offset
-        copy.limit = limit
+        copy.queryParts = queryParts.copy()
         
         return copy
     }
+    
     // MARK: Select
     
     @discardableResult
     public func select(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        return select(item)
+        select(item)
     }
     
     @discardableResult
@@ -52,7 +42,7 @@ public class SwifQLSelectBuilder {
     
     @discardableResult
     public func from(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        return from(item)
+        from(item)
     }
     
     @discardableResult
@@ -61,132 +51,11 @@ public class SwifQLSelectBuilder {
         return self
     }
     
-    // MARK: Join
-    
-    @discardableResult
-    public func join(_ mode: JoinMode, _ table: SwifQLable, on predicates: SwifQLable) -> SwifQLSelectBuilder {
-        join(SwifQLJoinBuilder(mode, table, on: predicates))
-    }
-    
-    @discardableResult
-    public func join(_ item: SwifQLJoinBuilder...) -> SwifQLSelectBuilder {
-        join(item)
-    }
-    
-    @discardableResult
-    public func join(_ items: [SwifQLJoinBuilder]) -> SwifQLSelectBuilder {
-        joins.append(contentsOf: items)
-        return self
-    }
-    
-    // MARK: Where
-    
-    @discardableResult
-    public func `where`(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        `where`(item)
-    }
-    
-    @discardableResult
-    public func `where`(_ items: [SwifQLable]) -> SwifQLSelectBuilder {
-        wheres.append(contentsOf: items)
-        return self
-    }
-    
-    // MARK: Group by
-    
-    @discardableResult
-    public func groupBy(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        groupBy(item)
-    }
-    
-    @discardableResult
-    public func groupBy(_ items: [SwifQLable]) -> SwifQLSelectBuilder {
-        groupBy.append(contentsOf: items)
-        return self
-    }
-    
-    // MARK: Having
-    
-    @discardableResult
-    public func having(_ item: SwifQLable...) -> SwifQLSelectBuilder {
-        having(item)
-    }
-    
-    @discardableResult
-    public func having(_ items: [SwifQLable]) -> SwifQLSelectBuilder {
-        havings.append(contentsOf: items)
-        return self
-    }
-    
-    // MARK: Order by
-    
-    @discardableResult
-    public func orderBy(_ item: OrderByItem...) -> SwifQLSelectBuilder {
-        orderBy(item)
-    }
-    
-    @discardableResult
-    public func orderBy(_ items: [OrderByItem]) -> SwifQLSelectBuilder {
-        orderBy.append(contentsOf: items)
-        return self
-    }
-    
-    // MARK: Offset
-    
-    @discardableResult
-    public func offset(_ value: Int) -> SwifQLSelectBuilder {
-        offset = value
-        return self
-    }
-    
-    // MARK: Limit
-    
-    @discardableResult
-    public func limit(_ value: Int) -> SwifQLSelectBuilder {
-        limit = value
-        return self
-    }
-    @discardableResult
-    public func limit(_ offset: Int,_ limit: Int) -> SwifQLSelectBuilder {
-        self.limit = limit
-        self.offset = offset
-        return self
-    }
-    
     public func build() -> SwifQLable {
         var query = SwifQL.select(select)
         if froms.count > 0 {
             query = query.from(froms)
         }
-        joins.forEach {
-            query = query.join($0.mode, $0.table, on: $0.predicates)
-        }
-        wheres.enumerated().forEach {
-            if $0.offset == 0 {
-                query = query.where($0.element)
-            } else {
-                query = query && $0.element
-            }
-        }
-        if groupBy.count > 0 {
-            query = query.groupBy(groupBy)
-        }
-        havings.enumerated().forEach {
-            if $0.offset == 0 {
-                query = query.having($0.element)
-            } else {
-                query = query && $0.element
-            }
-        }
-        if orderBy.count > 0 {
-            query = query.orderBy(orderBy)
-        }
-        if let limit = limit {
-            query = query.limit(limit)
-        }
-        if let offset = offset {
-            query = query.offset(offset)
-        }
-        return query
+        return queryParts.appended(to: query)
     }
 }
