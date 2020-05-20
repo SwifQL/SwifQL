@@ -21,6 +21,7 @@ public class QueryParts {
     public func copy() -> QueryParts {
         let copy = QueryParts()
         
+        copy.joins = joins
         copy.wheres = wheres
         copy.groupBy = groupBy
         copy.havings = havings
