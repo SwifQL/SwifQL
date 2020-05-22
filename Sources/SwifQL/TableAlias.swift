@@ -92,7 +92,7 @@ extension Decodable {
 
 //MARK: AliasedKeyPath
 
-public class AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, K: Keypathable, T: Decodable {
+public class AliasedKeyPath<K, T, V> where K: KeyPath<T, V>, T: Table, V: ColumnRepresentable {
     var alias: String
     var kp: K
     init(_ alias: String, _ kp: K) {
