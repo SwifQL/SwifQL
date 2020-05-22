@@ -31,13 +31,10 @@ extension Decodable {
     /// ```sql
     /// someting as my_achema.my_table_name
     /// ```
-    public static var alias: SwifQLable {
-        var parts: [SwifQLPart] = []
-        if let model = Self.self as? AnyTable.Type {
-            parts.append(SwifQLPartAlias(model.tableName))
-        } else {
-            parts.append(SwifQLPartAlias(String(describing: Self.self)))
+    public static var alias: TableAlias {
+        guard let model = Self.self as? AnyTable.Type else {
+            return .init(String(describing: Self.self))
         }
-        return SwifQLableParts(parts: parts)
+        return .init(model.tableName)
     }
 }
