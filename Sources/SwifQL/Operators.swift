@@ -108,6 +108,7 @@ extension SwifQLPartOperator {
     public static var decade: Result { "DECADE".operator }
     public static var century: Result { "CENTURY".operator }
     public static var overlaps: Result { "OVERLAPS".operator }
+    public static var over: Result { "OVER".operator }
     public static var doublePrecision: Result { "DOUBLE PRECISION".operator }
     public static var nulls: Result { "NULLS".operator }
     public static var first: Result { "FIRST".operator }
@@ -176,6 +177,8 @@ extension SwifQLPartOperator {
     public static var alter: Result { "ALTER".operator }
     public static var set: Result { "SET".operator }
     public static var data: Result { "DATA".operator }
+    public static var partition: Result { "PARTITION".operator }
+    public static var window: Result { "WINDOW".operator }
     public static func custom(_ v: String) -> Result { v.operator }
     
     public var left: Result { concatWith(.left) }
@@ -273,6 +276,7 @@ extension SwifQLPartOperator {
     public var decade: Result { concatWith(.decade) }
     public var century: Result { concatWith(.century) }
     public var overlaps: Result { concatWith(.overlaps) }
+    public var over: Result { concatWith(.over) }
     public var doublePrecision: Result { concatWith(.doublePrecision) }
     public var nulls: Result { concatWith(.nulls) }
     public var first: Result { concatWith(.first) }
@@ -341,6 +345,8 @@ extension SwifQLPartOperator {
     public var alter: Result { concatWith(.alter) }
     public var set: Result { concatWith(.set) }
     public var data: Result { concatWith(.data) }
+    public var partition: Result { concatWith(.partition) }
+    public var window: Result { concatWith(.window) }
     public func custom(_ v: String) -> Result { concatWith(.custom(v)) }
     
     private func concatWith(_ operator: Result) -> Result {
@@ -349,7 +355,5 @@ extension SwifQLPartOperator {
 }
 
 extension String {
-    fileprivate var `operator`: SwifQLPartOperator {
-        SwifQLPartOperator(self)
-    }
+    fileprivate var `operator`: SwifQLPartOperator { .init(self) }
 }
