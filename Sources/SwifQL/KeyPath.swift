@@ -52,6 +52,12 @@ public func => (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
         parts.append(contentsOf: rhs.parts)
     } else if let _ = rhs as? TableAlias {
         parts.append(contentsOf: rhs.parts)
+    } else if let schemaWithTable = rhs as? Path.SchemaWithTable {
+        parts.append(SwifQLPartAlias(schemaWithTable.table))
+    } else if let table = rhs as? Path.Table {
+        parts.append(SwifQLPartAlias(table.name))
+    } else if let kp = rhs as? Keypathable {
+        parts.append(SwifQLPartAlias(kp.lastPath))
     } else {
         parts.append(SwifQLPartAlias(String(describing: rhs)))
     }

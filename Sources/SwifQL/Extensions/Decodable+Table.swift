@@ -9,32 +9,16 @@ import Foundation
 
 extension Decodable {
     public static var table: SwifQLable {
-        var parts: [SwifQLPart] = []
-        if let schema = Self.self as? Schemable.Type {
-            parts.append(SwifQLPartSchema(schema.schemaName))
-            parts.append(o: .custom("."))
-        }
+        let tableName: String
         if let model = Self.self as? AnyTable.Type {
-            parts.append(SwifQLPartTable(model.tableName))
+            tableName = model.tableName
         } else {
-            parts.append(SwifQLPartTable(String(describing: Self.self)))
+            tableName = String(describing: Self.self)
         }
-        return SwifQLableParts(parts: parts)
-    }
-    
-    /// Use it instead of MyTable.table
-    /// when you want to reach result like
-    /// ```sql
-    /// someting as my_table_name
-    /// ```
-    /// instead of
-    /// ```sql
-    /// someting as my_achema.my_table_name
-    /// ```
-    public static var alias: TableAlias {
-        guard let model = Self.self as? AnyTable.Type else {
-            return .init(String(describing: Self.self))
+        if let schema = Self.self as? Schemable.Type {
+            return Path.SchemaWithTable(schema: schema.schemaName, table: tableName)
+        } else {
+            return Path.Table(tableName)
         }
-        return .init(model.tableName)
     }
 }
