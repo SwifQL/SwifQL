@@ -354,6 +354,12 @@ extension SwifQLPartOperator {
     }
 }
 
+extension SwifQLPartOperator: SwifQLable {
+    public var parts: [SwifQLPart] {
+        [self]
+    }
+}
+
 extension String {
     fileprivate var `operator`: SwifQLPartOperator { .init(self) }
 }
