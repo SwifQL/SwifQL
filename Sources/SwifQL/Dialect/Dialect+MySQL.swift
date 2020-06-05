@@ -1,6 +1,6 @@
 //
 //  Dialect+MySQL.swift
-//  
+//
 //
 //  Created by Mihael Isaev on 25.01.2020.
 //
@@ -35,4 +35,8 @@ class MySQLDialect: SQLDialect {
     }
     
     override func bindKey(_ i: Int) -> String { "?" }
+    
+    override var arrayStart: String { "'" }
+    
+    override var arrayEnd: String { "'" }
 }

@@ -1,6 +1,6 @@
 //
 //  Prepared.swift
-//  
+//
 //
 //  Created by Mihael Isaev on 25.01.2020.
 //
@@ -8,28 +8,28 @@
 import Foundation
 
 public struct SwifQLPrepared {
-    private var dialect: SQLDialect
-    private var query: String
-    private var values: [Encodable]
-    private var formattedValues: [String]
+    var _dialect: SQLDialect
+    var _query: String
+    var _values: [Encodable]
+    var _formattedValues: [String]
     
     init (dialect: SQLDialect, query: String, values: [Encodable], formattedValues: [String]) {
-        self.dialect = dialect
-        self.query = query
-        self.values = values
-        self.formattedValues = formattedValues
+        _dialect = dialect
+        _query = query
+        _values = values
+        _formattedValues = formattedValues
     }
     
     public var plain: String {
-        guard values.count > 0 else { return query }
-        let formatter = SwifQLFormatter(dialect, mode: .plain)
-        return formatter.string(from: query, with: formattedValues)
+        guard _values.count > 0 else { return _query }
+        let formatter = SwifQLFormatter(_dialect, mode: .plain)
+        return formatter.string(from: _query, with: _formattedValues)
     }
     
     public var splitted: SwifQLSplittedQuery {
-        guard values.count > 0 else { return .init(query: query, values: values) }
-        let formatter = SwifQLFormatter(dialect, mode: .binded)
-        let result = formatter.string(from: query, with: formattedValues)
-        return .init(query: result, values: values)
+        guard _values.count > 0 else { return .init(query: _query, values: _values) }
+        let formatter = SwifQLFormatter(_dialect, mode: .binded)
+        let result = formatter.string(from: _query, with: _formattedValues)
+        return .init(query: result, values: _values)
     }
 }
