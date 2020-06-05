@@ -14,3 +14,9 @@ public struct SwifQLPartOperator: SwifQLPart, Equatable {
         self._value = value
     }
 }
+
+extension SwifQLPartOperator: SwifQLable {
+    public var parts: [SwifQLPart] {
+        [self]
+    }
+}

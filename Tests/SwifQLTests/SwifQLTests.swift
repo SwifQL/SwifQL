@@ -2,6 +2,12 @@ import XCTest
 @testable import SwifQL
 
 final class SwifQLTests: SwifQLTestCase {
+    
+    //MARK: - Operators
+    
+    func testOperatorToSwifQLable() {
+        check(SwifQL.select(Operator.null), .mysql("SELECT NULL"), .psql("SELECT NULL"))
+    }
         
     //MARK: - ARRAY
     
@@ -106,6 +112,7 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testOperatorToSwifQLable", testOperatorToSwifQLable),
         ("testArray", testArray),
         ("testBindingForPostgreSQL", testBindingForPostgreSQL),
         ("testBindingForMySQL", testBindingForMySQL),
