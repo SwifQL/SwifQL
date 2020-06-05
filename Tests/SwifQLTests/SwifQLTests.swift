@@ -3,6 +3,26 @@ import XCTest
 
 final class SwifQLTests: SwifQLTestCase {
         
+    //MARK: - ARRAY
+    
+    func testArray() {
+        let emptyIntArray: [Int] = []
+        check(emptyIntArray, .mysql(""), .psql(""))
+        check(SwifQLableParts(parts: emptyIntArray), .mysql("''"), .psql("'{}'"))
+        
+        let nonEmptyIntArray: [Int] = [1,3,7]
+        check(nonEmptyIntArray, .mysql("1, 3, 7"), .psql("1, 3, 7"))
+        check(SwifQLableParts(parts: nonEmptyIntArray), .mysql("'1,3,7'"), .psql("'{1,3,7}'", "'{$1,$2,$3}'"))
+        
+        let emptyStringArray: [Int] = []
+        check(emptyStringArray, .mysql(""), .psql(""))
+        check(SwifQLableParts(parts: emptyStringArray), .mysql("''"), .psql("'{}'"))
+        
+        let nonEmptyStringArray: [String] = ["a", "b", "c"]
+        check(nonEmptyStringArray, .mysql("'a', 'b', 'c'"), .psql("'a', 'b', 'c'"))
+        check(SwifQLableParts(parts: nonEmptyStringArray), .mysql("'a,b,c'"), .psql("'{a,b,c}'", "'{$1,$2,$3}'"))
+    }
+    
     //MARK: - WHERE
     
     func testWhere() {
@@ -86,6 +106,7 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testArray", testArray),
         ("testBindingForPostgreSQL", testBindingForPostgreSQL),
         ("testBindingForMySQL", testBindingForMySQL),
         ("testUnion", testUnion),

@@ -1,6 +1,6 @@
 //
 //  Dialect+Postgres.swift
-//  
+//
 //
 //  Created by Mihael Isaev on 25.01.2020.
 //
@@ -59,4 +59,8 @@ class PostgreSQLDialect: SQLDialect {
     
     // returns $1 $2 $3 binding keys for PostgreSQL
     override func bindKey(_ i: Int) -> String { "$\(i)" }
+    
+    override var arrayStart: String { "'" + Operator.openBrace._value }
+    
+    override var arrayEnd: String { Operator.closeBrace._value + "'" }
 }

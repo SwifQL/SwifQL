@@ -1,6 +1,6 @@
 //
 //  Dialect.swift
-//  
+//
 //
 //  Created by Mihael Isaev on 25.01.2020.
 //
@@ -32,6 +32,12 @@ open class SQLDialect {
     open func boolValue(_ value: Bool) -> String {
         value ? "TRUE" : "FALSE"
     }
+    
+    open var arrayStart: String { "" }
+    
+    open var arraySeparator: String { Operator.comma._value }
+    
+    open var arrayEnd: String { "" }
     
     open func schemaName(_ value: String) -> String { value }
     

@@ -22,7 +22,13 @@ extension SwifQLable {
         parts.append(o: .openBracket)
         parts.append(o: .where)
         parts.append(o: .space)
-        parts.append(contentsOf: predicates.parts)
+        predicates.enumerated().forEach { i, v in
+            if i > 0 {
+                parts.append(o: .comma)
+                parts.append(o: .space)
+            }
+            parts.append(contentsOf: v.parts)
+        }
         parts.append(o: .closeBracket)
         return SwifQLableParts(parts: parts)
     }

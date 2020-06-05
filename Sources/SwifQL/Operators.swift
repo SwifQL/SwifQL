@@ -157,6 +157,8 @@ extension SwifQLPartOperator {
     public static var closeBracket: Result { ")".operator }
     public static var openSquareBracket: Result { "[".operator }
     public static var closeSquareBracket: Result { "]".operator }
+    public static var openBrace: Result { "{".operator }
+    public static var closeBrace: Result { "}".operator }
     public static var comma: Result { ",".operator }
     public static var space: Result { `_` }
     public static var `_`: Result { " ".operator }
@@ -325,6 +327,8 @@ extension SwifQLPartOperator {
     public var closeBracket: Result { concatWith(.closeBracket) }
     public var openSquareBracket: Result { concatWith(.openSquareBracket) }
     public var closeSquareBracket: Result { concatWith(.closeSquareBracket) }
+    public var openBrace: Result { concatWith(.openBrace) }
+    public var closeBrace: Result { concatWith(.closeBrace) }
     public var comma: Result { concatWith(.comma) }
     public var space: Result { concatWith(.space) }
     public var `_`: Result { concatWith(._) }
@@ -351,12 +355,6 @@ extension SwifQLPartOperator {
     
     private func concatWith(_ operator: Result) -> Result {
         (_value + `operator`._value).operator
-    }
-}
-
-extension SwifQLPartOperator: SwifQLable {
-    public var parts: [SwifQLPart] {
-        [self]
     }
 }
 

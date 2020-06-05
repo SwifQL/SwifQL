@@ -1,19 +1,19 @@
 //
 //  Array+SwifQLable.swift
-//  
+//
 //
 //  Created by Mihael Isaev on 26.01.2020.
 //
 
 import Foundation
 
-extension Array: SwifQLable where Element == SwifQLable {
+extension Array: SwifQLable where Element: SwifQLable {
     public var parts: [SwifQLPart] {
         separator(.comma).parts
     }
 }
 
-extension Array where Element == SwifQLable {
+extension Array where Element: SwifQLable {
     public func separator(_ separator: SwifQLableArraySeparator) -> SwifQLable {
         var parts: [SwifQLPart] = []
         for (i, v) in enumerated() {
@@ -25,4 +25,10 @@ extension Array where Element == SwifQLable {
         }
         return SwifQLableParts(parts: parts)
     }
+}
+
+extension Array: SwifQLPart where Element: SwifQLable {}
+
+extension Array: SwifQLPartArray where Element: SwifQLable {
+    public var elements: [SwifQLable] { self }
 }

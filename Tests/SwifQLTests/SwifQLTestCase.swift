@@ -34,20 +34,26 @@ class SwifQLTestCase: XCTestCase {
     
     struct QueryWithDialect {
         let dialect: SQLDialect
-        let query: String
+        let plainQuery: String
+        let bindedQuery: String?
         
-        static func psql(_ query: String) -> Self {
-            .init(dialect: .psql, query: query)
+        static func psql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
+            .init(dialect: .psql, plainQuery: plainQuery, bindedQuery: bindedQuery)
         }
         
-        static func mysql(_ query: String) -> Self {
-            .init(dialect: .mysql, query: query)
+        static func mysql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
+            .init(dialect: .mysql, plainQuery: plainQuery, bindedQuery: bindedQuery)
         }
     }
     
     func check(_ query: SwifQLable, _ dialects: QueryWithDialect...) {
         dialects.forEach {
-            XCTAssertEqual(query.prepare($0.dialect).plain, $0.query)
+            XCTAssertEqual(query.prepare($0.dialect).plain, $0.plainQuery)
+            if let bindedQuery = $0.bindedQuery {
+                let prepared = query.prepare($0.dialect)
+                let splitted = prepared.splitted
+                XCTAssertEqual(splitted.query, bindedQuery)
+            }
         }
     }
     
