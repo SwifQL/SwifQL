@@ -13,20 +13,52 @@ final class SwifQLTests: SwifQLTestCase {
     
     func testArray() {
         let emptyIntArray: [Int] = []
-        check(emptyIntArray, .mysql(""), .psql(""))
-        check(SwifQLableParts(parts: emptyIntArray), .mysql("''"), .psql("'{}'"))
-        
+        check(
+            emptyIntArray,
+//            .mysql(""),
+            .psql("")
+        )
+        check(
+            SwifQLableParts(parts: emptyIntArray),
+//            .mysql("''"),
+            .psql("'{}'")
+        )
+
         let nonEmptyIntArray: [Int] = [1,3,7]
-        check(nonEmptyIntArray, .mysql("1, 3, 7"), .psql("1, 3, 7"))
-        check(SwifQLableParts(parts: nonEmptyIntArray), .mysql("'1,3,7'"), .psql("'{1,3,7}'", "'{$1,$2,$3}'"))
+        check(
+            nonEmptyIntArray,
+//            .mysql("1, 3, 7"),
+            .psql("1, 3, 7")
+        )
+        check(
+            SwifQLableParts(parts: nonEmptyIntArray),
+//            .mysql("'1,3,7'"),
+            .psql("ARRAY[1,3,7]", "ARRAY[$1,$2,$3]")
+        )
         
         let emptyStringArray: [Int] = []
-        check(emptyStringArray, .mysql(""), .psql(""))
-        check(SwifQLableParts(parts: emptyStringArray), .mysql("''"), .psql("'{}'"))
-        
+        check(
+            emptyStringArray,
+//            .mysql(""),
+            .psql("")
+        )
+        check(
+            SwifQLableParts(parts: emptyStringArray),
+//            .mysql("''"),
+            .psql("'{}'")
+        )
+
         let nonEmptyStringArray: [String] = ["a", "b", "c"]
-        check(nonEmptyStringArray, .mysql("'a', 'b', 'c'"), .psql("'a', 'b', 'c'"))
-        check(SwifQLableParts(parts: nonEmptyStringArray), .mysql("'a,b,c'"), .psql("'{a,b,c}'", "'{$1,$2,$3}'"))
+        check(
+            nonEmptyStringArray,
+//            .mysql("'a', 'b', 'c'"),
+            .psql("'a', 'b', 'c'")
+        )
+        check(
+            SwifQLableParts(parts: nonEmptyStringArray),
+//            .mysql("'a','b','c'"),
+            .psql("ARRAY['a','b','c']", "ARRAY[$1,$2,$3]")
+        )
     }
     
     //MARK: - WHERE

@@ -44,25 +44,19 @@ extension SwifQLable {
         var formattedValues: [String] = []
         let query = parts.map { part in
             switch part {
-            case let v as SwifQLPartStringWithoutQuotes:
-                values.append(v.value)
-                formattedValues.append(v.value)
-                return dialect.bindSymbol
             case let v as SwifQLPartArray:
+                guard v.elements.count > 0 else {
+                    return dialect.emptyArrayStart + dialect.emptyArrayEnd
+                }
                 var string = dialect.arrayStart
                 v.elements.enumerated().forEach { i, v in
                     if i > 0 {
                         string += dialect.arraySeparator
                     }
-                    let prepared: SwifQLPrepared
-                    if let v = v as? String {
-                        prepared = StringWithoutQuotes(v).prepare(dialect)
-                    } else {
-                        prepared = v.prepare(dialect)
-                    }
+                    let prepared = v.prepare(dialect)
                     values.append(contentsOf: prepared._values)
                     formattedValues.append(contentsOf: prepared._formattedValues)
-                    string += prepared._query.replacingOccurrences(of: "'", with: "")
+                    string += prepared._query
                 }
                 return string + dialect.arrayEnd
             case let v as SwifQLPartBool:

@@ -34,10 +34,12 @@ open class SQLDialect {
     }
     
     open var arrayStart: String { "" }
+    open var emptyArrayStart: String { arrayStart }
     
     open var arraySeparator: String { Operator.comma._value }
     
     open var arrayEnd: String { "" }
+    open var emptyArrayEnd: String { arrayEnd }
     
     open func schemaName(_ value: String) -> String { value }
     

@@ -60,7 +60,9 @@ class PostgreSQLDialect: SQLDialect {
     // returns $1 $2 $3 binding keys for PostgreSQL
     override func bindKey(_ i: Int) -> String { "$\(i)" }
     
-    override var arrayStart: String { "'" + Operator.openBrace._value }
+    override var arrayStart: String { Operator.array._value + Operator.openSquareBracket._value }
+    override var emptyArrayStart: String { "'" + Operator.openBrace._value }
     
-    override var arrayEnd: String { Operator.closeBrace._value + "'" }
+    override var arrayEnd: String { Operator.closeSquareBracket._value }
+    override var emptyArrayEnd: String { Operator.closeBrace._value + "'" }
 }
