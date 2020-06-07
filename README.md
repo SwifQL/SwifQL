@@ -9,7 +9,7 @@
     </a>
     <img src="https://img.shields.io/github/workflow/status/MihaelIsaev/SwifQL/test" alt="Github Actions">
     <a href="https://discord.gg/q5wCPYv">
-        <img src="https://img.shields.io/badge/COMMUNITY-SWIFT.STREAM-FD6F32.svg" alt="Swift.Stream">
+        <img src="https://img.shields.io/discord/612561840765141005" alt="Swift.Stream">
     </a>
 </p>
 
