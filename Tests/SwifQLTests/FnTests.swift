@@ -111,9 +111,12 @@ final class FnTests: SwifQLTestCase {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = TimeZone(secondsFromGMT: 0)
+        let pdf = PostgresDateFormatter()
+        let date1 = df.date(from: "2019-10-01 00:00:00")!
+        let date2 = df.date(from: "2019-10-04 00:00:00")!
         check(
-            SwifQL.select(Fn.generate_series(df.date(from: "2019-10-01 00:00:00")!, df.date(from: "2019-10-04 00:00:00")!, "1 day")),
-            .psql("SELECT generate_series((TIMESTAMP 'EPOCH' + make_interval(secs => 1569888000.0)), (TIMESTAMP 'EPOCH' + make_interval(secs => 1570147200.0)), '1 day')"),
+            SwifQL.select(Fn.generate_series(date1, date2, "1 day")),
+            .psql("SELECT generate_series(('\(pdf.string(from: date1))'::timestamptz), ('\(pdf.string(from: date2))'::timestamptz), '1 day')"),
             .mysql("SELECT generate_series(FROM_UNIXTIME(1569888000.0), FROM_UNIXTIME(1570147200.0), '1 day')")
         )
     }

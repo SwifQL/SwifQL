@@ -67,7 +67,7 @@ class PostgreSQLDialect: SQLDialect {
     override var emptyArrayEnd: String { Operator.closeBrace._value + "'" }
 }
 
-fileprivate class PostgresDateFormatter: DateFormatter {
+class PostgresDateFormatter: DateFormatter {
     override init() {
         super.init()
         calendar = Calendar(identifier: .iso8601)
