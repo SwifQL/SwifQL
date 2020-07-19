@@ -9,7 +9,11 @@ import Foundation
 
 extension Array: SwifQLable where Element: SwifQLable {
     public var parts: [SwifQLPart] {
-        separator(.comma).parts
+        if let s = self as? SwifQLCodable {
+            return [SwifQLPartUnsafeValue(s)]
+        } else {
+            return separator(.comma).parts
+        }
     }
 }
 

@@ -18,3 +18,5 @@ public protocol SwifQLEncodable: Encodable, SwifQLable {}
 extension SwifQLEncodable {
     public var parts: [SwifQLPart] { [SwifQLPartUnsafeValue(self)] }
 }
+
+extension Array: SwifQLCodable where Element: SwifQLCodable {}
