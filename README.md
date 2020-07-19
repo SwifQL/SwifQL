@@ -382,6 +382,39 @@ PgArray(1, 2, 3)
 PgArray(emptyMode: .dollar) => .uuidArray
 PgArray() => .textArray
 ```
+
+## Nesting array of objects inside of query result
+Consider such response object you want to achieve:
+
+```swift
+struct Book {
+  let title: String
+  let authors: [Author]
+}
+
+struct Author {
+  let name: String
+}
+```
+
+you have to build it with use of subquery to dump Authors in JSON array and then attach them to result query. This will allow you to get all `Books` with their respective `Authors` 
+
+This example uses Pivot table `BookAuthor` to join `Books` with their `Authors`
+
+```swift
+    let authors = SwifQL.select(Fn.coalesce(Fn.array_agg(Fn.to_jsonb(Author.table)), PgArray() => .jsonbArray))
+
+    let query = SwifQLSelectBuilder()
+    query.select(Book.table.*)
+
+    query.from(Book.table)
+
+    query.join(.left, BookAuthor.table, on: \Book.$id == \BookAuthor.$bookID)
+    query.join(.left, Author.table, on: \Author.$id == \BookAuthor.$authorID)
+
+    // then query.group(...) as required in your case
+```
+
 ## FILTER
 SQL example
 ```sql
