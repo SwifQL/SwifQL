@@ -120,6 +120,16 @@ final class FnTests: SwifQLTestCase {
             .mysql("SELECT generate_series(FROM_UNIXTIME(1569888000.0), FROM_UNIXTIME(1570147200.0), '1 day')")
         )
     }
+
+    // MARK: - MySQL DATE_FORMAT
+
+    func testFn_date_format() {
+        check(
+            SwifQL.select(Fn.date_format(CarBrands.column("createdAt"), "%y-%m")),
+            .psql(#"SELECT DATE_FORMAT("CarBrands"."createdAt", '%y-%m')"#),
+            .mysql("SELECT DATE_FORMAT(CarBrands.createdAt, '%y-%m')")
+        )
+    }
     
     static var allTests = [
         ("testFn_to_tsvector", testFn_to_tsvector),
@@ -127,6 +137,7 @@ final class FnTests: SwifQLTestCase {
         ("testFn_plainto_tsquery", testFn_plainto_tsquery),
         ("testConcat", testConcat),
         ("testGenerateSeriesNumbers", testGenerateSeriesNumbers),
-        ("testGenerateSeriesDates", testGenerateSeriesDates)
+        ("testGenerateSeriesDates", testGenerateSeriesDates),
+        ("testFn_date_format", testFn_date_format)
     ]
 }
