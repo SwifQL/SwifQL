@@ -876,6 +876,19 @@ final class SwifQLTests: XCTestCase {
         checkAllDialects(queryDate, pg: pgDate, mySQL: mySQLDate)
     }
 
+    // MARK: - MySQL DATE_FORMAT
+
+    func testFn_date_format() {
+        let query = SwifQL.select(Fn.date_format(CarBrands.column("createdAt"), "%y-%m"))
+        let pg = """
+        SELECT DATE_FORMAT("CarBrands"."createdAt", '%y-%m')
+        """
+        let mySQL = """
+        SELECT DATE_FORMAT(CarBrands.createdAt, '%y-%m')
+        """
+        checkAllDialects(query, pg: pg, mySQL: mySQL)
+    }
+
     static var allTests = [
         ("testPureSelect", testSelect),
         ("testSimpleString", testSelectString),
@@ -960,6 +973,7 @@ final class SwifQLTests: XCTestCase {
         ("testCaseWhenThenElse1", testCaseWhenThenElse1),
         ("testCaseWhenThenElse2", testCaseWhenThenElse2),
         ("testGenerateSeriesNumbers", testGenerateSeriesNumbers),
-        ("testGenerateSeriesDates", testGenerateSeriesDates)
+        ("testGenerateSeriesDates", testGenerateSeriesDates),
+        ("testFn_date_format", testFn_date_format)
     ]
 }
