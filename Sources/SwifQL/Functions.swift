@@ -168,7 +168,7 @@ extension Fn {
         // MARK: MySQL
         
         public static var from_unixtime: Name = .init("FROM_UNIXTIME")
-        static var date_format: Fn.Name = .init("DATE_FORMAT")
+        public static var date_format: Name = .init("DATE_FORMAT")
         
         // MARK: Custom
         
@@ -1858,7 +1858,7 @@ extension Fn {
     /// ```
     /// [Learn more →](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_date-format)
     /// [Learn more →](https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-format)
-    static func date_format(_ datetime: SwifQLable, _ format: String) -> SwifQLable {
+    public static func date_format(_ datetime: SwifQLable, _ format: String) -> SwifQLable {
         var parts: [SwifQLPart] = datetime.parts
         parts.append(o: .comma)
         parts.append(o: .space)
