@@ -20,7 +20,7 @@ extension SwifQLable {
     public func items(_ items: SwifQLable...) -> SwifQLable {
         self.items(items)
     }
-    /// Represent provided values in round brackets separated with comma
+    /// Represent values provided as array
     public func items(_ items: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = self.parts
         parts.appendSpaceIfNeeded()

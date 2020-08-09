@@ -7,6 +7,23 @@
 
 import Foundation
 
+
+/// Create alias for `Table`
+///
+/// Usage:
+/// * using `TableAlias` for _subquery_
+/// ```swift
+/// let u = TableAlias("u")
+/// let subquery = |SwifQL
+///     .select(Fn.count(\User.$id) => "users",
+///             \User.$groupID => "groupID")
+///     .from(User.table)
+///     .groupBy(\User.$groupID)| => u
+/// let query = SwifQL.select(..., u.users)
+///     .from(...)
+///     .join(.left, subquery, on: u.groupID == \Group.$id)
+///     .groupBy(..., u.users)
+/// ```
 @dynamicMemberLookup
 public class TableAlias: SwifQLable {
     public var name: String

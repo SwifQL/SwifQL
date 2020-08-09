@@ -7,9 +7,20 @@
 
 import Foundation
 
-//MARK: NOT ILIKE
+// MARK: NOT ILIKE
 
 extension SwifQLable {
+    /// Builds query with `NOT ILIKE` parameter
+    ///
+    /// Example usage:
+    /// ```swift
+    /// let name = "John"
+    /// SwifQL.select
+    ///     // ...
+    ///     .where((\User.$name).notILike(name))
+    /// ```
+    /// - Parameter part: `SwifQLable` element
+    ///
     public func notILike(_ part: SwifQLable) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

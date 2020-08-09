@@ -7,12 +7,33 @@
 
 import Foundation
 
-//MARK: IN
+// MARK: IN
 
 extension SwifQLable {
+    /// Builds query with `NOT IN` parameter
+    ///
+    /// Example usage:
+    /// ```swift
+    /// SwifQL.select
+    ///     // ...
+    ///     .where((\User.$id).notIn(aUserID, bUserID))
+    /// ```
+    /// - Parameter items: comma separated list of  `SwifQLable` elements
+    ///
     public func notIn(_ items: SwifQLable...) -> SwifQLable {
         notIn(items)
     }
+
+    /// Builds query with `NOT IN` parameter
+    ///
+    /// Example usage:
+    /// ```swift
+    /// SwifQL.select
+    ///     // ...
+    ///     .where((\User.$id).notIn(userIDsArray))
+    /// ```
+    /// - Parameter items: Array of `[SwifQLable]` elements
+    ///
     public func notIn(_ items: [SwifQLable]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()

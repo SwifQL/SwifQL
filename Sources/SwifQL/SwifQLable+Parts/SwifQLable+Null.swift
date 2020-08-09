@@ -10,6 +10,16 @@ import Foundation
 //MARK: NULL
 
 extension SwifQLable {
+
+    /// use `null` property to compare column value with `SQL NULL` (aka Swift nil)
+    ///
+    /// Usage:
+    /// ```swift
+    /// SwifQL.select
+    ///     // ...
+    ///     .where(\User.$name == username
+    ///         && |\User.$status == "active" || \User.$updatedAt == SwifQL.null|)
+    /// ```
     public var null: SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
