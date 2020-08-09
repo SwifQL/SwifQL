@@ -25,6 +25,9 @@ extension SwifQLEnum {
 }
 
 /// Allows to compare enum with enum column
+///
+/// Usage:
+/// 
 /// ```swift
 /// \User.$status == UserStatus.banned
 /// ```

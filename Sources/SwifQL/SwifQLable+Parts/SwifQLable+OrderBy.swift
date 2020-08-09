@@ -46,10 +46,12 @@ public struct OrderByItem: SwifQLable {
 
     // MARK: Direction
 
+    @available(*, deprecated, message: "use `.asc`, `.desc` methods instead")
     public static func direction(_ value: Direction, _ elements: SwifQLable..., nulls: Nulls? = nil) -> OrderByItem {
         direction(value, elements, nulls: nulls)
     }
 
+    @available(*, deprecated, message: "use `.asc`, `.desc` methods instead")
     public static func direction(_ value: Direction, _ elements: [SwifQLable], nulls: Nulls? = nil) -> OrderByItem {
         OrderByItem(elements: elements, direction: value, nulls: nulls)
     }

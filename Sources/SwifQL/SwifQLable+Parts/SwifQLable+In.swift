@@ -10,9 +10,30 @@ import Foundation
 //MARK: IN
 
 extension SwifQLable {
+    /// Builds query with `IN` parameter
+    ///
+    /// Example usage:
+    /// ```swift
+    /// SwifQL.select
+    ///     // ...
+    ///     .where((\User.$id).in(aUserID, bUserID))
+    /// ```
+    /// - Parameter items: comma separated list of  `SwifQLable` elements
+    ///
     public func `in`(_ items: SwifQLable...) -> SwifQLable {
         `in`(items)
     }
+
+    /// Builds query with `IN` parameter
+    ///
+    /// Example usage:
+    /// ```swift
+    /// SwifQL.select
+    ///     // ...
+    ///     .where((\User.$id).in(userIDsArray))
+    /// ```
+    /// - Parameter items: Array of `[SwifQLable]` elements
+    ///
     public func `in`(_ items: [SwifQLable]) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
