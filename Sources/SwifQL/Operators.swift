@@ -114,6 +114,7 @@ extension SwifQLPartOperator {
     public static var first: Result { "FIRST".operator }
     public static var last: Result { "LAST".operator }
     public static var create: Result { "CREATE".operator }
+    public static var index: Result { "INDEX".operator }
     public static var type: Result { "TYPE".operator }
     public static var function: Result { "FUNCTION".operator }
     public static var table: Result { "TABLE".operator }
@@ -160,17 +161,21 @@ extension SwifQLPartOperator {
     public static var openBrace: Result { "{".operator }
     public static var closeBrace: Result { "}".operator }
     public static var comma: Result { ",".operator }
+    public static var period: Result { ".".operator }
     public static var space: Result { `_` }
     public static var `_`: Result { " ".operator }
+    public static var using: Result { "USING".operator }
     public static var owner: Result { "OWNER".operator }
     public static var to: Result { "TO".operator }
     public static var currentUser: Result { "CURRENT_USER".operator }
     public static var sessionUser: Result { "SESSION_USER".operator }
     public static var rename: Result { "RENAME".operator }
+    public static var column: Result { "COLUMN".operator }
     public static var attribute: Result { "ATTRIBUTE".operator }
     public static var cascade: Result { "CASCADE".operator }
     public static var restrict: Result { "RESTRICT".operator }
     public static var schema: Result { "SCHEMA".operator }
+    public static var foreign: Result { "FOREIGN".operator }
     public static var value: Result { "VALUE".operator }
     public static var before: Result { "BEFORE".operator }
     public static var after: Result { "AFTER".operator }
@@ -284,6 +289,7 @@ extension SwifQLPartOperator {
     public var first: Result { concatWith(.first) }
     public var last: Result { concatWith(.last) }
     public var create: Result { concatWith(.create) }
+    public var index: Result { concatWith(.index) }
     public var type: Result { concatWith(.type) }
     public var function: Result { concatWith(.function) }
     public var table: Result { concatWith(.table) }
@@ -330,17 +336,21 @@ extension SwifQLPartOperator {
     public var openBrace: Result { concatWith(.openBrace) }
     public var closeBrace: Result { concatWith(.closeBrace) }
     public var comma: Result { concatWith(.comma) }
+    public var period: Result { concatWith(.period) }
     public var space: Result { concatWith(.space) }
     public var `_`: Result { concatWith(._) }
+    public var using: Result { concatWith(.using) }
     public var owner: Result { concatWith(.owner) }
     public var to: Result { concatWith(.to) }
     public var currentUser: Result { concatWith(.currentUser) }
     public var sessionUser: Result { concatWith(.sessionUser) }
     public var rename: Result { concatWith(.rename) }
+    public var column: Result { concatWith(.column) }
     public var attribute: Result { concatWith(.attribute) }
     public var cascade: Result { concatWith(.cascade) }
     public var restrict: Result { concatWith(.restrict) }
     public var schema: Result { concatWith(.schema) }
+    public var foreign: Result { concatWith(.foreign) }
     public var value: Result { concatWith(.value) }
     public var before: Result { concatWith(.before) }
     public var after: Result { concatWith(.after) }
