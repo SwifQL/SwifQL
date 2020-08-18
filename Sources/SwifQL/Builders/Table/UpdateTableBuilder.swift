@@ -80,48 +80,54 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     // MARK: KeyPath
     
     /// Adds a new column to a table.
-    public func addColumn<V>(_ keyPath: KeyPath<T, V>, _ type: SwifQL.`Type`) -> Self where V: ColumnRepresentable {
-        addColumn(keyPath, type: type, default: nil, constraints: [])
+    public func addColumn<V>(_ keyPath: KeyPath<T, V>, _ type: SwifQL.`Type`, checkIfNotExists: Bool = false) -> Self where V: ColumnRepresentable {
+        addColumn(keyPath, type: type, default: nil, checkIfNotExists: checkIfNotExists, constraints: [])
     }
     
     /// Adds a new column to a table.
-    public func addColumn<V>(_ keyPath: KeyPath<T, V>, _ type: SwifQL.`Type`, _ constraints: Constraint...) -> Self where V: ColumnRepresentable {
-        addColumn(keyPath, type: type, default: nil, constraints: constraints)
+    public func addColumn<V>(_ keyPath: KeyPath<T, V>, _ type: SwifQL.`Type`, checkIfNotExists: Bool = false, _ constraints: Constraint...) -> Self where V: ColumnRepresentable {
+        addColumn(keyPath, type: type, default: nil, checkIfNotExists: checkIfNotExists, constraints: constraints)
     }
     
     /// Adds a new column to a table.
-    public func addColumn<V>(_ keyPath: KeyPath<T, V>, _ type: SwifQL.`Type`, _ `default`: ColumnDefault, _ constraints: Constraint...) -> Self where V: ColumnRepresentable {
-        addColumn(keyPath, type: type, default: `default`, constraints: constraints)
+    public func addColumn<V>(_ keyPath: KeyPath<T, V>, _ type: SwifQL.`Type`, _ `default`: ColumnDefault, checkIfNotExists: Bool = false, _ constraints: Constraint...) -> Self where V: ColumnRepresentable {
+        addColumn(keyPath, type: type, default: `default`, checkIfNotExists: checkIfNotExists, constraints: constraints)
     }
     
     /// Adds a new column to a table.
-    public func addColumn<V>(_ keyPath: KeyPath<T, V>, type: SwifQL.`Type`, `default`: ColumnDefault?, constraints: [Constraint]) -> Self where V: ColumnRepresentable {
-        addColumn(T.key(for: keyPath), type: type, default: `default`, constraints: constraints)
+    public func addColumn<V>(_ keyPath: KeyPath<T, V>, type: SwifQL.`Type`, `default`: ColumnDefault?, checkIfNotExists: Bool = false, constraints: [Constraint]) -> Self where V: ColumnRepresentable {
+        addColumn(T.key(for: keyPath), type: type, default: `default`, checkIfNotExists: checkIfNotExists, constraints: constraints)
     }
     
     // MARK: String
     
     /// Adds a new column to a table.
-    public func addColumn(_ name: String, _ type: SwifQL.`Type`) -> Self {
-        addColumn(name, type: type, default: nil, constraints: [])
+    public func addColumn(_ name: String, _ type: SwifQL.`Type`, checkIfNotExists: Bool = false) -> Self {
+        addColumn(name, type: type, default: nil, checkIfNotExists: checkIfNotExists, constraints: [])
     }
     
     /// Adds a new column to a table.
-    public func addColumn(_ name: String, _ type: SwifQL.`Type`, _ constraints: Constraint...) -> Self {
-        addColumn(name, type: type, default: nil, constraints: constraints)
+    public func addColumn(_ name: String, _ type: SwifQL.`Type`, checkIfNotExists: Bool = false, _ constraints: Constraint...) -> Self {
+        addColumn(name, type: type, default: nil, checkIfNotExists: checkIfNotExists, constraints: constraints)
     }
     
     /// Adds a new column to a table.
-    public func addColumn(_ name: String, _ type: SwifQL.`Type`, _ `default`: ColumnDefault, _ constraints: Constraint...) -> Self {
-        addColumn(name, type: type, default: `default`, constraints: constraints)
+    public func addColumn(_ name: String, _ type: SwifQL.`Type`, _ `default`: ColumnDefault, checkIfNotExists: Bool = false, _ constraints: Constraint...) -> Self {
+        addColumn(name, type: type, default: `default`, checkIfNotExists: checkIfNotExists, constraints: constraints)
     }
     
     /// Adds a new column to a table.
-    public func addColumn(_ name: String, type: SwifQL.`Type`, `default`: ColumnDefault?, constraints: [Constraint]) -> Self {
+    public func addColumn(_ name: String, type: SwifQL.`Type`, `default`: ColumnDefault?, checkIfNotExists: Bool = false, constraints: [Constraint]) -> Self {
         var parts: [SwifQLPart] = []
         parts.append(o: .add)
         parts.append(o: .space)
         parts.append(o: .column)
+        if checkIfNotExists {
+            parts.append(o: .space)
+            parts.append(o: .if)
+            parts.append(o: .not)
+            parts.append(o: .exists)
+        }
         parts.append(o: .space)
         parts.append(SwifQLPartColumn(name))
         parts.append(o: .space)
@@ -142,17 +148,22 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     
     /// For dropping a table column.
     /// The constraints and indexes imposed on the columns will also be dropped.
-    public func dropColumn<V>(_ keyPath: KeyPath<T, V>)  -> Self where V: ColumnRepresentable {
-        dropColumn(T.key(for: keyPath))
+    public func dropColumn<V>(_ keyPath: KeyPath<T, V>, checkIfExists: Bool = false)  -> Self where V: ColumnRepresentable {
+        dropColumn(T.key(for: keyPath), checkIfExists: checkIfExists)
     }
     
     /// For dropping a table column.
     /// The constraints and indexes imposed on the columns will also be dropped.
-    public func dropColumn(_ name: String) -> Self {
+    public func dropColumn(_ name: String, checkIfExists: Bool = false) -> Self {
         var parts = SwifQL.parts
         parts.append(o: .drop)
         parts.append(o: .space)
         parts.append(o: .column)
+        if checkIfExists {
+            parts.append(o: .space)
+            parts.append(o: .if)
+            parts.append(o: .exists)
+        }
         parts.append(o: .space)
         parts.append(SwifQLPartColumn(name))
         combinedAlterActions.append(parts)
