@@ -154,10 +154,9 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     /// Usage:
     ///
     /// ```swift
-    ///     .dropColumn(\User.$name)
-    ///     .dropColumn(\User.$surname, checkIfExists: true) // default `false`
-    ///     .dropColumn(\User.$role, restrict: false) // default `true`
-    ///     .dropColumn(\User.$createdAt, cascade: true) // default `false`
+    /// .dropColumn(\User.$name)
+    /// .dropColumn(\User.$surname, checkIfExists: true) // default `false`
+    /// .dropColumn(\User.$createdAt, cascade: true) // default `false`
     /// ```
     public func dropColumn<V>(_ keyPath: KeyPath<T, V>, checkIfExists: Bool = false, restrict: Bool = true, cascade: Bool = false)  -> Self where V: ColumnRepresentable {
         dropColumn(T.key(for: keyPath), checkIfExists: checkIfExists, restrict: restrict, cascade: cascade)
@@ -169,10 +168,9 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     /// Usage:
     ///
     /// ```swift
-    ///     .dropColumn("abc")
-    ///     .dropColumn("xyz", checkIfExists: true) // default `false`
-    ///     .dropColumn("cde", restrict: false) // default `true`
-    ///     .dropColumn("qwe", cascade: true) // default `false`
+    /// .dropColumn("abc")
+    /// .dropColumn("xyz", checkIfExists: true) // default `false`
+    /// .dropColumn("qwe", cascade: true) // default `false`
     /// ```
     public func dropColumn(_ name: String, checkIfExists: Bool = false, restrict: Bool = true, cascade: Bool = false) -> Self {
         var parts = SwifQL.parts
@@ -193,6 +191,7 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
         if cascade {
             parts.append(o: .space)
             parts.append(o: .cascade)
+        }
         combinedAlterActions.append(parts)
         return self
     }
