@@ -148,13 +148,33 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     
     /// For dropping a table column.
     /// The constraints and indexes imposed on the columns will also be dropped.
-    public func dropColumn<V>(_ keyPath: KeyPath<T, V>, checkIfExists: Bool = false)  -> Self where V: ColumnRepresentable {
-        dropColumn(T.key(for: keyPath), checkIfExists: checkIfExists)
+    ///
+    /// You should use "string" table names instead of KeyPaths to keep consistency with previous migrations.
+    ///
+    /// Usage:
+    ///
+    /// ```swift
+    ///     .dropColumn(\User.$name)
+    ///     .dropColumn(\User.$surname, checkIfExists: true) // default `false`
+    ///     .dropColumn(\User.$role, restrict: false) // default `true`
+    ///     .dropColumn(\User.$createdAt, cascade: true) // default `false`
+    /// ```
+    public func dropColumn<V>(_ keyPath: KeyPath<T, V>, checkIfExists: Bool = false, restrict: Bool = true, cascade: Bool = false)  -> Self where V: ColumnRepresentable {
+        dropColumn(T.key(for: keyPath), checkIfExists: checkIfExists, restrict: restrict, cascade: cascade)
     }
     
     /// For dropping a table column.
     /// The constraints and indexes imposed on the columns will also be dropped.
-    public func dropColumn(_ name: String, checkIfExists: Bool = false) -> Self {
+    ///
+    /// Usage:
+    ///
+    /// ```swift
+    ///     .dropColumn("abc")
+    ///     .dropColumn("xyz", checkIfExists: true) // default `false`
+    ///     .dropColumn("cde", restrict: false) // default `true`
+    ///     .dropColumn("qwe", cascade: true) // default `false`
+    /// ```
+    public func dropColumn(_ name: String, checkIfExists: Bool = false, restrict: Bool = true, cascade: Bool = false) -> Self {
         var parts = SwifQL.parts
         parts.append(o: .drop)
         parts.append(o: .space)
@@ -166,6 +186,13 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
         }
         parts.append(o: .space)
         parts.append(SwifQLPartColumn(name))
+        if restrict {
+            parts.append(o: .space)
+            parts.append(o: .restrict)
+        }
+        if cascade {
+            parts.append(o: .space)
+            parts.append(o: .cascade)
         combinedAlterActions.append(parts)
         return self
     }
