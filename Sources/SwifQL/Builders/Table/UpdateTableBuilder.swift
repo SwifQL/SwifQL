@@ -125,7 +125,9 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
         if checkIfNotExists {
             parts.append(o: .space)
             parts.append(o: .if)
+            parts.append(o: .space)
             parts.append(o: .not)
+            parts.append(o: .space)
             parts.append(o: .exists)
         }
         parts.append(o: .space)
@@ -158,8 +160,8 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     /// .dropColumn(\User.$surname, checkIfExists: true) // default `false`
     /// .dropColumn(\User.$createdAt, cascade: true) // default `false`
     /// ```
-    public func dropColumn<V>(_ keyPath: KeyPath<T, V>, checkIfExists: Bool = false, restrict: Bool = true, cascade: Bool = false)  -> Self where V: ColumnRepresentable {
-        dropColumn(T.key(for: keyPath), checkIfExists: checkIfExists, restrict: restrict, cascade: cascade)
+    public func dropColumn<V>(_ keyPath: KeyPath<T, V>, checkIfExists: Bool = false, cascade: Bool = false)  -> Self where V: ColumnRepresentable {
+        dropColumn(T.key(for: keyPath), checkIfExists: checkIfExists, cascade: cascade)
     }
     
     /// For dropping a table column.
@@ -172,7 +174,7 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     /// .dropColumn("xyz", checkIfExists: true) // default `false`
     /// .dropColumn("qwe", cascade: true) // default `false`
     /// ```
-    public func dropColumn(_ name: String, checkIfExists: Bool = false, restrict: Bool = true, cascade: Bool = false) -> Self {
+    public func dropColumn(_ name: String, checkIfExists: Bool = false, cascade: Bool = false) -> Self {
         var parts = SwifQL.parts
         parts.append(o: .drop)
         parts.append(o: .space)
@@ -180,17 +182,17 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
         if checkIfExists {
             parts.append(o: .space)
             parts.append(o: .if)
+            parts.append(o: .space)
             parts.append(o: .exists)
         }
         parts.append(o: .space)
         parts.append(SwifQLPartColumn(name))
-        if restrict {
-            parts.append(o: .space)
-            parts.append(o: .restrict)
-        }
         if cascade {
             parts.append(o: .space)
             parts.append(o: .cascade)
+        } else {
+            parts.append(o: .space)
+            parts.append(o: .restrict)
         }
         combinedAlterActions.append(parts)
         return self
