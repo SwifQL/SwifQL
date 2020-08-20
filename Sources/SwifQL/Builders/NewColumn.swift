@@ -18,8 +18,6 @@ public class NewColumn: SwifQLable {
         self.type = type
     }
     
-    // MARK: Limit
-    
     @discardableResult
     public func `default`(constant v: Any) -> Self {
         `default` = SwifQLableParts(parts: SwifQLPartSafeValue(v))

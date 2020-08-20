@@ -3,6 +3,135 @@ import XCTest
 
 final class SwifQLTests: SwifQLTestCase {
     
+    // MARK: Rename Table
+    
+    func testRenameTable() {
+        check(UpdateTableBuilder<CarBrands>().renameTable(to: "aaa"),
+              .psql(#"ALTER TABLE "CarBrands" RENAME TO "aaa";"#))
+    }
+    
+    // MARK: Add Column
+    
+    func testAddColumn() {
+        check(UpdateTableBuilder<CarBrands>().addColumn("aaa", .bigint, .default(0), .notNull),
+              .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "aaa" bigint DEFAULT 0 NOT NULL;"#))
+    }
+
+    func testAddColumnIfNotExits() {
+        check(UpdateTableBuilder<CarBrands>().addColumn("aaa", .bigint, .default(0), checkIfNotExists: true, .notNull),
+              .psql(#"ALTER TABLE "CarBrands" ADD COLUMN IF NOT EXISTS "aaa" bigint DEFAULT 0 NOT NULL;"#))
+    }
+
+    // MARK: Drop Column
+    
+    func testDropColumn() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa"),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#))
+    }
+
+    func testDropColumnIfExists() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa";"#))
+    }
+
+    func testDropColumnCascade() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", cascade: true),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#))
+    }
+
+    func testDropColumnIfExistsCascade() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true, cascade: true),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" CASCADE;"#))
+    }
+
+    // MARK: Set Default
+    
+    func testSetDefault() {
+        check(UpdateTableBuilder<CarBrands>().setDefault("aaa", constant: 0),
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET DEFAULT 0;"#))
+    }
+    
+    // MARK: Drop Default
+    
+    func testDropDefault() {
+        check(UpdateTableBuilder<CarBrands>().dropDefault("aaa"),
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP DEFAULT;"#))
+    }
+    
+    // MARK: Set Not Null
+    
+    func testSetNotNull() {
+        check(UpdateTableBuilder<CarBrands>().setNotNull("aaa"),
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET NOT NULL;"#))
+    }
+    
+    // MARK: Drop Not Null
+    
+    func testDropNotNull() {
+        check(UpdateTableBuilder<CarBrands>().dropNotNull("aaa"),
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP NOT NULL;"#))
+    }
+    
+    // MARK: Rename Column
+    
+    func testRenameColumn() {
+        check(UpdateTableBuilder<CarBrands>().renameColumn("aaa", to: "bbb"),
+              .psql(#"ALTER TABLE "CarBrands" RENAME COLUMN "aaa" TO "bbb";"#))
+    }
+    
+    // MARK: Add Unique
+    
+    func testAddUnique() {
+        check(UpdateTableBuilder<CarBrands>().addUnique(to: "aaa", "bbb"),
+              .psql(#"ALTER TABLE "CarBrands" ADD UNIQUE ("aaa", "bbb");"#))
+    }
+    
+    // MARK: Add Primary Key
+    
+    func testAddPrimaryKey() {
+        check(UpdateTableBuilder<CarBrands>().addPrimaryKey(to: "aaa", "bbb"),
+              .psql(#"ALTER TABLE "CarBrands" ADD PRIMARY KEY ("aaa", "bbb");"#))
+    }
+    
+    // MARK: Drop Constraint
+    
+    func testDropConstraint() {
+        check(UpdateTableBuilder<CarBrands>().dropConstraint("aaa"),
+              .psql(#"DROP CONSTRAINT "aaa";"#))
+    }
+    
+    // MARK: Drop Index
+    
+    func testDropIndex() {
+        check(UpdateTableBuilder<CarBrands>().dropIndex(name: "aaa"),
+              .psql(#"DROP INDEX "aaa";"#))
+    }
+    
+    // MARK: Create Index
+    
+    func testCreateIndex() {
+        check(UpdateTableBuilder<CarBrands>().createIndex(unique: true,
+                                                                                      name: "aaa",
+                                                                                      items: .column("column3", order: .desc), .expression(SwifQLBool(true) == SwifQLBool(true)),
+                                                                                      type: .hash,
+                                                                                      where: SwifQLBool(true) == SwifQLBool(true)),
+              .psql(#"CREATE UNIQUE INDEX "aaa" ON "CarBrands" USING HASH ("column3" DESC, (TRUE = TRUE)) WHERE TRUE = TRUE;"#))
+    }
+    
+    // MARK: Add Check
+    
+    func testAddCheck() {
+        check(UpdateTableBuilder<CarBrands>().addCheck(constraintName: "some_check", SwifQLBool(true) == SwifQLBool(false)),
+              .psql(#"ALTER TABLE "CarBrands" ADD CONSTRAINT "some_check" CHECK (TRUE = FALSE);"#))
+    }
+    
+    // MARK: Add Foreign Key
+    
+    func testAddForeignKey() {
+        check(UpdateTableBuilder<CarBrands>().addForeignKey(column: "aaa", constraintName: "fk_aaa", schema: "deleted", table: "User", columns: "id", onDelete: .cascade, onUpdate: .noAction),
+              .psql(#"ALTER TABLE "CarBrands" ADD CONSTRAINT "fk_aaa" FOREIGN KEY ("aaa") REFERENCES "deleted"."User"("id") ON DELETE CASCADE ON UPDATE NO ACTION;"#))
+    }
+    
     //MARK: - Operators
     
     func testOperatorToSwifQLable() {
@@ -144,6 +273,24 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testRenameTable", testRenameTable),
+        ("testAddColumn", testAddColumn),
+        ("testDropColumn", testDropColumn),
+        ("testDropColumnIfExists", testDropColumnIfExists),
+        ("testDropColumnCascade", testDropColumnCascade),
+        ("testDropColumnIfExistsCascade", testDropColumnIfExistsCascade),
+        ("testSetDefault", testSetDefault),
+        ("testDropDefault", testDropDefault),
+        ("testSetNotNull", testSetNotNull),
+        ("testDropNotNull", testDropNotNull),
+        ("testRenameColumn", testRenameColumn),
+        ("testAddUnique", testAddUnique),
+        ("testAddPrimaryKey", testAddPrimaryKey),
+        ("testDropConstraint", testDropConstraint),
+        ("testDropIndex", testDropIndex),
+        ("testCreateIndex", testCreateIndex),
+        ("testAddCheck", testAddCheck),
+        ("testAddForeignKey", testAddForeignKey),
         ("testOperatorToSwifQLable", testOperatorToSwifQLable),
         ("testArray", testArray),
         ("testBindingForPostgreSQL", testBindingForPostgreSQL),
