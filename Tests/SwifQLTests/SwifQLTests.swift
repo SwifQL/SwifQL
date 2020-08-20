@@ -26,17 +26,22 @@ final class SwifQLTests: SwifQLTestCase {
     
     func testDropColumn() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa"),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" RESTRICT;"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#))
     }
 
     func testDropColumnIfExists() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" RESTRICT;"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa";"#))
     }
 
     func testDropColumnCascade() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", cascade: true),
               .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#))
+    }
+
+    func testDropColumnIfExistsCascade() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true, cascade: true),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" CASCADE;"#))
     }
 
     // MARK: Set Default
@@ -271,6 +276,9 @@ final class SwifQLTests: SwifQLTestCase {
         ("testRenameTable", testRenameTable),
         ("testAddColumn", testAddColumn),
         ("testDropColumn", testDropColumn),
+        ("testDropColumnIfExists", testDropColumnIfExists),
+        ("testDropColumnCascade", testDropColumnCascade),
+        ("testDropColumnIfExistsCascade", testDropColumnIfExistsCascade),
         ("testSetDefault", testSetDefault),
         ("testDropDefault", testDropDefault),
         ("testSetNotNull", testSetNotNull),

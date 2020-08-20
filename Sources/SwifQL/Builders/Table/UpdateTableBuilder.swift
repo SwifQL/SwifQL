@@ -190,9 +190,6 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
         if cascade {
             parts.append(o: .space)
             parts.append(o: .cascade)
-        } else {
-            parts.append(o: .space)
-            parts.append(o: .restrict)
         }
         combinedAlterActions.append(parts)
         return self
