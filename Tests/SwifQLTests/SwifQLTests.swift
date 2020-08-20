@@ -16,14 +16,29 @@ final class SwifQLTests: SwifQLTestCase {
         check(UpdateTableBuilder<CarBrands>().addColumn("aaa", .bigint, .default(0), .notNull),
               .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "aaa" bigint DEFAULT 0 NOT NULL;"#))
     }
-    
+
+    func testAddColumnIfNotExits() {
+        check(UpdateTableBuilder<CarBrands>().addColumn("aaa", .bigint, .default(0), checkIfNotExists: true, .notNull),
+              .psql(#"ALTER TABLE "CarBrands" ADD COLUMN IF NOT EXISTS "aaa" bigint DEFAULT 0 NOT NULL;"#))
+    }
+
     // MARK: Drop Column
     
     func testDropColumn() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa"),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" RESTRICT;"#))
     }
-    
+
+    func testDropColumnIfExists() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" RESTRICT;"#))
+    }
+
+    func testDropColumnCascade() {
+        check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", cascade: true),
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#))
+    }
+
     // MARK: Set Default
     
     func testSetDefault() {
