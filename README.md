@@ -12,7 +12,14 @@
         <img src="https://img.shields.io/discord/612561840765141005" alt="Swift.Stream">
     </a>
 </p>
-
+<p align="center">
+    <a href="https://swiftpackageindex.com/SwifQL/SwifQL">
+        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwifQL%2FSwifQL%2Fbadge%3Ftype%3Dswift-versions">
+    </a>
+    <a href="https://swiftpackageindex.com/SwifQL/SwifQL">
+        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwifQL%2FSwifQL%2Fbadge%3Ftype%3Dplatforms">
+    </a>
+</p>
 <br>
 
 This lib can be used either stand alone, or with frameworks like Vapor, Kitura, Perfect and others
