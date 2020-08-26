@@ -2,9 +2,34 @@ import XCTest
 @testable import SwifQL
 
 final class DirectiveTests: SwifQLTestCase {
-    //MARK: - INSERT INTO
+    // MARK: - UPDATE
+    
+    func testUpdate() {
+        check(
+            SwifQL.update(Path.Schema(nil).table("ttt")),
+            .psql(#"UPDATE "ttt""#),
+            .mysql("UPDATE ttt")
+        )
+        check(
+            SwifQL.update(Path.Schema("sss").table("ttt")),
+            .psql(#"UPDATE "sss"."ttt""#),
+            .mysql("UPDATE sss.ttt")
+        )
+    }
+    
+    // MARK: - INSERT INTO
     
     func testInsertInto() {
+        check(
+            SwifQL.insertInto(Path.Schema(nil).table("ttt"), fields: "id"),
+            .psql(#"INSERT INTO "ttt" ("id")"#),
+            .mysql("INSERT INTO ttt (id)")
+        )
+        check(
+            SwifQL.insertInto(Path.Schema("sss").table("ttt"), fields: "id"),
+            .psql(#"INSERT INTO "sss"."ttt" ("id")"#),
+            .mysql("INSERT INTO sss.ttt (id)")
+        )
         check(
             SwifQL.insertInto(CarBrands.table, fields: CarBrands.column("id")),
             .psql(#"INSERT INTO "CarBrands" ("id")"#),
