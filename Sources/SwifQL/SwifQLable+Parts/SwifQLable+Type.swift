@@ -16,11 +16,20 @@ extension SwifQLable {
     }
     
     public func type(_ name: String) -> SwifQLable {
+        type(nil, name)
+    }
+    
+    public func type(_ schema: String?, _ name: String) -> SwifQLable {
         var parts: [SwifQLPart] = self.parts
         parts.appendSpaceIfNeeded()
         parts.append(o: .type)
-        parts.append(o: .space)
-        parts.append(o: .custom(name))
+        if let schema = schema {
+            parts.append(o: .space)
+            parts.append(contentsOf: Path.Schema(schema).table(name).parts)
+        } else {
+            parts.append(o: .space)
+            parts.append(contentsOf: Path.Table(name).parts)
+        }
         return SwifQLableParts(parts: parts)
     }
 }

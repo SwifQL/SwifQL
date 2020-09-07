@@ -8,14 +8,17 @@
 import Foundation
 
 public protocol AnySwifQLEnum {
+    static var schema: String? { get }
     static var name: String { get }
 }
 
 public protocol SwifQLEnum: AnySwifQLEnum, RawRepresentable, Codable, CaseIterable, SwifQLable {
+    static var schema: String? { get }
     static var name: String { get }
 }
 
 extension SwifQLEnum {
+    public static var schema: String? { nil }
     public static var name: String { String(describing: Self.self).lowercased() }
 }
 

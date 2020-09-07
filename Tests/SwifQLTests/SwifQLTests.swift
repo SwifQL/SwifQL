@@ -3,6 +3,35 @@ import XCTest
 
 final class SwifQLTests: SwifQLTestCase {
     
+    // MARK: Create Type
+    
+    func testCreateType() {
+        check(
+            SwifQL.type("mood"),
+            .psql(#"TYPE "mood""#),
+            .mysql(#"TYPE mood"#)
+        )
+        check(
+            SwifQL.type("trololo", "mood"),
+            .psql(#"TYPE "trololo"."mood""#),
+            .mysql(#"TYPE trololo.mood"#)
+        )
+    }
+    
+    // MARK: Select enum
+    
+    private enum Mood: String, SwifQLEnum {
+        case sad, happy
+    }
+    
+    func testSelectEnum() {
+        check(
+            SwifQL.select(Mood.happy),
+            .psql(#"SELECT 'happy'"#),
+            .mysql(#"SELECT 'happy'"#)
+        )
+    }
+    
     // MARK: Rename Table
     
     func testRenameTable() {
@@ -273,6 +302,8 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testCreateType", testCreateType),
+        ("testSelectEnum", testSelectEnum),
         ("testRenameTable", testRenameTable),
         ("testAddColumn", testAddColumn),
         ("testDropColumn", testDropColumn),
