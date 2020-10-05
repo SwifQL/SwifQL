@@ -42,11 +42,15 @@ public struct Constraint {
     }
     
     public static func references<T: Table>(_ table: T.Type, onDelete: ReferentialAction? = nil, onUpdate: ReferentialAction? = nil) -> Constraint {
-        references(table.tableName, onDelete: onDelete, onUpdate: onUpdate)
+        var schemaName: String?
+        if let schemable = table as? Schemable.Type {
+            schemaName = schemable.schemaName
+        }
+        return references(schemaName, table.tableName, onDelete: onDelete, onUpdate: onUpdate)
     }
     
-    public static func references(_ table: String, onDelete: ReferentialAction? = nil, onUpdate: ReferentialAction? = nil) -> Constraint {
-        var query = SwifQL.references[any: Path.Table(table)]
+    public static func references(_ schema: String? = nil, _ table: String, onDelete: ReferentialAction? = nil, onUpdate: ReferentialAction? = nil) -> Constraint {
+        var query = SwifQL.references[any: Path.SchemaWithTable(schema: schema, table: table)]
         if let action = onDelete {
             query = query.on.delete[any: action]
         }
