@@ -115,14 +115,22 @@ extension Type {
         
         case is Optional<[Data]>.Type: fallthrough
         case is [Data].Type: return .byteaArray
-            
+        
         case is AnyOptionalEnum.Type:
             guard let t = type as? AnyOptionalEnum.Type else { fallthrough }
-            return .custom(t.name)
+            if let st = type as? Schemable.Type {
+                return .custom(st.schemaName + "." + t.name)
+            } else {
+                return .custom(t.name)
+            }
         case is AnySwifQLEnum.Type:
             guard let t = type as? AnySwifQLEnum.Type else { fallthrough }
-            return .custom(t.name)
-        
+            if let st = type as? Schemable.Type {
+                return .custom(st.schemaName + "." + t.name)
+            } else {
+                return .custom(t.name)
+            }
+            
         case is Optional<[Encodable]>.Type: fallthrough
         case is [Encodable].Type: return .jsonbArray
         
