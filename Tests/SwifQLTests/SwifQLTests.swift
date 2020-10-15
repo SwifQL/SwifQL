@@ -3,6 +3,31 @@ import XCTest
 
 final class SwifQLTests: SwifQLTestCase {
     
+    // MARK: Alias
+    
+    func testAlias() {
+        check(
+            CarBrands.as("c"),
+            .psql(#""c""#),
+            .mysql(#"c"#)
+        )
+        check(
+            CarBrands.as("c").$id,
+            .psql(#""c"."id""#),
+            .mysql(#"c.id"#)
+        )
+        check(
+            CarBrands.as("c").table,
+            .psql(#""CarBrands" AS "c""#),
+            .mysql(#"CarBrands AS c"#)
+        )
+        check(
+            SchemableCarBrands.as("c").table,
+            .psql(#""public"."CarBrands" AS "c""#),
+            .mysql(#"public.CarBrands AS c"#)
+        )
+    }
+    
     // MARK: Create Type
     
     func testCreateType() {

@@ -50,7 +50,7 @@ public class GenericTableAlias<M: Decodable>: SwifQLable, AnyGenericTableAlias {
     public typealias Model = M
     
     public var parts: [SwifQLPart] {
-        [SwifQLPartTable(schema: schema, table: alias)]
+        [SwifQLPartTable(schema: nil, table: alias)]
     }
     
     public var table: SwifQLable {
