@@ -3,6 +3,26 @@ import XCTest
 
 final class SwifQLTests: SwifQLTestCase {
     
+    // MARK: Update
+    
+    func testUpdateWithSchema() {
+        let alias = CarBrands.inSchema("hello")
+        check(
+            SwifQL.update(alias.table).set[items: alias.$id == 1, alias.$createdAt == 2],
+            .psql(#"UPDATE "hello"."CarBrands" SET "id" = 1, "createdAt" = 2"#),
+            .mysql(#"UPDATE hello.CarBrands SET id = 1, createdAt = 2"#)
+        )
+    }
+    
+    func testUpdateAlreadySchemableWithSchemaDifferentSchema() {
+        let alias = SchemableCarBrands.inSchema("hello")
+        check(
+            SwifQL.update(alias.table).set[items: alias.$id == 1, alias.$createdAt == 2],
+            .psql(#"UPDATE "hello"."CarBrands" SET "id" = 1, "createdAt" = 2"#),
+            .mysql(#"UPDATE hello.CarBrands SET id = 1, createdAt = 2"#)
+        )
+    }
+    
     // MARK: Alias
     
     func testAlias() {
@@ -327,6 +347,8 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testUpdateWithSchema", testUpdateWithSchema),
+        ("testUpdateAlreadySchemableWithSchemaDifferentSchema", testUpdateAlreadySchemableWithSchemaDifferentSchema),
         ("testCreateType", testCreateType),
         ("testSelectEnum", testSelectEnum),
         ("testRenameTable", testRenameTable),
