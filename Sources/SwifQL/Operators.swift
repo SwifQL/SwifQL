@@ -30,6 +30,7 @@ extension SwifQLPartOperator {
     public static var select: Result { "SELECT".operator }
     public static var distinct: Result { "DISTINCT".operator }
     public static var `as`: Result { "as".operator }
+    public static var any: Result { "ANY".operator }
     public static var delete: Result { "DELETE".operator }
     public static var from: Result { "FROM".operator }
     public static var join: Result { "JOIN".operator }
@@ -205,6 +206,7 @@ extension SwifQLPartOperator {
     public var select: Result { concatWith(.select) }
     public var distinct: Result { concatWith(.distinct) }
     public var `as`: Result { concatWith(.as) }
+    public var any: Result { concatWith(.any) }
     public var delete: Result { concatWith(.delete) }
     public var from: Result { concatWith(.from) }
     public var join: Result { concatWith(.join) }

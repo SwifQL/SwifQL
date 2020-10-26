@@ -2,6 +2,15 @@ import XCTest
 @testable import SwifQL
 
 final class SwifQLTests: SwifQLTestCase {
+    // MARK: ANY operator
+    
+    func testAnyOperator() {
+        check(
+            SwifQL.any("hello"),
+            .psql(#"ANY('hello')"#),
+            .mysql(#"ANY('hello')"#)
+        )
+    }
     
     // MARK: Update
     
@@ -347,6 +356,7 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testAnyOperator", testAnyOperator),
         ("testUpdateWithSchema", testUpdateWithSchema),
         ("testUpdateAlreadySchemableWithSchemaDifferentSchema", testUpdateAlreadySchemableWithSchemaDifferentSchema),
         ("testCreateType", testCreateType),
