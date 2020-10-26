@@ -6,6 +6,10 @@ class SwifQLTestCase: XCTestCase {
         static var schemaName: String { "deleted" }
     }
     
+    enum GearboxType: String, SwifQLEnum {
+        case manual, auto, cvt
+    }
+    
     struct SchemableCarBrands: Table, Schemable {
         static var tableName: String { "CarBrands" }
         

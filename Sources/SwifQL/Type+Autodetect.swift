@@ -123,12 +123,29 @@ extension Type {
             } else {
                 return .custom(t.name)
             }
+            
+        case is AnyOptionalEnumArray.Type:
+            guard let t = type as? AnyOptionalEnumArray.Type else { fallthrough }
+            if let st = type as? Schemable.Type {
+                return .customArray(st.schemaName + "." + t.name)
+            } else {
+                return .customArray(t.name)
+            }
+            
         case is AnySwifQLEnum.Type:
             guard let t = type as? AnySwifQLEnum.Type else { fallthrough }
             if let st = type as? Schemable.Type {
                 return .custom(st.schemaName + "." + t.name)
             } else {
                 return .custom(t.name)
+            }
+            
+        case is AnySwifQLEnumArray.Type:
+            guard let t = type as? AnySwifQLEnumArray.Type else { fallthrough }
+            if let st = t.elementType as? Schemable.Type {
+                return .customArray(st.schemaName + "." + t.name)
+            } else {
+                return .customArray(t.name)
             }
             
         case is Optional<[Encodable]>.Type: fallthrough
@@ -149,4 +166,18 @@ extension Optional: AnyOptionalEnum where Wrapped: AnySwifQLEnum {
 }
 extension Optional {
     fileprivate static var trololo: Wrapped.Type { return Wrapped.self }
+}
+fileprivate protocol AnyOptionalEnumArray {
+    static var name: String { get }
+}
+extension Array: AnyOptionalEnumArray where Element: AnyOptionalEnum {
+    fileprivate static var name: String { Element.name }
+}
+fileprivate protocol AnySwifQLEnumArray {
+    static var name: String { get }
+    static var elementType: AnySwifQLEnum.Type { get }
+}
+extension Array: AnySwifQLEnumArray where Element: AnySwifQLEnum {
+    fileprivate static var name: String { Element.name }
+    fileprivate static var elementType: AnySwifQLEnum.Type { Element.self }
 }

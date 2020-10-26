@@ -489,4 +489,5 @@ public struct Type {
     // MARK: Custom
     
     public static func custom(_ name: String) -> Type { .init(name) }
+    public static func customArray(_ name: String) -> Type { .init(name + "[]") }
 }

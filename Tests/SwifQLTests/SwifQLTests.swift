@@ -2,6 +2,27 @@ import XCTest
 @testable import SwifQL
 
 final class SwifQLTests: SwifQLTestCase {
+    // MARK: Enum array
+    
+    func testEnumArray() {
+        check(
+            [GearboxType.manual],
+            .psql(#"'{manual}'"#),
+            .mysql(#"'{manual}'"#)
+        )
+        check(
+            [GearboxType.manual, .auto],
+            .psql(#"'{manual,auto}'"#),
+            .mysql(#"'{manual,auto}'"#)
+        )
+    }
+    
+    // MARK: Enum array type autodetect
+    
+    func testEnumArrayTypeAutodetect() {
+        XCTAssertEqual(Type.auto(from: [GearboxType].self).name, "gearboxtype[]")
+    }
+    
     // MARK: ANY operator
     
     func testAnyOperator() {
@@ -356,6 +377,8 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testEnumArray", testEnumArray),
+        ("testEnumArrayTypeAutodetect", testEnumArrayTypeAutodetect),
         ("testAnyOperator", testAnyOperator),
         ("testUpdateWithSchema", testUpdateWithSchema),
         ("testUpdateAlreadySchemableWithSchemaDifferentSchema", testUpdateAlreadySchemableWithSchemaDifferentSchema),

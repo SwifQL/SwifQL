@@ -7,16 +7,18 @@
 
 import Foundation
 
-public protocol AnySwifQLEnum {
+public protocol AnySwifQLEnum: Codable, SwifQLable {
     static var name: String { get }
+    var anyRawValue: Any { get }
 }
 
-public protocol SwifQLEnum: AnySwifQLEnum, RawRepresentable, Codable, CaseIterable, SwifQLable {
+public protocol SwifQLEnum: AnySwifQLEnum, RawRepresentable, CaseIterable {
     static var name: String { get }
 }
 
 extension SwifQLEnum {
     public static var name: String { String(describing: Self.self).lowercased() }
+    public var anyRawValue: Any { rawValue }
 }
 
 /// See `SwifQLable`
