@@ -40,12 +40,22 @@ extension SwifQLable {
         parts.append(o: .in)
         parts.append(o: .space)
         parts.append(o: .openBracket)
-        for (i, v) in items.enumerated() {
-            if i > 0 {
-                parts.append(o: .comma)
-                parts.append(o: .space)
+        if items.count == 1, let array = items.first as? AnySwifQLEnumArray {
+            array.items.enumerated().forEach { i, v in
+                if i > 0 {
+                    parts.append(o: .comma)
+                    parts.append(o: .space)
+                }
+                parts.append(safe: v.anyRawValue)
             }
-            parts.append(contentsOf: v.parts)
+        } else {
+            items.enumerated().forEach { i, v in
+                if i > 0 {
+                    parts.append(o: .comma)
+                    parts.append(o: .space)
+                }
+                parts.append(contentsOf: v.parts)
+            }
         }
         parts.append(o: .closeBracket)
         return SwifQLableParts(parts: parts)

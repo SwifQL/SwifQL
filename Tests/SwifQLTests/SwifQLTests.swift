@@ -2,6 +2,66 @@ import XCTest
 @testable import SwifQL
 
 final class SwifQLTests: SwifQLTestCase {
+    // MARK: String enum array
+    
+    func testStringEnumArray() {
+        enum UserRole: String, SwifQLEnum {
+            case admin
+            case staff
+            case vendor
+        }
+        check(
+            SwifQL.in([UserRole.admin, .staff, .vendor]),
+            .psql(#"IN ('admin', 'staff', 'vendor')"#),
+            .mysql(#"IN ('admin', 'staff', 'vendor')"#)
+        )
+    }
+    
+    // MARK: Int enum array
+    
+    func testIntEnumArray() {
+        enum UserRole: Int, SwifQLEnum {
+            case admin = 0
+            case staff = 1
+            case vendor = 2
+        }
+        check(
+            SwifQL.in([UserRole.admin, .staff, .vendor]),
+            .psql(#"IN (0, 1, 2)"#),
+            .mysql(#"IN (0, 1, 2)"#)
+        )
+    }
+    
+    // MARK: Int enum value alone
+    
+    func testIntEnumValueAlone() {
+        enum UserRole: Int, SwifQLEnum {
+            case admin = 0
+            case staff = 1
+            case vendor = 2
+        }
+        check(
+            0 == UserRole.admin,
+            .psql(#"0 = 0"#),
+            .mysql(#"0 = 0"#)
+        )
+    }
+    
+    // MARK: String enum value alone
+    
+    func testStringEnumValueAlone() {
+        enum UserRole: String, SwifQLEnum {
+            case admin
+            case staff
+            case vendor
+        }
+        check(
+            "admin" == UserRole.admin,
+            .psql(#"'admin' = 'admin'"#),
+            .mysql(#"'admin' = 'admin'"#)
+        )
+    }
+
     // MARK: Null Condition
     
     func testNullCondition() {
@@ -392,6 +452,10 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testStringEnumArray", testStringEnumArray),
+        ("testIntEnumArray", testIntEnumArray),
+        ("testIntEnumValueAlone", testIntEnumValueAlone),
+        ("testStringEnumValueAlone", testStringEnumValueAlone),
         ("testNullCondition", testNullCondition),
         ("testEnumArray", testEnumArray),
         ("testEnumArrayTypeAutodetect", testEnumArrayTypeAutodetect),

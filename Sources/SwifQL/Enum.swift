@@ -12,6 +12,14 @@ public protocol AnySwifQLEnum: Codable, SwifQLable {
     var anyRawValue: Any { get }
 }
 
+protocol AnySwifQLEnumArray {
+    var items: [AnySwifQLEnum] { get }
+}
+
+extension Array: AnySwifQLEnumArray where Element: AnySwifQLEnum {
+    var items: [AnySwifQLEnum] { self }
+}
+
 public protocol SwifQLEnum: AnySwifQLEnum, RawRepresentable, CaseIterable {
     static var name: String { get }
 }
@@ -23,7 +31,7 @@ extension SwifQLEnum {
 
 /// See `SwifQLable`
 extension SwifQLEnum {
-    public var parts: [SwifQLPart] { [SwifQLPartOperator("'\(rawValue)'")] }
+    public var parts: [SwifQLPart] { [SwifQLPartSafeValue(rawValue)] }
 }
 
 /// Allows to compare enum with enum column

@@ -140,8 +140,8 @@ extension Type {
                 return .custom(t.name)
             }
             
-        case is AnySwifQLEnumArray.Type:
-            guard let t = type as? AnySwifQLEnumArray.Type else { fallthrough }
+        case is _AnySwifQLEnumArray.Type:
+            guard let t = type as? _AnySwifQLEnumArray.Type else { fallthrough }
             if let st = t.elementType as? Schemable.Type {
                 return .customArray(st.schemaName + "." + t.name)
             } else {
@@ -173,11 +173,11 @@ fileprivate protocol AnyOptionalEnumArray {
 extension Array: AnyOptionalEnumArray where Element: AnyOptionalEnum {
     fileprivate static var name: String { Element.name }
 }
-fileprivate protocol AnySwifQLEnumArray {
+fileprivate protocol _AnySwifQLEnumArray {
     static var name: String { get }
     static var elementType: AnySwifQLEnum.Type { get }
 }
-extension Array: AnySwifQLEnumArray where Element: AnySwifQLEnum {
+extension Array: _AnySwifQLEnumArray where Element: AnySwifQLEnum {
     fileprivate static var name: String { Element.name }
     fileprivate static var elementType: AnySwifQLEnum.Type { Element.self }
 }
