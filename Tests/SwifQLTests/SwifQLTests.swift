@@ -2,6 +2,21 @@ import XCTest
 @testable import SwifQL
 
 final class SwifQLTests: SwifQLTestCase {
+    // MARK: Null Condition
+    
+    func testNullCondition() {
+        check(
+            "hello" == SwifQLNull,
+            .psql(#"'hello' = NULL"#),
+            .mysql(#"'hello' = NULL"#)
+        )
+        check(
+            "hello" == nil,
+            .psql(#"'hello' IS NULL"#),
+            .mysql(#"'hello' IS NULL"#)
+        )
+    }
+    
     // MARK: Enum array
     
     func testEnumArray() {
@@ -377,6 +392,7 @@ final class SwifQLTests: SwifQLTestCase {
     }
     
     static var allTests = [
+        ("testNullCondition", testNullCondition),
         ("testEnumArray", testEnumArray),
         ("testEnumArrayTypeAutodetect", testEnumArrayTypeAutodetect),
         ("testAnyOperator", testAnyOperator),

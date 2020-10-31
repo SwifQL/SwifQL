@@ -61,6 +61,8 @@ extension SwifQLable {
                 return string + dialect.arrayEnd
             case let v as SwifQLPartBool:
                 return dialect.boolValue(v.value)
+            case is SwifQLPartNull:
+                return dialect.null
             case let v as SwifQLPartSchema:
                 guard let schema = v.schema else { return "" }
                 return dialect.schemaName(schema)
