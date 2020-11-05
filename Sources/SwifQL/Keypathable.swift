@@ -7,12 +7,18 @@
 
 import Foundation
 
-public protocol Keypathable {
+public protocol Keypathable: KeyPathLastPath {
     var schema: String? { get }
     var table: String { get }
     var paths: [String] { get }
     var shortPath: String { get }
     var lastPath: String { get }
+}
+
+extension KeyPath: KeyPathLastPath where Root: Table, Value: ColumnRepresentable {
+    public var lastPath: String {
+        Root.key(for: self)
+    }
 }
 
 extension KeyPath: Keypathable where Root: Table, Value: ColumnRepresentable {
@@ -29,10 +35,6 @@ extension KeyPath: Keypathable where Root: Table, Value: ColumnRepresentable {
     }
     
     public var shortPath: String {
-        Root.key(for: self)
-    }
-    
-    public var lastPath: String {
         Root.key(for: self)
     }
 }
