@@ -70,7 +70,7 @@ extension Data: SwifQLable {
         return [
             SwifQLPartOperator("decode"),
             SwifQLPartOperator.openBracket,
-            SwifQLPartUnsafeValue(base64EncodedString()),
+            SwifQLPartSafeValue(base64EncodedString()),
             SwifQLPartOperator.comma,
             SwifQLPartOperator.space,
             SwifQLPartSafeValue("base64"),
