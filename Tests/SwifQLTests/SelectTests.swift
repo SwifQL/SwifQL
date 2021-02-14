@@ -30,6 +30,15 @@ final class SelectTests: SwifQLTestCase {
             .mysql("SELECT 1.234")
         )
     }
+
+    func testSelectData() {
+        let base64 = "Aa+/0w=="
+        let data = Data(base64Encoded: base64)!
+        check(
+            SwifQL.select(data),
+            .psql("SELECT decode('\(base64)', 'base64')")
+        )
+    }
     
     func testSelectSeveralSimpleValues() {
         check(
