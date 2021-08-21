@@ -347,37 +347,67 @@ extension Fn {
         var parts: [SwifQLPart] = []
         if let years = years {
             parts.append(o: .custom("years => "))
-            parts.append(contentsOf: years.parts)
+            if let number = years as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: years.parts)
+            }
         }
         if let months = months {
             if parts.count > 0 { parts.append(o: .comma, .space) }
             parts.append(o: .custom("months => "))
-            parts.append(contentsOf: months.parts)
+            if let number = months as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: months.parts)
+            }
         }
         if let weeks = weeks {
             if parts.count > 0 { parts.append(o: .comma, .space) }
             parts.append(o: .custom("weeks => "))
-            parts.append(contentsOf: weeks.parts)
+            if let number = weeks as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: weeks.parts)
+            }
         }
         if let days = days {
             if parts.count > 0 { parts.append(o: .comma, .space) }
             parts.append(o: .custom("days => "))
-            parts.append(contentsOf: days.parts)
+            if let number = days as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: days.parts)
+            }
         }
         if let hours = hours {
             if parts.count > 0 { parts.append(o: .comma, .space) }
             parts.append(o: .custom("hours => "))
-            parts.append(contentsOf: hours.parts)
+            if let number = hours as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: hours.parts)
+            }
         }
         if let mins = mins {
             if parts.count > 0 { parts.append(o: .comma, .space) }
             parts.append(o: .custom("mins => "))
-            parts.append(contentsOf: mins.parts)
+            if let number = mins as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: mins.parts)
+            }
         }
         if let secs = secs {
             if parts.count > 0 { parts.append(o: .comma, .space) }
             parts.append(o: .custom("secs => "))
-            parts.append(contentsOf: secs.parts)
+            if let number = secs as? Int {
+                parts.append(o: .custom("\(number)"))
+            } else if let number = secs as? Double {
+                parts.append(o: .custom("\(number)"))
+            } else {
+                parts.append(contentsOf: secs.parts)
+            }
         }
         return build(.make_interval, body: parts)
     }
