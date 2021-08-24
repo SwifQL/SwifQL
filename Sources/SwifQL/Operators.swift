@@ -12,7 +12,7 @@ public typealias Operator = SwifQLPartOperator
 
 extension SwifQLPartOperator {
     public typealias Result = SwifQLPartOperator
-    
+
     public static var left: Result { "LEFT".operator }
     public static var right: Result { "RIGHT".operator }
     public static var inner: Result { "INNER".operator }
@@ -187,8 +187,11 @@ extension SwifQLPartOperator {
     public static var data: Result { "DATA".operator }
     public static var partition: Result { "PARTITION".operator }
     public static var window: Result { "WINDOW".operator }
+    public static var `true`: Result { "TRUE".operator }
+    public static var `false`: Result { "FALSE".operator }
+
     public static func custom(_ v: String) -> Result { v.operator }
-    
+
     public var left: Result { concatWith(.left) }
     public var right: Result { concatWith(.right) }
     public var inner: Result { concatWith(.inner) }
@@ -363,13 +366,17 @@ extension SwifQLPartOperator {
     public var data: Result { concatWith(.data) }
     public var partition: Result { concatWith(.partition) }
     public var window: Result { concatWith(.window) }
+    public var `true`: Result { concatWith(.true) }
+    public var `false`: Result { concatWith(.false) }
     public func custom(_ v: String) -> Result { concatWith(.custom(v)) }
-    
+
     private func concatWith(_ operator: Result) -> Result {
         (_value + `operator`._value).operator
     }
 }
 
 extension String {
-    fileprivate var `operator`: SwifQLPartOperator { .init(self) }
+
+    public  var `operator`: SwifQLPartOperator { .init(self) }
+
 }
