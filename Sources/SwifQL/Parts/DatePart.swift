@@ -9,7 +9,7 @@ import Foundation
 
 public struct SwifQLPartDate: SwifQLPart {
     public var date: Date
-    
+
     public init (_ date: Date) {
         self.date = date
     }

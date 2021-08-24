@@ -10,7 +10,7 @@ import Foundation
 public struct SwifQLPartTableWithAlias: SwifQLPart {
     public var schema: String?
     public var table, alias: String
-    
+
     public init (schema: String?, table: String, alias: String) {
         self.schema = schema
         self.table = table

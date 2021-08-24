@@ -8,15 +8,13 @@
 import Foundation
 
 public struct SwifQLPartOperator: SwifQLPart, Equatable {
-    var _value: String
-    
+    public var _value: String
+
     public init (_ value: String) {
         self._value = value
     }
 }
 
 extension SwifQLPartOperator: SwifQLable {
-    public var parts: [SwifQLPart] {
-        [self]
-    }
+    public var parts: [SwifQLPart] { [self] }
 }

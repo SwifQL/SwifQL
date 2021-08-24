@@ -9,7 +9,7 @@ import Foundation
 
 public struct SwifQLPartColumn: SwifQLPart {
     public var name: String
-    
+
     public init (_ name: String) {
         self.name = name
     }

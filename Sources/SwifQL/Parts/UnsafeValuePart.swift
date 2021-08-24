@@ -8,8 +8,8 @@
 import Foundation
 
 public struct SwifQLPartUnsafeValue: SwifQLPart {
-    var unsafeValue: Encodable
-    
+   public var unsafeValue: Encodable
+
     public init (_ value: Encodable) {
         unsafeValue = value
     }
