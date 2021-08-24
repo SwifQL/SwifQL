@@ -14,3 +14,13 @@ public struct SwifQLPartUnsafeValue: SwifQLPart {
         unsafeValue = value
     }
 }
+
+extension SwifQLPartUnsafeValue {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    preparator._values.append(unsafeValue)
+    preparator._formattedValues.append(dialect.safeValue(unsafeValue))
+    return dialect.bindSymbol
+  }
+
+}

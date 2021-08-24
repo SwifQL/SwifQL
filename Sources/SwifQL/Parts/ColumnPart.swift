@@ -14,3 +14,11 @@ public struct SwifQLPartColumn: SwifQLPart {
         self.name = name
     }
 }
+
+extension SwifQLPartColumn {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.column(name)
+  }
+
+}

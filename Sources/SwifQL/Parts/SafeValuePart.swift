@@ -14,3 +14,12 @@ public struct SwifQLPartSafeValue: SwifQLPart {
         safeValue = value
     }
 }
+
+
+extension SwifQLPartSafeValue {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.safeValue(safeValue)
+  }
+
+}

@@ -18,3 +18,11 @@ public struct SwifQLPartBool: SwifQLPart, SwifQLable {
         self.value = value
     }
 }
+
+extension SwifQLPartBool {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.boolValue(value)
+  }
+
+}

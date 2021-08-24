@@ -14,3 +14,11 @@ public struct SwifQLPartAlias: SwifQLPart {
         self.alias = alias
     }
 }
+
+extension SwifQLPartAlias {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.alias(alias)
+  }
+
+}

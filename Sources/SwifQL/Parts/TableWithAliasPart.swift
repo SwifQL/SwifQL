@@ -17,3 +17,12 @@ public struct SwifQLPartTableWithAlias: SwifQLPart {
         self.alias = alias
     }
 }
+
+extension SwifQLPartTableWithAlias {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    guard let schema = schema else { return dialect.tableName(table, andAlias: alias) }
+    return dialect.schemaName(schema) + "." + dialect.tableName(table, andAlias: alias)
+  }
+
+}

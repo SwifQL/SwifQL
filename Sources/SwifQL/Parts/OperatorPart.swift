@@ -18,3 +18,13 @@ public struct SwifQLPartOperator: SwifQLPart, Equatable {
 extension SwifQLPartOperator: SwifQLable {
     public var parts: [SwifQLPart] { [self] }
 }
+
+
+extension SwifQLPartOperator {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return _value
+  }
+
+}
+

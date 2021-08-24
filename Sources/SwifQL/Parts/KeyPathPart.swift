@@ -40,3 +40,11 @@ extension SwifQLPartKeyPath: SwifQLable {
         SwifQLableParts(parts: self).parts
     }
 }
+
+extension SwifQLPartKeyPath {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.keyPath(self)
+  }
+
+}
