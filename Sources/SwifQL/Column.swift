@@ -23,6 +23,14 @@ public protocol ColumnRepresentable {
     var column: Column<Value> { get }
 }
 
+private protocol AnyOptional {
+    static var nilValue: Self { get }
+}
+
+extension Optional: AnyOptional {
+    static var nilValue: Optional<Wrapped> { .none }
+}
+
 @propertyWrapper
 public final class Column<Value>: AnyColumn, ColumnRepresentable, ColumnRootNameable, Encodable where Value: Codable {
     public let name: String
@@ -45,6 +53,8 @@ public final class Column<Value>: AnyColumn, ColumnRepresentable, ColumnRootName
                 return value as! Value
             } else if let value = self.outputValue {
                 return value
+            } else if let type = Value.self as? AnyOptional.Type {
+                return type.nilValue as! Value
             } else {
                 fatalError("Cannot access field before it is initialized or fetched")
             }

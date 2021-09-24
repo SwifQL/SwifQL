@@ -13,6 +13,10 @@ final class TableEncoding: SwifQLTestCase {
         }
     }
     
+    func testWithOptionalColumn() {
+        XCTAssertNil(TableWithOptionalColumn().firstName)
+    }
+    
     func testWithKeyPaths() {
         guard let encodedData = try? JSONEncoder().encode(KeyPathTable()) else {
             XCTFail("Unable to encode PureTable")
@@ -26,6 +30,7 @@ final class TableEncoding: SwifQLTestCase {
     
     static var allTests = [
         ("testPure", testPure),
+        ("testWithOptionalColumn", testWithOptionalColumn),
         ("testWithKeyPaths", testWithKeyPaths)
     ]
 }
@@ -46,6 +51,13 @@ fileprivate final class PureTable: Table {
         id = UUID()
         firstName = ""
     }
+}
+
+fileprivate final class TableWithOptionalColumn: Table {
+    @Column("first_name")
+    var firstName: String?
+
+    init () {}
 }
 
 fileprivate struct KeyPathStruct: Codable {
