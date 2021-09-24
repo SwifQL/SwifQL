@@ -13,3 +13,11 @@ public struct SwifQLPartNull: SwifQLPart, SwifQLable {
     public var parts: [SwifQLPart] { [self] }
     public init () {}
 }
+
+extension SwifQLPartNull {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.null
+  }
+
+}

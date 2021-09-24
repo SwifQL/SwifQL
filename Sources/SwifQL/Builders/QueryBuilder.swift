@@ -7,9 +7,14 @@
 
 import Foundation
 
+// MARK: - Protocols
+
 public protocol QueryBuilderItemable {
     var values: [SwifQLable] { get }
 }
+
+// MARK: - Items
+
 public struct QueryBuilderItem: SwifQLable {
     public let parts: [SwifQLPart]
     public let values: [SwifQLable]
@@ -24,7 +29,10 @@ public struct QueryBuilderItem: SwifQLable {
         self.values = values ?? []
     }
 }
-@_functionBuilder public struct QueryBuilder {
+
+// MARK: - Builder
+
+@resultBuilder public struct QueryBuilder {
     public typealias Block = () -> SwifQLable
     
     /// Builds an empty view from an block containing no statements, `{ }`.

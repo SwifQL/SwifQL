@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "SwifQL",
     platforms: [
-       .macOS(.v10_15)
+      .macOS(.v10_15), .iOS(.v12)
     ],
     products: [
         // 💎 Swift lib that gives an ability to build complex raw SQL-queries in strong-type declarative way

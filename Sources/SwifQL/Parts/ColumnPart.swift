@@ -9,8 +9,16 @@ import Foundation
 
 public struct SwifQLPartColumn: SwifQLPart {
     public var name: String
-    
+
     public init (_ name: String) {
         self.name = name
     }
+}
+
+extension SwifQLPartColumn {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.column(name)
+  }
+
 }

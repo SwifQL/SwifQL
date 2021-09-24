@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol QueryBuilderable: class {
+public protocol QueryBuilderable: AnyObject {
     var queryParts: QueryParts { get set }
 }
 

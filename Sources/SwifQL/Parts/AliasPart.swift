@@ -8,9 +8,17 @@
 import Foundation
 
 public struct SwifQLPartAlias: SwifQLPart {
-    var alias: String
-    
+    public var alias: String
+
     init (_ alias: String) {
         self.alias = alias
     }
+}
+
+extension SwifQLPartAlias {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.alias(alias)
+  }
+
 }

@@ -10,11 +10,19 @@ import Foundation
 public typealias SwifQLBool = SwifQLPartBool
 
 public struct SwifQLPartBool: SwifQLPart, SwifQLable {
+
+    public let value: Bool
     public var parts: [SwifQLPart] { [self] }
-    
-    let value: Bool
-    
+
     public init (_ value: Bool) {
         self.value = value
     }
+}
+
+extension SwifQLPartBool {
+
+  public func prepare(_ dialect: SQLDialect, preparator: inout SwifQLPrepared) -> String {
+    return dialect.boolValue(value)
+  }
+
 }

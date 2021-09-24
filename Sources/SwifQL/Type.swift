@@ -8,7 +8,7 @@
 typealias CastType = Type
 
 public struct Type {
-    let name: String
+    public let name: String
     
     public init (_ name: String) {
         self.name = name
