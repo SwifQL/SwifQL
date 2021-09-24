@@ -14,7 +14,9 @@ final class TableEncoding: SwifQLTestCase {
     }
     
     func testWithOptionalColumn() {
+        #if swift(>=5.4)
         XCTAssertNil(TableWithOptionalColumn().firstName)
+        #endif
     }
     
     func testWithKeyPaths() {
