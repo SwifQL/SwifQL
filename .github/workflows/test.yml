@@ -2,7 +2,7 @@ name: test
 on: [push, pull_request]
 jobs:
   xenial:
-    container: swift:5.3-focal
+    container: swift:5.4-focal
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
