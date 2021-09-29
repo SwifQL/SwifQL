@@ -43,6 +43,7 @@ extension SwifQLPartOperator {
     public static var into: Result { "INTO".operator }
     public static var values: Result { "VALUES".operator }
     public static var union: Result { "UNION".operator }
+    public static var all: Result { "ALL".operator }
     public static var returning: Result { "RETURNING".operator }
     public static var exists: Result { "EXISTS".operator }
     public static var and: Result { "AND".operator }
