@@ -73,7 +73,13 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
     // MARK: - ADD COLUMN
     
     public func addColumn(_ newColumn: NewColumn) -> Self {
-        combinedAlterActions.append(newColumn.parts)
+        var parts: [SwifQLPart] = []
+        parts.append(o: .add)
+        parts.append(o: .space)
+        parts.append(o: .column)
+        parts.append(o: .space)
+        parts.append(contentsOf: newColumn.parts)
+        combinedAlterActions.append(parts)
         return self
     }
     

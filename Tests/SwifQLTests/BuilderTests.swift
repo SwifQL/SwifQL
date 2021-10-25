@@ -28,8 +28,24 @@ final class BuilderTests: SwifQLTestCase {
         XCTAssertEqual(prepareBuildPSQL , prepareCopyPSQL)
     }
     
+    func testUpdateBuilderAddColumn() {
+        check(
+            UpdateTableBuilder<CarBrands>()
+                .addColumn(NewColumn.init("hello", .text)),
+            .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "hello" text;"#),
+            .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;")
+        )
+        check(
+            UpdateTableBuilder<CarBrands>()
+                .addColumn("hello", .text),
+            .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "hello" text;"#),
+            .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;")
+        )
+    }
+    
     static var allTests = [
         ("testSelectBuilderLimitShort", testSelectBuilderLimitShort),
-        ("testSelectBuilderCopy", testSelectBuilderCopy)
+        ("testSelectBuilderCopy", testSelectBuilderCopy),
+        ("testUpdateBuilderAddColumn", testUpdateBuilderAddColumn)
     ]
 }
