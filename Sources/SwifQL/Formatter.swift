@@ -55,7 +55,7 @@ struct SwifQLFormatter {
     }
     
     private func binded(_ query: String) -> String {
-        binded(query) { dialect.bindKey($0) }
+        binded(query) { self.dialect.bindKey($0) }
     }
     
     private func plain(query: String, with formattedValues: [String]) -> String {
