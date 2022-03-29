@@ -34,6 +34,7 @@ public protocol KeyPathEncodable {}
 
 @dynamicMemberLookup
 public protocol Table: AnyTable, ColumnRoot {
+    @_disfavoredOverload
     init ()
     
     static subscript<V>(dynamicMember keyPath: KeyPath<Self, V>) -> SwifQLable { get }
