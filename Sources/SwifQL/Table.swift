@@ -89,16 +89,16 @@ extension Table {
 
     public func encode(to encoder: Encoder) throws {
         let container = encoder.container(keyedBy: TableCodingKey.self)
-        try self.columns.forEach {
+        for column in columns {
             let key: TableCodingKey
             switch self {
             case _ as KeyPathEncodable:
-                key = .string($0.name.keyPath)
+                key = .string(column.name.keyPath)
             default:
-                key = .string($0.name.label)
+                key = .string(column.name.label)
             }
             let encoder = ContainerEncoder(container: container, key: key)
-            try $0.property.encode(to: encoder)
+            try column.property.encode(to: encoder)
         }
     }
 }
