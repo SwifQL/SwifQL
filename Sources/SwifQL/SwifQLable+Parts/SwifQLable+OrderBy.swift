@@ -94,8 +94,8 @@ public struct OrderByItem: SwifQLable {
     
     // MARK: Random
     
-    /// Returns results in a random order. Hibrid operator that provides proper sintaxis acording to used language.
-    public static var random: SwifQLHibridOperator {
+    /// Returns results in a random order. Hybrid operator that provides proper sintaxis acording to used language.
+    public static var random: SwifQLHybridOperator {
         .random
     }
     
@@ -158,7 +158,7 @@ extension SwifQLable {
     /// ```
     ///
     
-    public func orderBy(_ field: SwifQLHibridOperator) -> SwifQLable {
+    public func orderBy(_ field: SwifQLHybridOperator) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
         parts.append(o: .order)

@@ -84,7 +84,7 @@ extension SwifQLable {
                 return dialect.column(v.name)
             case let v as SwifQLPartOperator:
                 return v._value
-            case let v as SwifQLHibridOperator:
+            case let v as SwifQLHybridOperator:
                 switch dialect{
                 case .psql:
                     return v._psql._value

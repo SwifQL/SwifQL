@@ -1,5 +1,5 @@
 //
-//  HibridOperatorPart.swift
+//  HybridOperatorPart.swift
 //  
 //
 //  Created by TierraCero on 5/30/23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SwifQLHibridOperator: SwifQLPart, Equatable {
+public struct SwifQLHybridOperator: SwifQLPart, Equatable {
     
     var _psql: SwifQLPartOperator
     
@@ -19,7 +19,7 @@ public struct SwifQLHibridOperator: SwifQLPart, Equatable {
     }
 }
 
-extension SwifQLHibridOperator: SwifQLable {
+extension SwifQLHybridOperator: SwifQLable {
     public var parts: [SwifQLPart] {
         [self]
     }
