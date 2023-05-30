@@ -84,6 +84,15 @@ extension SwifQLable {
                 return dialect.column(v.name)
             case let v as SwifQLPartOperator:
                 return v._value
+            case let v as SwifQLHibridOperator:
+                switch dialect{
+                case .psql:
+                    return v._psql._value
+                case .mysql:
+                    return v._mysql._value
+                default:
+                    return v._mysql._value
+                }
             case let v as SwifQLPartDate:
                 return dialect.date(v.date)
             case let v as SwifQLPartSafeValue:

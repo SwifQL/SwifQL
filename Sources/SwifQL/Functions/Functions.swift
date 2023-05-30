@@ -80,6 +80,9 @@ extension Array where Element == SwifQLPart {
     public mutating func append(o: SwifQLPartOperator...) {
         o.forEach { append($0) }
     }
+    public mutating func append(h: SwifQLHibridOperator...) {
+        h.forEach { append($0) }
+    }
     public mutating func append(safe value: Any) {
         append(SwifQLPartSafeValue(value))
     }
