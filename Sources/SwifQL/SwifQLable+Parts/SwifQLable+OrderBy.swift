@@ -92,6 +92,13 @@ public struct OrderByItem: SwifQLable {
         OrderByItem(elements: elements, direction: .desc, nulls: nulls)
     }
     
+    // MARK: Random
+    
+    /// Returns results in a random order. Hybrid operator that provides proper sintaxis acording to used language.
+    public static var random: SwifQLHybridOperator {
+        .random
+    }
+    
     // MARK: - SwifQLable
     
     public var parts: [SwifQLPart] {
@@ -150,6 +157,18 @@ extension SwifQLable {
     /// ORDER BY User.email IS NULL, User.email ASC, User.firstName IS NOT NULL, User.firstName DESC
     /// ```
     ///
+    
+    public func orderBy(_ field: SwifQLHybridOperator) -> SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .order)
+        parts.append(o: .space)
+        parts.append(o: .by)
+        parts.append(o: .space)
+        parts.append(h: .random)
+        return SwifQLableParts(parts: parts)
+    }
+    
     public func orderBy(_ fields: OrderByItem...) -> SwifQLable {
         orderBy(fields)
     }

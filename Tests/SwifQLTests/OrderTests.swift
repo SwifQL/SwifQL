@@ -38,9 +38,23 @@ final class OrderTests: SwifQLTestCase {
         )
     }
     
+    // MARK: - Order by random() / Order by rand()
+    
+    func testOrderByRandom() {
+        check(
+            SwifQL.orderBy(.random),
+            .psql(#"ORDER BY random()"#)
+        )
+        check(
+            SwifQL.orderBy(.random),
+            .mysql("ORDER BY rand()")
+        )
+    }
+    
     static var allTests = [
         ("testOrderBySimple", testOrderBySimple),
         ("testOrderByWithNulls", testOrderByWithNulls),
-        ("testOrderByDirection", testOrderByDirection)
+        ("testOrderByDirection", testOrderByDirection),
+        ("testOrderByRandom", testOrderByRandom)
     ]
 }
