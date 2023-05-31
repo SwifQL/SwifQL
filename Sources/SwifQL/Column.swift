@@ -61,7 +61,7 @@ public final class Column<Value>: AnyColumn, ColumnRepresentable, ColumnRootName
                     return type.nilValue as! Value
                 }
                 #endif
-                fatalError("Cannot access to \(columnName) field before it is initialized or fetched")
+                fatalError("Cannot access \"\(columnName)\" field before it is initialized or fetched")
             }
         }
         set {
