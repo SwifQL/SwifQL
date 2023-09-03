@@ -34,6 +34,29 @@ class SwifQLTestCase: XCTestCase {
         init() {}
     }
     
+    struct CarBrandReferences: Table {
+        @Column("id")
+        var id: UUID
+        @Column("model")
+        var model: String
+        @Column("available")
+        var available: Bool
+        @Column("score")
+        var score: Int
+        @Column("mainGers")
+        var mainGers: GearboxType
+        @Column("availableGers")
+        var availableGers: [GearboxType]
+        @Column("availableYears")
+        var availableYears: [Int]
+        @Column("knowedIssues")
+        var knowedIssues: [UUID]
+        @Column("tags")
+        var tags: [String]
+        
+        init() {}
+    }
+    
     let cb = CarBrands.as("cb")
     
     struct QueryWithDialect {

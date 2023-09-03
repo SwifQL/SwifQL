@@ -8,6 +8,7 @@
 import Foundation
 
 extension Array: SwifQLable where Element: SwifQLable {
+    
     public var parts: [SwifQLPart] {
         if let _ = Element.self as? AnySwifQLEnum.Type {
             let values = compactMap {
@@ -15,9 +16,11 @@ extension Array: SwifQLable where Element: SwifQLable {
             }.joined(separator: ",")
             return [SwifQLPartSafeValue("{\(values)}")]
         }
+        
         if let s = self as? SwifQLCodable {
             return [SwifQLPartUnsafeValue(s)]
         } else {
+            
             return separator(.comma).parts
         }
     }

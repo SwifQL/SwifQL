@@ -390,6 +390,18 @@ PgArray(emptyMode: .dollar) => .uuidArray
 PgArray() => .textArray
 ```
 
+Postgress range query examples
+```swift
+// var ingredients: [IngredientsEnum] 
+SwifQL.select(FoodMenu.table.*).WHERE( \FoodMenu.$ingredients ||> [.tomato] )
+
+// var ingredients: [String]
+SwifQL.select(FoodMenu.table.*).WHERE( \FoodMenu.$ingredients ||> PgArray(["tomato"]) )
+
+// var vendors: [UUID]
+SwifQL.select(FoodMenu.table.*).WHERE( \FoodMenu.$vendors ||> PgArray([vendorUuid]) )
+```
+
 ## Nesting array of objects inside of query result
 Consider such response object you want to achieve:
 
