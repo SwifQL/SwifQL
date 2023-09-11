@@ -250,6 +250,28 @@ let user2 = User(email: "byebye@gmail.com", name: "Amily")
 let user3 = User(email: "trololo@gmail.com", name: "Trololo")
 [user1, user2, user3].batchInsert(on: conn)
 ```
+## Update
+
+### General Update
+SQL example
+```sql
+UPDATE "User" SET "name" = 'Mike'
+```
+SwifQL representation
+```swift
+SwifQL.update(User.table).set[items: User.$name == "Mike"]
+```
+
+### In Schema Update
+SQL example
+```sql
+UPDATE "VIP"."User" SET "name" = 'Mike'
+```
+SwifQL representation
+```swift
+let vip = User.inSchema("VIP")
+SwifQL.update(vip.table).set[items: vip.$name == "Mike"]
+```
 
 ## Builders
 
