@@ -1,5 +1,5 @@
 ////
-////  SwifQLableFunctionBuilder.swift
+////  SwifQLableResultBuilder.swift
 ////  SwifQL
 ////
 ////  Created by Mihael Isaev on 11.04.2020.
@@ -7,7 +7,7 @@
 //
 //import Foundation
 //
-//@_functionBuilder public struct SwifQLableFunctionBuilder {
+//@resultBuilder public struct SwifQLableResultBuilder {
 //    public typealias Block = () -> SwifQLable
 //    
 //    /// Builds an empty view from an block containing no statements, `{ }`.
@@ -44,17 +44,17 @@
 //    }
 //}
 //
-//public protocol SwifQLableFunctionBuilderItem {
+//public protocol SwifQLableResultBuilderItem {
 //    var expressions: [SwifQLable] { get }
 //}
 //
-//extension SwifQLable: SwifQLableFunctionBuilderItem {
+//extension SwifQLable: SwifQLableResultBuilderItem {
 //    public var expressions: [SwifQLable] { [self] }
 //}
-//extension Array: SwifQLableFunctionBuilderItem where Element: SwifQLable {
+//extension Array: SwifQLableResultBuilderItem where Element: SwifQLable {
 //    public var expressions: [SwifQLable] { self }
 //}
-//extension Optional: SwifQLableFunctionBuilderItem where Wrapped: SwifQLable {
+//extension Optional: SwifQLableResultBuilderItem where Wrapped: SwifQLable {
 //    public var expressions: [SwifQLable] {
 //        switch self {
 //        case .none: return []

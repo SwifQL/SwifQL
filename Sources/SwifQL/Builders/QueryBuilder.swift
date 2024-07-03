@@ -24,7 +24,7 @@ public struct QueryBuilderItem: SwifQLable {
         self.values = values ?? []
     }
 }
-@_functionBuilder public struct QueryBuilder {
+@resultBuilder public struct QueryBuilder {
     public typealias Block = () -> SwifQLable
     
     /// Builds an empty view from an block containing no statements, `{ }`.

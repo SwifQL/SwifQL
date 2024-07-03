@@ -341,7 +341,7 @@ extension SwifQLPartOperator {
     public var comma: Result { concatWith(.comma) }
     public var period: Result { concatWith(.period) }
     public var space: Result { concatWith(.space) }
-    public var `_`: Result { concatWith(._) }
+    public var `_`: Result { concatWith(.`_`) }
     public var using: Result { concatWith(.using) }
     public var owner: Result { concatWith(.owner) }
     public var to: Result { concatWith(.to) }
