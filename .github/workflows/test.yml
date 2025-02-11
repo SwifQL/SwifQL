@@ -1,27 +1,9 @@
 name: test
 on: [push, pull_request]
 jobs:
-  swift_5_5:
-    container: swift:5.5-focal
+  swift_6_0:
+    container: swift:6.0
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - run: swift test --enable-test-discovery --sanitize=thread
-  swift_5_4:
-    container: swift:5.4-focal
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - run: swift test --enable-test-discovery --sanitize=thread
-  swift_5_3:
-    container: swift:5.3-focal
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - run: swift test --enable-test-discovery --sanitize=thread
-  swift_5_2:
-    container: swift:5.2-focal
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - run: swift test --enable-test-discovery --sanitize=thread
+    - run: swift test
