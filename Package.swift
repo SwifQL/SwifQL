@@ -15,5 +15,6 @@ let package = Package(
     targets: [
         .target(name: "SwifQL", dependencies: []),
         .testTarget(name: "SwifQLTests", dependencies: [.target(name: "SwifQL")]),
-    ]
+    ],
+    swiftLanguageModes: [.v5]
 )
