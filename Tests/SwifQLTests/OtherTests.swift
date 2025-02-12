@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class SwifQLTests: SwifQLTestCase {
+@Suite("Other Tests")
+struct OtherTests: SwifQLTests {
     // MARK: String enum array
     
-    func testStringEnumArray() {
+    @Test("Test String Enum Array")
+    func stringEnumArray() {
         enum UserRole: String, SwifQLEnum {
             case admin
             case staff
@@ -19,7 +22,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Int enum array
     
-    func testIntEnumArray() {
+    @Test("Test Int Enum Array")
+    func intEnumArray() {
         enum UserRole: Int, SwifQLEnum {
             case admin = 0
             case staff = 1
@@ -34,7 +38,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Int enum value alone
     
-    func testIntEnumValueAlone() {
+    @Test("Test Int Enum Array With Alone Value")
+    func intEnumValueAlone() {
         enum UserRole: Int, SwifQLEnum {
             case admin = 0
             case staff = 1
@@ -49,7 +54,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: String enum value alone
     
-    func testStringEnumValueAlone() {
+    @Test("Test String Enum Array With Value Alone")
+    func stringEnumValueAlone() {
         enum UserRole: String, SwifQLEnum {
             case admin
             case staff
@@ -64,7 +70,8 @@ final class SwifQLTests: SwifQLTestCase {
 
     // MARK: Null Condition
     
-    func testNullCondition() {
+    @Test("Test Null Condition")
+    func nullCondition() {
         check(
             "hello" == SwifQLNull,
             .psql(#"'hello' = NULL"#),
@@ -79,7 +86,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Enum array
     
-    func testEnumArray() {
+    @Test("Test Enum Array")
+    func enumArray() {
         check(
             [GearboxType.manual],
             .psql(#"'{manual}'"#),
@@ -94,13 +102,15 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Enum array type autodetect
     
-    func testEnumArrayTypeAutodetect() {
+    @Test("Test Array Type Autodetect")
+    func enumArrayTypeAutodetect() {
         XCTAssertEqual(Type.auto(from: [GearboxType].self).name, "gearboxtype[]")
     }
     
     // MARK: ANY operator
     
-    func testAnyOperator() {
+    @Test("Test Operator")
+    func anyOperator() {
         check(
             SwifQL.any("hello"),
             .psql(#"ANY('hello')"#),
@@ -110,7 +120,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Update
     
-    func testUpdateWithSchema() {
+    @Test("Test Update With Schema")
+    func updateWithSchema() {
         let alias = CarBrands.inSchema("hello")
         check(
             SwifQL.update(alias.table).set[items: alias.$id == 1, alias.$createdAt == 2],
@@ -119,7 +130,8 @@ final class SwifQLTests: SwifQLTestCase {
         )
     }
     
-    func testUpdateAlreadySchemableWithSchemaDifferentSchema() {
+    @Test("Test Update Already Schemable With Different Schema")
+    func updateAlreadySchemableWithDifferentSchema() {
         let alias = SchemableCarBrands.inSchema("hello")
         check(
             SwifQL.update(alias.table).set[items: alias.$id == 1, alias.$createdAt == 2],
@@ -130,7 +142,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Alias
     
-    func testAlias() {
+    @Test("Test Alias")
+    func alias() {
         check(
             CarBrands.as("c"),
             .psql(#""c""#),
@@ -155,7 +168,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Create Type
     
-    func testCreateType() {
+    @Test("Test Create Type")
+    func createType() {
         check(
             SwifQL.type("mood"),
             .psql(#"TYPE "mood""#),
@@ -174,7 +188,8 @@ final class SwifQLTests: SwifQLTestCase {
         case sad, happy
     }
     
-    func testSelectEnum() {
+    @Test("Test Select Enum")
+    func selectEnum() {
         check(
             SwifQL.select(Mood.happy),
             .psql(#"SELECT 'happy'"#),
@@ -184,142 +199,168 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: Rename Table
     
-    func testRenameTable() {
+    @Test("Test Rename Table")
+    func renameTable() {
         check(UpdateTableBuilder<CarBrands>().renameTable(to: "aaa"),
               .psql(#"ALTER TABLE "CarBrands" RENAME TO "aaa";"#))
     }
     
     // MARK: Add Column
     
-    func testAddColumn() {
+    @Test("Test Add Column")
+    func addColumn() {
         check(UpdateTableBuilder<CarBrands>().addColumn("aaa", .bigint, .default(0), .notNull),
               .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "aaa" bigint DEFAULT 0 NOT NULL;"#))
     }
 
-    func testAddColumnIfNotExits() {
+    @Test("Test Add Column If Not Exits")
+    func addColumnIfNotExits() {
         check(UpdateTableBuilder<CarBrands>().addColumn("aaa", .bigint, .default(0), checkIfNotExists: true, .notNull),
               .psql(#"ALTER TABLE "CarBrands" ADD COLUMN IF NOT EXISTS "aaa" bigint DEFAULT 0 NOT NULL;"#))
     }
 
     // MARK: Drop Column
     
-    func testDropColumn() {
+    @Test("Test Drop Column")
+    func dropColumn() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa"),
               .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#))
     }
 
-    func testDropColumnIfExists() {
+    @Test("Test Drop Column If Exists")
+    func dropColumnIfExists() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true),
               .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa";"#))
     }
 
-    func testDropColumnCascade() {
+    @Test("Test Drop Column Cascade")
+    func dropColumnCascade() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", cascade: true),
               .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#))
     }
 
-    func testDropColumnIfExistsCascade() {
+    @Test("Test Drop Column If Exists Cascade")
+    func dropColumnIfExistsCascade() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true, cascade: true),
               .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" CASCADE;"#))
     }
 
     // MARK: Set Default
     
-    func testSetDefault() {
+    @Test("Test Set Default")
+    func setDefault() {
         check(UpdateTableBuilder<CarBrands>().setDefault("aaa", constant: 0),
               .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET DEFAULT 0;"#))
     }
     
     // MARK: Drop Default
     
-    func testDropDefault() {
+    @Test("Test Drop Default")
+    func dropDefault() {
         check(UpdateTableBuilder<CarBrands>().dropDefault("aaa"),
               .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP DEFAULT;"#))
     }
     
     // MARK: Set Not Null
     
-    func testSetNotNull() {
+    @Test("Test Set Not Null")
+    func setNotNull() {
         check(UpdateTableBuilder<CarBrands>().setNotNull("aaa"),
               .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET NOT NULL;"#))
     }
     
     // MARK: Drop Not Null
     
-    func testDropNotNull() {
+    @Test("Test Drop Not Null")
+    func dropNotNull() {
         check(UpdateTableBuilder<CarBrands>().dropNotNull("aaa"),
               .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP NOT NULL;"#))
     }
     
     // MARK: Rename Column
     
-    func testRenameColumn() {
+    @Test("Test Rename Column")
+    func renameColumn() {
         check(UpdateTableBuilder<CarBrands>().renameColumn("aaa", to: "bbb"),
               .psql(#"ALTER TABLE "CarBrands" RENAME COLUMN "aaa" TO "bbb";"#))
     }
     
     // MARK: Add Unique
     
-    func testAddUnique() {
+    @Test("Test Add Unique")
+    func addUnique() {
         check(UpdateTableBuilder<CarBrands>().addUnique(to: "aaa", "bbb"),
               .psql(#"ALTER TABLE "CarBrands" ADD UNIQUE ("aaa", "bbb");"#))
     }
     
     // MARK: Add Primary Key
     
-    func testAddPrimaryKey() {
+    @Test("Test Add Primary Key")
+    func addPrimaryKey() {
         check(UpdateTableBuilder<CarBrands>().addPrimaryKey(to: "aaa", "bbb"),
               .psql(#"ALTER TABLE "CarBrands" ADD PRIMARY KEY ("aaa", "bbb");"#))
     }
     
     // MARK: Drop Constraint
     
-    func testDropConstraint() {
+    @Test("Test Drop Constraint")
+    func dropConstraint() {
         check(UpdateTableBuilder<CarBrands>().dropConstraint("aaa"),
               .psql(#"DROP CONSTRAINT "aaa";"#))
     }
     
     // MARK: Drop Index
     
-    func testDropIndex() {
+    @Test("Test Drop Index")
+    func dropIndex() {
         check(UpdateTableBuilder<CarBrands>().dropIndex(name: "aaa"),
               .psql(#"DROP INDEX "aaa";"#))
     }
     
     // MARK: Create Index
     
-    func testCreateIndex() {
-        check(UpdateTableBuilder<CarBrands>().createIndex(unique: true,
-                                                                                      name: "aaa",
-                                                                                      items: .column("column3", order: .desc), .expression(SwifQLBool(true) == SwifQLBool(true)),
-                                                                                      type: .hash,
-                                                                                      where: SwifQLBool(true) == SwifQLBool(true)),
-              .psql(#"CREATE UNIQUE INDEX "aaa" ON "CarBrands" USING HASH ("column3" DESC, (TRUE = TRUE)) WHERE TRUE = TRUE;"#))
+    @Test("Test Create Index")
+    func createIndex() {
+        check(
+            UpdateTableBuilder<CarBrands>().createIndex(
+                unique: true,
+                name: "aaa",
+                items: .column("column3", order: .desc),
+                       .expression(SwifQLBool(true) == SwifQLBool(true)),
+                type: .hash,
+                where: SwifQLBool(true) == SwifQLBool(true)
+            ),
+            .psql(#"CREATE UNIQUE INDEX "aaa" ON "CarBrands" USING HASH ("column3" DESC, (TRUE = TRUE)) WHERE TRUE = TRUE;"#)
+        )
     }
     
     // MARK: Add Check
     
-    func testAddCheck() {
+    @Test("Test Add Check")
+    func addCheck() {
         check(UpdateTableBuilder<CarBrands>().addCheck(constraintName: "some_check", SwifQLBool(true) == SwifQLBool(false)),
               .psql(#"ALTER TABLE "CarBrands" ADD CONSTRAINT "some_check" CHECK (TRUE = FALSE);"#))
     }
     
     // MARK: Add Foreign Key
     
-    func testAddForeignKey() {
+    @Test("Test Add Foreign Key")
+    func addForeignKey() {
         check(UpdateTableBuilder<CarBrands>().addForeignKey(column: "aaa", constraintName: "fk_aaa", schema: "deleted", table: "User", columns: "id", onDelete: .cascade, onUpdate: .noAction),
               .psql(#"ALTER TABLE "CarBrands" ADD CONSTRAINT "fk_aaa" FOREIGN KEY ("aaa") REFERENCES "deleted"."User"("id") ON DELETE CASCADE ON UPDATE NO ACTION;"#))
     }
     
     //MARK: - Operators
     
-    func testOperatorToSwifQLable() {
+    @Test("Test Operator To SwifQLable")
+    func operatorToSwifQLable() {
         check(SwifQL.select(Operator.null), .mysql("SELECT NULL"), .psql("SELECT NULL"))
     }
         
     //MARK: - ARRAY
     
-    func testArray() {
+    @Test("Test Array")
+    func array() {
         let emptyIntArray: [Int] = []
         check(
             emptyIntArray,
@@ -371,13 +412,16 @@ final class SwifQLTests: SwifQLTestCase {
     
     //MARK: - WHERE
     
-    func testWhere() {
+    @Test("Test Where")
+    func `where`() {
         check(SwifQL.where("" == 1), all: "WHERE '' = 1")
         check(SwifQL.where, all: "WHERE")
     }
     
     //MARK: - UNION
-    func testUnion() {
+    
+    @Test("Test Union")
+    func union() {
         let table1 = Path.Table("Table1")
         let table2 = Path.Table("Table2")
         let table3 = Path.Table("Table3")
@@ -407,7 +451,8 @@ final class SwifQLTests: SwifQLTestCase {
 
     //MARK: - VALUES
     
-    func testValues() {
+    @Test("Test Values")
+    func values() {
         check(
             SwifQL.values(1, 1.2, 1.234, "hello"),
             .psql("(1, 1.2, 1.234, 'hello')"),
@@ -422,14 +467,16 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: - BINDINGS
     
-    func testBindingForPostgreSQL() {
+    @Test("Test Binding For PostgreSQL")
+    func bindingForPostgreSQL() {
         let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.psql).splitted.query
         XCTAssertEqual(query, """
         WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
         """)
     }
     
-    func testBindingForMySQL() {
+    @Test("Test Binding For MySQL")
+    func bindingForMySQL() {
         let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.mysql).splitted.query
         XCTAssertEqual(query, """
         WHERE CarBrands.name = ? OR CarBrands.name = ?
@@ -438,7 +485,8 @@ final class SwifQLTests: SwifQLTestCase {
     
     // MARK: - FormattedKeyPath
     
-    func testFormattedKeyPath() {
+    @Test("Test Formatted KeyPath")
+    func formattedKeyPath() {
         check(
             SwifQL.select(FormattedKeyPath(CarBrands.self, "id")),
             .psql(#"SELECT "CarBrands"."id""#),
@@ -450,43 +498,4 @@ final class SwifQLTests: SwifQLTestCase {
             .mysql("SELECT CarBrands.id")
         )
     }
-    
-    static var allTests = [
-        ("testStringEnumArray", testStringEnumArray),
-        ("testIntEnumArray", testIntEnumArray),
-        ("testIntEnumValueAlone", testIntEnumValueAlone),
-        ("testStringEnumValueAlone", testStringEnumValueAlone),
-        ("testNullCondition", testNullCondition),
-        ("testEnumArray", testEnumArray),
-        ("testEnumArrayTypeAutodetect", testEnumArrayTypeAutodetect),
-        ("testAnyOperator", testAnyOperator),
-        ("testUpdateWithSchema", testUpdateWithSchema),
-        ("testUpdateAlreadySchemableWithSchemaDifferentSchema", testUpdateAlreadySchemableWithSchemaDifferentSchema),
-        ("testCreateType", testCreateType),
-        ("testSelectEnum", testSelectEnum),
-        ("testRenameTable", testRenameTable),
-        ("testAddColumn", testAddColumn),
-        ("testDropColumn", testDropColumn),
-        ("testDropColumnIfExists", testDropColumnIfExists),
-        ("testDropColumnCascade", testDropColumnCascade),
-        ("testDropColumnIfExistsCascade", testDropColumnIfExistsCascade),
-        ("testSetDefault", testSetDefault),
-        ("testDropDefault", testDropDefault),
-        ("testSetNotNull", testSetNotNull),
-        ("testDropNotNull", testDropNotNull),
-        ("testRenameColumn", testRenameColumn),
-        ("testAddUnique", testAddUnique),
-        ("testAddPrimaryKey", testAddPrimaryKey),
-        ("testDropConstraint", testDropConstraint),
-        ("testDropIndex", testDropIndex),
-        ("testCreateIndex", testCreateIndex),
-        ("testAddCheck", testAddCheck),
-        ("testAddForeignKey", testAddForeignKey),
-        ("testOperatorToSwifQLable", testOperatorToSwifQLable),
-        ("testArray", testArray),
-        ("testBindingForPostgreSQL", testBindingForPostgreSQL),
-        ("testBindingForMySQL", testBindingForMySQL),
-        ("testUnion", testUnion),
-        ("testFormattedKeyPath", testFormattedKeyPath)
-    ]
 }

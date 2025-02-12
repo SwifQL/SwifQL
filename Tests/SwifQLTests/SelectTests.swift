@@ -1,13 +1,17 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import Foundation
 
-final class SelectTests: SwifQLTestCase {
-    func testSelect() {
+@Suite("Select Tests")
+struct SelectTests: SwifQLTests {
+    @Test("Test Select")
+    func select() {
         check(SwifQL.select, all: "SELECT")
         check(SwifQL.select(), all: "SELECT ")
     }
     
-    func testSelectString() {
+    @Test("Test Select String")
+    func selectString() {
         check(
             SwifQL.select("hello"),
             .psql("SELECT 'hello'"),
@@ -15,7 +19,17 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectInt() {
+//    @Test("Test Select UUID Array")
+//    func selectUUIDArray() {
+//        check(
+//            SwifQL ||> [PostgresArray(UUID(uuidString: "00000000-0000-0000-0000-000000000001"))],
+//            .psql("SELECT 'hello'"),
+//            .mysql("SELECT 'hello'")
+//        )
+//    }
+    
+    @Test("Test Select Int")
+    func selectInt() {
         check(
             SwifQL.select(1),
             .psql("SELECT 1"),
@@ -23,7 +37,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectDouble() {
+    @Test("Test Select Double")
+    func selectDouble() {
         check(
             SwifQL.select(1.234),
             .psql("SELECT 1.234"),
@@ -31,7 +46,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
 
-    func testSelectData() {
+    @Test("Test Select Date")
+    func selectData() {
         let base64 = "Aa+/0w=="
         let data = Data(base64Encoded: base64)!
         check(
@@ -40,7 +56,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectSeveralSimpleValues() {
+    @Test("Test Select Several Simple Values")
+    func selectSeveralSimpleValues() {
         check(
             SwifQL.select("hello", 1, 1.234),
             .psql("SELECT 'hello', 1, 1.234"),
@@ -48,7 +65,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumn_path() {
+    @Test("Test Select Column Path")
+    func selectColumn_path() {
         check(
             SwifQL.select(Path.Column("id")),
             .psql(#"SELECT "id""#),
@@ -56,7 +74,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumn_keyPath() {
+    @Test("Test Select Column KeyPath")
+    func selectColumn_keyPath() {
         check(
             SwifQL.select(\CarBrands.$id),
             .psql(#"SELECT "CarBrands"."id""#),
@@ -64,7 +83,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumn_keyPath_alias_simple() {
+    @Test("Test Select Column KeyPath Alias Simple")
+    func selectColumn_keyPath_alias_simple() {
         check(
             SwifQL.select(\CarBrands.$id => "ident"),
             .psql(#"SELECT "CarBrands"."id" as "ident""#),
@@ -72,7 +92,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumn_keyPath_alias_keyPath() {
+    @Test("Test Select Column KeyPath Alias KeyPath")
+    func selectColumn_keyPath_alias_keyPath() {
         struct Result: Aliasable {
             @Alias("ident") var abc: UUID
             init () {}
@@ -84,7 +105,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumnWithTable() {
+    @Test("Test Select Column With Table")
+    func selectColumnWithTable() {
         check(
             SwifQL.select(Path.Table("CarBrands").column("id")),
             .psql(#"SELECT "CarBrands"."id""#),
@@ -92,7 +114,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumnWithTableAndSchema() {
+    @Test("Test Select Column With Table And Schema")
+    func selectColumnWithTableAndSchema() {
         check(
             SwifQL.select(Path.Schema("test").table("CarBrands").column("id")),
             .psql(#"SELECT "test"."CarBrands"."id""#),
@@ -100,7 +123,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectColumnWithoutTable() {
+    @Test("Test Select Column Without Table")
+    func selectColumnWithoutTable() {
         check(
             SwifQL.select(Path.Column("id")),
             .psql(#"SELECT "id""#),
@@ -108,7 +132,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testGenericSelector_all() {
+    @Test("Test Generic Selector All")
+    func genericSelector_all() {
         check(
             CarBrands.select,
             .psql(#"SELECT "CarBrands".* FROM "CarBrands""#),
@@ -116,7 +141,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectCarBrands() {
+    @Test("Select CarBrands")
+    func selectCarBrands() {
         check(
             SwifQL.select(CarBrands.column("id")),
             .psql(#"SELECT "CarBrands"."id""#),
@@ -124,7 +150,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectSchemableCarBrands() {
+    @Test("Select Schemable CarBrands")
+    func selectSchemableCarBrands() {
         check(
             SwifQL.select(SchemableCarBrands.column("id")),
             .psql(#"SELECT "public"."CarBrands"."id""#),
@@ -132,7 +159,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectCarBrandsInCustomSchema() {
+    @Test("Select CarBrands in Customer Schema")
+    func selectCarBrandsInCustomSchema() {
         let cb = Schema<CarBrands>("hello")
         check(
             SwifQL.select(cb.column("id")),
@@ -141,7 +169,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectCarBrandsSeveralFields() {
+    @Test("Select CarBrands Several Fields")
+    func selectCarBrandsSeveralFields() {
         check(
             SwifQL.select(CarBrands.column("id"), CarBrands.column("name")),
             .psql(#"SELECT "CarBrands"."id", "CarBrands"."name""#),
@@ -149,7 +178,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectCarBrandsWithAlias() {
+    @Test("Select CarBrands With Alias")
+    func selectCarBrandsWithAlias() {
         check(
             SwifQL.select(cb.column("id")),
             .psql(#"SELECT "cb"."id""#),
@@ -157,7 +187,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectCarBrandsWithAliasSeveralFields() {
+    @Test("Select CarBrands With Alias Several Fields")
+    func selectCarBrandsWithAliasSeveralFields() {
         check(
             SwifQL.select(cb.column("id"), cb.column("name")),
             .psql(#"SELECT "cb"."id", "cb"."name""#),
@@ -165,7 +196,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectCarBrandsSeveralFieldsMixed() {
+    @Test("Select CarBrands Several Fields Mixed")
+    func selectCarBrandsSeveralFieldsMixed() {
         check(
             SwifQL.select(CarBrands.column("id"), cb.column("name"), CarBrands.column("createdAt")),
             .psql(#"SELECT "CarBrands"."id", "cb"."name", "CarBrands"."createdAt""#),
@@ -175,7 +207,8 @@ final class SelectTests: SwifQLTestCase {
     
     //MARK: PostgreSQL Functions
     
-    func testSelectFnAbs() {
+    @Test("Select abs")
+    func selectFnAbs() {
         check(
             SwifQL.select(Fn.abs(1)),
             .psql("SELECT abs(1)"),
@@ -183,7 +216,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnAvg() {
+    @Test("Select avg")
+    func selectFnAvg() {
         check(
             SwifQL.select(Fn.avg(1)),
             .psql("SELECT avg(1)"),
@@ -191,7 +225,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnBitLength() {
+    @Test("Select bit_length")
+    func selectFnBitLength() {
         check(
             SwifQL.select(Fn.bit_length("hello")),
             .psql("SELECT bit_length('hello')"),
@@ -199,7 +234,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnBtrim() {
+    @Test("Select btrim")
+    func selectFnBtrim() {
         check(
             SwifQL.select(Fn.btrim("hello", "ll")),
             .psql("SELECT btrim('hello', 'll')"),
@@ -207,7 +243,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnCeil() {
+    @Test("Select ceil")
+    func selectFnCeil() {
         check(
             SwifQL.select(Fn.ceil(1.5)),
             .psql("SELECT ceil(1.5)"),
@@ -215,7 +252,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnCeiling() {
+    @Test("Select ceiling")
+    func selectFnCeiling() {
         check(
             SwifQL.select(Fn.ceiling(1.5)),
             .psql("SELECT ceiling(1.5)"),
@@ -223,7 +261,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnCharLength() {
+    @Test("Select char_length")
+    func selectFnCharLength() {
         check(
             SwifQL.select(Fn.char_length("hello")),
             .psql("SELECT char_length('hello')"),
@@ -231,7 +270,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnCharacter_length() {
+    @Test("Select character_length")
+    func selectFnCharacter_length() {
         check(
             SwifQL.select(Fn.character_length("hello")),
             .psql("SELECT character_length('hello')"),
@@ -239,7 +279,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnInitcap() {
+    @Test("Select initcap")
+    func selectFnInitcap() {
         check(
             SwifQL.select(Fn.initcap("hello")),
             .psql("SELECT initcap('hello')"),
@@ -247,7 +288,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnLength() {
+    @Test("Select length")
+    func selectFnLength() {
         check(
             SwifQL.select(Fn.length("hello")),
             .psql("SELECT length('hello')"),
@@ -255,7 +297,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnLower() {
+    @Test("Select lower")
+    func selectFnLower() {
         check(
             SwifQL.select(Fn.lower("hello")),
             .psql("SELECT lower('hello')"),
@@ -263,7 +306,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnLpad() {
+    @Test("Select lpad")
+    func selectFnLpad() {
         check(
             SwifQL.select(Fn.lpad("hello", 3, "lo")),
             .psql("SELECT lpad('hello', 3, 'lo')"),
@@ -271,7 +315,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnLtrim() {
+    @Test("Select ltrim")
+    func selectFnLtrim() {
         check(
             SwifQL.select(Fn.ltrim("hello", "he")),
             .psql("SELECT ltrim('hello', 'he')"),
@@ -279,7 +324,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnPosition() {
+    @Test("Select position")
+    func selectFnPosition() {
         check(
             SwifQL.select(Fn.position("el", in: "hello")),
             .psql("SELECT position('el' IN 'hello')"),
@@ -287,7 +333,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnRepeat() {
+    @Test("Select repeat")
+    func selectFnRepeat() {
         check(
             SwifQL.select(Fn.repeat("hello", 2)),
             .psql("SELECT repeat('hello', 2)"),
@@ -295,7 +342,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnReplace() {
+    @Test("Select replace")
+    func selectFnReplace() {
         check(
             SwifQL.select(Fn.replace("hello", "el", "ol")),
             .psql("SELECT replace('hello', 'el', 'ol')"),
@@ -303,7 +351,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnRpad() {
+    @Test("Select rpad")
+    func selectFnRpad() {
         check(
             SwifQL.select(Fn.rpad("hello", 2, "ho")),
             .psql("SELECT rpad('hello', 2, 'ho')"),
@@ -311,7 +360,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnRtrim() {
+    @Test("Select rtrim")
+    func selectFnRtrim() {
         check(
             SwifQL.select(Fn.rtrim(" hello ", " ")),
             .psql("SELECT rtrim(' hello ', ' ')"),
@@ -319,7 +369,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnStrpos() {
+    @Test("Select strpos")
+    func selectFnStrpos() {
         check(
             SwifQL.select(Fn.strpos("hello", "ll")),
             .psql("SELECT strpos('hello', 'll')"),
@@ -327,7 +378,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnSubstring() {
+    @Test("Select substring")
+    func selectFnSubstring() {
         check(
             SwifQL.select(Fn.substring("hello", from: 1)),
             .psql("SELECT substring('hello' FROM 1)"),
@@ -345,7 +397,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnTranslate() {
+    @Test("Select translate")
+    func selectFnTranslate() {
         check(
             SwifQL.select(Fn.translate("hola", "hola", "hello")),
             .psql("SELECT translate('hola', 'hola', 'hello')"),
@@ -353,7 +406,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnLTrim() {
+    @Test("Select ltrim")
+    func selectFnLTrim() {
         check(
             SwifQL.select(Fn.ltrim("hello", "he")),
             .psql("SELECT ltrim('hello', 'he')"),
@@ -361,7 +415,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnUpper() {
+    @Test("Select upper")
+    func selectFnUpper() {
         check(
             SwifQL.select(Fn.upper("hello")),
             .psql("SELECT upper('hello')"),
@@ -369,7 +424,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnCount() {
+    @Test("Select count")
+    func selectFnCount() {
         check(
             SwifQL.select(Fn.count(CarBrands.column("id"))),
             .psql(#"SELECT count("CarBrands"."id")"#),
@@ -382,7 +438,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnDiv() {
+    @Test("Select div")
+    func selectFnDiv() {
         check(
             SwifQL.select(Fn.div(12, 4)),
             .psql("SELECT div(12, 4)"),
@@ -390,7 +447,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnExp() {
+    @Test("Select exp")
+    func selectFnExp() {
         check(
             SwifQL.select(Fn.exp(12, 4)),
             .psql("SELECT exp(12, 4)"),
@@ -398,7 +456,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnFloor() {
+    @Test("Select floor")
+    func selectFnFloor() {
         check(
             SwifQL.select(Fn.floor(12)),
             .psql("SELECT floor(12)"),
@@ -406,7 +465,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnMax() {
+    @Test("Select max")
+    func selectFnMax() {
         check(
             SwifQL.select(Fn.max(CarBrands.column("id"))),
             .psql(#"SELECT max("CarBrands"."id")"#),
@@ -419,7 +479,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnMin() {
+    @Test("Select min")
+    func selectFnMin() {
         check(
             SwifQL.select(Fn.min(CarBrands.column("id"))),
             .psql(#"SELECT min("CarBrands"."id")"#),
@@ -432,7 +493,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnMod() {
+    @Test("Select mod")
+    func selectFnMod() {
         check(
             SwifQL.select(Fn.mod(12, 4)),
             .psql("SELECT mod(12, 4)"),
@@ -440,7 +502,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnPower() {
+    @Test("Select power")
+    func selectFnPower() {
         check(
             SwifQL.select(Fn.power(12, 4)),
             .psql("SELECT power(12, 4)"),
@@ -448,7 +511,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnRandom() {
+    @Test("Select random")
+    func selectFnRandom() {
         check(
             SwifQL.select(Fn.random()),
             .psql("SELECT random()"),
@@ -456,7 +520,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnRound() {
+    @Test("Select round")
+    func selectFnRound() {
         check(
             SwifQL.select(Fn.round(12.43)),
             .psql("SELECT round(12.43)"),
@@ -469,7 +534,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnSetSeed() {
+    @Test("Select setseed")
+    func selectFnSetSeed() {
         check(
             SwifQL.select(Fn.setseed(12)),
             .psql("SELECT setseed(12)"),
@@ -477,7 +543,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnSign() {
+    @Test("Select sign")
+    func selectFnSign() {
         check(
             SwifQL.select(Fn.sign(12)),
             .psql("SELECT sign(12)"),
@@ -485,7 +552,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnSqrt() {
+    @Test("Select sqrt")
+    func selectFnSqrt() {
         check(
             SwifQL.select(Fn.sqrt(16)),
             .psql("SELECT sqrt(16)"),
@@ -493,7 +561,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
     
-    func testSelectFnSum() {
+    @Test("Select sum")
+    func selectFnSum() {
         check(
             SwifQL.select(Fn.sum(CarBrands.column("id"))),
             .psql(#"SELECT sum("CarBrands"."id")"#),
@@ -506,7 +575,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
 
-    func testSelectFnStringAgg() {
+    @Test("Select string_agg")
+    func selectFnStringAgg() {
         check(
             SwifQL.select(Fn.string_agg(CarBrands.column("name"), ", ")),
             .psql(#"SELECT string_agg("CarBrands"."name", ', ')"#),
@@ -514,7 +584,8 @@ final class SelectTests: SwifQLTestCase {
         )
     }
 
-    func testSelectFnRegexpReplace() {
+    @Test("Select regexp_replace")
+    func selectFnRegexpReplace() {
         check(
             SwifQL.select(Fn.regexp_replace("/full/path/to/filename", "^.+/", "")),
             .psql(#"SELECT regexp_replace('/full/path/to/filename', '^.+/', '')"#),
@@ -524,68 +595,12 @@ final class SelectTests: SwifQLTestCase {
     
     // MARK: - SELECT with alias in select params
     
-    func testSelectWithAliasInSelectParams() {
+    @Test("Select With Alias In Select Params")
+    func selectWithAliasInSelectParams() {
         check(
             SwifQL.select("hello", =>"aaa").from(|SwifQL.select(CarBrands.column("name")).from(CarBrands.table))| => "aaa",
             .psql(#"SELECT 'hello', "aaa" FROM (SELECT "CarBrands"."name" FROM "CarBrands") as "aaa""#),
             .mysql("SELECT 'hello', aaa FROM (SELECT CarBrands.name FROM CarBrands) as aaa")
         )
     }
-    
-    static var allTests = [
-        ("testPureSelect", testSelect),
-        ("testSimpleString", testSelectString),
-        ("testSelectInt", testSelectInt),
-        ("testSelectDouble", testSelectDouble),
-        ("testSelectSeveralSimpleValues", testSelectSeveralSimpleValues),
-        ("testSelectColumn_path", testSelectColumn_path),
-        ("testSelectColumn_keyPath", testSelectColumn_keyPath),
-        ("testSelectColumn_keyPath_alias_simple", testSelectColumn_keyPath_alias_simple),
-        ("testSelectColumn_keyPath_alias_keyPath", testSelectColumn_keyPath_alias_keyPath),
-        ("testSelectColumnWithTable", testSelectColumnWithTable),
-        ("testSelectCarBrands", testSelectCarBrands),
-        ("testSelectCarBrandsSeveralFields", testSelectCarBrandsSeveralFields),
-        ("testSelectCarBrandsWithAlias", testSelectCarBrandsWithAlias),
-        ("testSelectCarBrandsWithAliasSeveralFields", testSelectCarBrandsWithAliasSeveralFields),
-        ("testSelectCarBrandsSeveralFieldsMixed", testSelectCarBrandsSeveralFieldsMixed),
-        ("testSelectFnAvg", testSelectFnAvg),
-        ("testSelectFnBitLength", testSelectFnBitLength),
-        ("testSelectFnBtrim", testSelectFnBtrim),
-        ("testSelectFnCeil", testSelectFnCeil),
-        ("testSelectFnCeiling", testSelectFnCeiling),
-        ("testSelectFnCharLength", testSelectFnCharLength),
-        ("testSelectFnCharacter_length", testSelectFnCharacter_length),
-        ("testSelectFnInitcap", testSelectFnInitcap),
-        ("testSelectFnLength", testSelectFnLength),
-        ("testSelectFnLower", testSelectFnLower),
-        ("testSelectFnLpad", testSelectFnLpad),
-        ("testSelectFnLtrim", testSelectFnLtrim),
-        ("testSelectFnPosition", testSelectFnPosition),
-        ("testSelectFnRepeat", testSelectFnRepeat),
-        ("testSelectFnReplace", testSelectFnReplace),
-        ("testSelectFnRpad", testSelectFnRpad),
-        ("testSelectFnRtrim", testSelectFnRtrim),
-        ("testSelectFnStrpos", testSelectFnStrpos),
-        ("testSelectFnSubstring", testSelectFnSubstring),
-        ("testSelectFnTranslate", testSelectFnTranslate),
-        ("testSelectFnLTrim", testSelectFnLTrim),
-        ("testSelectFnUpper", testSelectFnUpper),
-        ("testSelectFnCount", testSelectFnCount),
-        ("testSelectFnDiv", testSelectFnDiv),
-        ("testSelectFnExp", testSelectFnExp),
-        ("testSelectFnFloor", testSelectFnFloor),
-        ("testSelectFnMax", testSelectFnMax),
-        ("testSelectFnMin", testSelectFnMin),
-        ("testSelectFnMod", testSelectFnMod),
-        ("testSelectFnPower", testSelectFnPower),
-        ("testSelectFnRandom", testSelectFnRandom),
-        ("testSelectFnRound", testSelectFnRound),
-        ("testSelectFnSetSeed", testSelectFnSetSeed),
-        ("testSelectFnSign", testSelectFnSign),
-        ("testSelectFnSqrt", testSelectFnSqrt),
-        ("testSelectFnSum", testSelectFnSum),
-        ("testSelectFnStringAgg", testSelectFnStringAgg),
-        ("testSelectFnRegexpReplace", testSelectFnRegexpReplace),
-        ("testSelectWithAliasInSelectParams", testSelectWithAliasInSelectParams)
-    ]
 }

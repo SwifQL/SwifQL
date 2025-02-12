@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class SubqueryTests: SwifQLTestCase {
+@Suite("Subquery Tests")
+struct SubqueryTests: SwifQLTests {
     // MARK: - SUBQUERY WITH ALIAS
     
-    func testSubqueryWithAlias() {
+    @Test("Test Subquery With Alias")
+    func subqueryWithAlias() {
         let a = CarBrands.as("a")
         let b = CarBrands.as("b")
         // WRONG EXAMPLE because of `|` postfix operator near `alias1`
@@ -36,8 +39,4 @@ final class SubqueryTests: SwifQLTestCase {
             .mysql("SELECT a.name, (SELECT json_agg(alias1) as test1 FROM (SELECT b.name as someName FROM CarBrands AS b WHERE b.id = a.id) as alias1) FROM CarBrands AS a")
         )
     }
-    
-    static var allTests = [
-        ("testSubqueryWithAlias", testSubqueryWithAlias)
-    ]
 }

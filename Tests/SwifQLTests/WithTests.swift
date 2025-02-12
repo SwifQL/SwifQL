@@ -1,8 +1,11 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class WithTests: SwifQLTestCase {
-    func testWith() {
+@Suite("With Tests")
+struct WithTests: SwifQLTests {
+    @Test("Test With")
+    func with() {
         check(
             SwifQL
                 .with(.init(Path.Table("Table1"), SwifQL.select(Path.Table("Table2").*).from(Path.Table("Table2"))))
@@ -13,7 +16,8 @@ final class WithTests: SwifQLTestCase {
         )
     }
     
-    func testWithColumns() {
+    @Test("Test With Columns")
+    func withColumns() {
         struct Table1: Table { init() {} }
         check(
             SwifQL
@@ -27,9 +31,4 @@ final class WithTests: SwifQLTestCase {
             .mysql("WITH Table1 as (SELECT Table1.* FROM Table1), Table2 (hi, there) as (SELECT Table2.* FROM Table2) SELECT Table3.* FROM Table3")
         )
     }
-    
-    static var allTests = [
-        ("testWith", testWith),
-        ("testWithColumns", testWithColumns)
-    ]
 }

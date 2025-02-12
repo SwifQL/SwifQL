@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class CaseTests: SwifQLTestCase {
+@Suite("Case Tests")
+struct CaseTests: SwifQLTests {
     // MARK: - Case When Then Else
     
-    func testCaseWhenThenElse1() {
+    @Test("Test Case When Then Else 1")
+    func caseWhenThenElse1() {
         check(
             Case
                 .when(CarBrands.column("name") == "BMW")
@@ -18,7 +21,8 @@ final class CaseTests: SwifQLTestCase {
         )
     }
     
-    func testCaseWhenThenElse2() {
+    @Test("Test Case When Then Else 2")
+    func caseWhenThenElse2() {
         check(
             Case(CarBrands.column("name"))
                 .when("BMW")
@@ -31,9 +35,4 @@ final class CaseTests: SwifQLTestCase {
             .mysql("CASE CarBrands.name WHEN 'BMW' THEN 'Crazy driver' WHEN 'Tesla' THEN 'Fancy driver' ELSE 'Normal driver' END")
         )
     }
-    
-    static var allTests = [
-        ("testCaseWhenThenElse1", testCaseWhenThenElse1),
-        ("testCaseWhenThenElse2", testCaseWhenThenElse2)
-    ]
 }

@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class DirectiveTests: SwifQLTestCase {
+@Suite("Directive Tests")
+struct DirectiveTests: SwifQLTests {
     // MARK: - UPDATE
     
-    func testUpdate() {
+    @Test("Test Update")
+    func update() {
         check(
             SwifQL.update(Path.Schema(nil).table("ttt")),
             .psql(#"UPDATE "ttt""#),
@@ -19,7 +22,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - INSERT INTO
     
-    func testInsertInto() {
+    @Test("Test Insert Into")
+    func insertInto() {
         check(
             SwifQL.insertInto(Path.Schema(nil).table("ttt"), fields: "id"),
             .psql(#"INSERT INTO "ttt" ("id")"#),
@@ -59,7 +63,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - Delete
     
-    func testDelete() {
+    @Test("Test Delete")
+    func delete() {
         check(
             SwifQL.delete(from: CarBrands.table).where(CarBrands.column("name") == "BMW"),
             .psql(#"DELETE FROM "CarBrands" WHERE "CarBrands"."name" = 'BMW'"#),
@@ -69,7 +74,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - RETURNING
     
-    func testReturning() {
+    @Test("Test Returning")
+    func returning() {
         check(
             SwifQL.returning("hello_world", "bye_world"),
             .psql(#"RETURNING "hello_world", "bye_world""#),
@@ -84,7 +90,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - ON CONFLICT DO NOTHING
     
-    func testOnConflict() {
+    @Test("Test On Conflict")
+    func onConflict() {
         check(
             SwifQL.on.conflict(CarBrands.column("id"), CarBrands.column("name")),
             .psql(#"ON CONFLICT ("id", "name")"#),
@@ -99,7 +106,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - ON CONFLICT ON CONSTRAINT DO NOTHING
     
-    func testOnConflictOnConstraintDoNothing() {
+    @Test("Test On Conflict On Constraint Do Nothing")
+    func onConflictOnConstraintDoNothing() {
         check(
             SwifQL.on.conflict.on.constraint("hello_world"),
             .psql(#"ON CONFLICT ON CONSTRAINT "hello_world""#),
@@ -119,7 +127,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - DO NOTHING
     
-    func testDoNothing() {
+    @Test("Test Do Nothing")
+    func doNothing() {
         check(
             SwifQL.do.nothing,
             .psql("DO NOTHING"),
@@ -129,7 +138,8 @@ final class DirectiveTests: SwifQLTestCase {
     
     // MARK: - NOT / NOT BETWEEN / BETWEEN
     
-    func testNotAndBetween() {
+    @Test("Test Not And Between")
+    func notAndBetween() {
         check(
             SwifQL.between(10.and(20)),
             .psql("BETWEEN 10 AND 20"),
@@ -151,13 +161,4 @@ final class DirectiveTests: SwifQLTestCase {
             .mysql("NOT BETWEEN CarBrands.id AND CarBrands.name")
         )
     }
-    
-    static var allTests = [
-        ("testOnConflict", testOnConflict),
-        ("testOnConflictOnConstraintDoNothing", testOnConflictOnConstraintDoNothing),
-        ("testDoNothing", testDoNothing),
-        ("testNotAndBetween", testNotAndBetween),
-        ("testReturning", testReturning),
-        ("testDelete", testDelete)
-    ]
 }

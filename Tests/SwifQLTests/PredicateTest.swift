@@ -1,18 +1,14 @@
-//
-//  PredicateTest.swift
-//  
-//
-//  Created by Tierra Cero on 9/3/23.
-//
-
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class PredicateTest: SwifQLTestCase {
+@Suite("Predicate Tests")
+struct PredicateTests: SwifQLTests {
     
     // MARK: - Greater Than (Number)
     
-    func testGreaterThan() {
+    @Test("Test Greater Than")
+    func greaterThan() {
         check(
             SwifQL.where(\CarBrandReferences.$score > 10),
             .psql(#"WHERE "CarBrandReferences"."score" > 10"#),
@@ -22,7 +18,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Less Than (Number)
     
-    func testLessThan() {
+    @Test("Test Less Than")
+    func lessThan() {
         check(
             SwifQL.where(\CarBrandReferences.$score < 10),
             .psql(#"WHERE "CarBrandReferences"."score" < 10"#),
@@ -32,7 +29,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Greater Than Or Equal (Number)
     
-    func testGreaterThanOrEqual() {
+    @Test("Test Greater Than Or Equal")
+    func greaterThanOrEqual() {
         check(
             SwifQL.where(\CarBrandReferences.$score >= 10),
             .psql(#"WHERE "CarBrandReferences"."score" >= 10"#),
@@ -42,7 +40,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Less Than Or Equal (Number)
     
-    func testLessThanOrEqual() {
+    @Test("Test Less Than Or Equal")
+    func lessThanOrEqual() {
         check(
             SwifQL.where(\CarBrandReferences.$score <= 10),
             .psql(#"WHERE "CarBrandReferences"."score" <= 10"#),
@@ -52,7 +51,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Equal (Number)
     
-    func testEqualNumber() {
+    @Test("Test Equal Number")
+    func equalNumber() {
         check(
             SwifQL.where(\CarBrandReferences.$score == 10),
             .psql(#"WHERE "CarBrandReferences"."score" = 10"#),
@@ -62,7 +62,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Equal (String)
     
-    func testEqualString() {
+    @Test("Test Equal String")
+    func equalString() {
         check(
             SwifQL.where(\CarBrandReferences.$model == "x001"),
             .psql(#"WHERE "CarBrandReferences"."model" = 'x001'"#),
@@ -72,7 +73,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Equal (Boolean)
     
-    func testEqualBoolean() {
+    @Test("Test Equal Boolean")
+    func equalBoolean() {
         check(
             SwifQL.where(\CarBrandReferences.$available == true),
             .psql(#"WHERE "CarBrandReferences"."available" = TRUE"#),
@@ -82,7 +84,8 @@ final class PredicateTest: SwifQLTestCase {
 
     // MARK: - Equal (Enum)
     
-    func testEqualAType() {
+    @Test("Test Equal A Type")
+    func equalAType() {
         check(
             SwifQL.where(\CarBrandReferences.$mainGers == GearboxType.manual),
             .psql(#"WHERE "CarBrandReferences"."mainGers" = 'manual'"#),
@@ -92,7 +95,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Equal (Null)
     
-    func testEqualNULL() {
+    @Test("Test Equal NULL")
+    func equalNULL() {
         check(
             SwifQL.where(\CarBrandReferences.$model == nil),
             .psql(#"WHERE "CarBrandReferences"."model" IS NULL"#),
@@ -102,7 +106,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Not Equal (Number)
     
-    func testNotEqualNumber() {
+    @Test("Test Not Equal Number")
+    func notEqualNumber() {
         check(
             SwifQL.where(\CarBrandReferences.$score != 10),
             .psql(#"WHERE "CarBrandReferences"."score" != 10"#),
@@ -112,7 +117,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Not Equal (String)
     
-    func testNotEqualString() {
+    @Test("Test Not Equal String")
+    func notEqualString() {
         check(
             SwifQL.where(\CarBrandReferences.$model != "x001"),
             .psql(#"WHERE "CarBrandReferences"."model" != 'x001'"#),
@@ -122,7 +128,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Not Equal (Boolean)
     
-    func testNotEqualBoolean() {
+    @Test("Test Not Equal Boolean")
+    func notEqualBoolean() {
         check(
             SwifQL.where(\CarBrandReferences.$available != true),
             .psql(#"WHERE "CarBrandReferences"."available" != TRUE"#),
@@ -132,7 +139,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Not Equal (Enum)
 
-    func testNotEqualAType() {
+    @Test("Test Not Equal A Type")
+    func notEqualAType() {
         check(
             SwifQL.where(\CarBrandReferences.$mainGers != GearboxType.manual),
             .psql(#"WHERE "CarBrandReferences"."mainGers" != 'manual'"#),
@@ -142,7 +150,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Not Equal (Null)
     
-    func testNotEqualNULL() {
+    @Test("Test Not Equal NULL")
+    func notEqualNULL() {
         check(
             SwifQL.where(\CarBrandReferences.$model != nil),
             .psql(#"WHERE "CarBrandReferences"."model" IS NOT NULL"#),
@@ -152,7 +161,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Between (Int)
     
-    func testBetweenInt () {
+    @Test("Test Between Int")
+    func betweenInt () {
         check(
             SwifQL.where(\CarBrandReferences.$score <> 5 && 20),
             .psql(#"WHERE "CarBrandReferences"."score" BETWEEN 5 AND 20"#),
@@ -162,7 +172,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Between (String)
     
-    func testBetweenString () {
+    @Test("Test Between String")
+    func betweenString () {
         check(
             SwifQL.where(\CarBrandReferences.$model <> "a" && "t"),
             .psql(#"WHERE "CarBrandReferences"."model" BETWEEN 'a' AND 't'"#),
@@ -172,7 +183,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range @> ([Enum])
     
-    func testRangeLeftEnum() {
+    @Test("Test Range Left Enum")
+    func rangeLeftEnum() {
         check(
             SwifQL.where(\CarBrandReferences.$availableGers ||> [GearboxType.manual]),
             .psql(#"WHERE "CarBrandReferences"."availableGers" @> '{manual}'"#)
@@ -181,7 +193,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range <@ ([Enum])
     
-    func testRangeRightEnum() {
+    @Test("Test Range Right Enum")
+    func rangeRightEnum() {
         check(
             SwifQL.where(\CarBrandReferences.$availableGers <|| [GearboxType.manual]),
             .psql(#"WHERE "CarBrandReferences"."availableGers" <@ '{manual}'"#)
@@ -190,7 +203,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range @> ([String])
     
-    func testRangeLeftString() {
+    @Test("Test Range Left String")
+    func rangeLeftString() {
         check(
             SwifQL.where(\CarBrandReferences.$tags ||> PgArray(["red"])),
             .psql(#"WHERE "CarBrandReferences"."tags" @> ARRAY['red']"#)
@@ -199,7 +213,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range <@ ([String])
     
-    func testRangeRightString() {
+    @Test("Test Range Right String")
+    func rangeRightString() {
         check(
             SwifQL.where(\CarBrandReferences.$tags <|| PgArray(["red"])),
             .psql(#"WHERE "CarBrandReferences"."tags" <@ ARRAY['red']"#)
@@ -208,7 +223,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range @> ([Int])
     
-    func testRangeLeftInt() {
+    @Test("Test Range Left Int")
+    func rangeLeftInt() {
         check(
             SwifQL.where(\CarBrandReferences.$availableYears ||> PgArray([1, 2, 3])),
             .psql(#"WHERE "CarBrandReferences"."availableYears" @> ARRAY[1, 2, 3]"#)
@@ -217,7 +233,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range <@ ([Int])
     
-    func testRangeRightInt() {
+    @Test("Test Range Right Int")
+    func rangeRightInt() {
         check(
             SwifQL.where(\CarBrandReferences.$availableYears <|| PgArray([1, 2, 3])),
             .psql(#"WHERE "CarBrandReferences"."availableYears" <@ ARRAY[1, 2, 3]"#)
@@ -226,7 +243,8 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range @> ([UUID])
     
-    func testRangeLeftUUID() {
+    @Test("Test Range Left UUID")
+    func rangeLeftUUID() {
         check(
             SwifQL.where(\CarBrandReferences.$knowedIssues ||> PgArray([UUID(uuidString: "25afebec-179e-43ff-8c7b-a0a460c7c996")!, UUID(uuidString: "25afebec-179e-43ff-8c7b-a0a460c7c996")!])),
             .psql(#"WHERE "CarBrandReferences"."knowedIssues" @> ARRAY['25AFEBEC-179E-43FF-8C7B-A0A460C7C996', '25AFEBEC-179E-43FF-8C7B-A0A460C7C996']"#)
@@ -235,39 +253,11 @@ final class PredicateTest: SwifQLTestCase {
     
     // MARK: - Range <@ ([UUID])
     
-    func testRangeRightUUID() {
+    @Test("Test Range Right UUID")
+    func rangeRightUUID() {
         check(
             SwifQL.where(\CarBrandReferences.$knowedIssues <|| PgArray([UUID(uuidString: "25afebec-179e-43ff-8c7b-a0a460c7c996")!, UUID(uuidString: "25afebec-179e-43ff-8c7b-a0a460c7c996")!])),
             .psql(#"WHERE "CarBrandReferences"."knowedIssues" <@ ARRAY['25AFEBEC-179E-43FF-8C7B-A0A460C7C996', '25AFEBEC-179E-43FF-8C7B-A0A460C7C996']"#)
         )
     }
-    
-    
-    static var allTests = [
-        ("testGreaterThan", testGreaterThan),
-        ("testLessThan", testLessThan),
-        ("testGreaterThanOrEqual", testGreaterThanOrEqual),
-        ("testLessThanOrEqual", testLessThanOrEqual),
-        ("testEqualNumber", testEqualNumber),
-        ("testEqualString", testEqualString),
-        ("testEqualBoolean", testEqualBoolean),
-        ("testEqualAType", testEqualAType),
-        ("testEqualNULL", testEqualNULL),
-        ("testNotEqualNumber", testNotEqualNumber),
-        ("testNotEqualString", testNotEqualString),
-        ("testNotEqualBoolean", testNotEqualBoolean),
-        ("testNotEqualAType", testNotEqualAType),
-        ("testNotEqualNULL", testNotEqualNULL),
-        ("testBetweenInt", testBetweenInt),
-        ("testBetweenString", testBetweenString),
-        ("testRangeLeftEnum", testRangeLeftEnum),
-        ("testRangeRightEnum", testRangeLeftString),
-        ("testRangeLeftString", testRangeLeftString),
-        ("testRangeRightString", testRangeRightString),
-        ("testRangeLeftInt", testRangeLeftInt),
-        ("testRangeRightInt", testRangeRightInt),
-        ("testRangeLeftUUID", testRangeLeftUUID),
-        ("testRangeRightUUID", testRangeRightUUID)
-    ]
-    
 }

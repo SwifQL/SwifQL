@@ -1,8 +1,11 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class TableEncoding: SwifQLTestCase {
-    func testPure() {
+@Suite("Table Encoding Tests")
+struct TableEncodingTests: SwifQLTests {
+    @Test("Test Pure")
+    func pure() {
         guard let encodedData = try? JSONEncoder().encode(PureTable()) else {
             XCTFail("Unable to encode PureTable")
             return
@@ -13,13 +16,15 @@ final class TableEncoding: SwifQLTestCase {
         }
     }
     
-    func testWithOptionalColumn() {
+    @Test("Test With Optional Column")
+    func withOptionalColumn() {
         #if swift(>=5.4)
         XCTAssertNil(TableWithOptionalColumn().firstName)
         #endif
     }
     
-    func testWithKeyPaths() {
+    @Test("Test With KeyPaths")
+    func withKeyPaths() {
         guard let encodedData = try? JSONEncoder().encode(KeyPathTable()) else {
             XCTFail("Unable to encode PureTable")
             return
@@ -29,12 +34,6 @@ final class TableEncoding: SwifQLTestCase {
             return
         }
     }
-    
-    static var allTests = [
-        ("testPure", testPure),
-        ("testWithOptionalColumn", testWithOptionalColumn),
-        ("testWithKeyPaths", testWithKeyPaths)
-    ]
 }
 
 fileprivate struct PureStruct: Codable {

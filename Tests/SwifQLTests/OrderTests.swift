@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class OrderTests: SwifQLTestCase {
+@Suite("Order Tests")
+struct OrderTests: SwifQLTests {
     // MARK: - Order by simple
     
-    func testOrderBySimple() {
+    @Test("Test Order By Simple")
+    func orderBySimple() {
         check(
             SwifQL.orderBy(.asc(CarBrands.column("name")), .desc(CarBrands.column("id"))),
             .psql(#"ORDER BY "CarBrands"."name" ASC, "CarBrands"."id" DESC"#),
@@ -14,7 +17,8 @@ final class OrderTests: SwifQLTestCase {
     
     // MARK: - Order by with nulls
     
-    func testOrderByWithNulls() {
+    @Test("Test Order By With Nulls")
+    func orderByWithNulls() {
         check(
             SwifQL.orderBy(.asc(CarBrands.column("name"), nulls: .first), .desc(CarBrands.column("id"), nulls: .last)),
             .psql(#"ORDER BY "CarBrands"."name" ASC NULLS FIRST, "CarBrands"."id" DESC NULLS LAST"#)
@@ -27,7 +31,8 @@ final class OrderTests: SwifQLTestCase {
     
     // MARK: - Order by with direction
     
-    func testOrderByDirection() {
+    @Test("Test Order By Direction")
+    func orderByDirection() {
         check(
             SwifQL.orderBy(.direction(.asc, CarBrands.column("name"), nulls: .last)),
             .psql(#"ORDER BY "CarBrands"."name" ASC NULLS LAST"#)
@@ -40,7 +45,8 @@ final class OrderTests: SwifQLTestCase {
     
     // MARK: - Order by random() / Order by rand()
     
-    func testOrderByRandom() {
+    @Test("Test Order By Random")
+    func orderByRandom() {
         check(
             SwifQL.orderBy(.random),
             .psql(#"ORDER BY random()"#)
@@ -50,11 +56,4 @@ final class OrderTests: SwifQLTestCase {
             .mysql("ORDER BY rand()")
         )
     }
-    
-    static var allTests = [
-        ("testOrderBySimple", testOrderBySimple),
-        ("testOrderByWithNulls", testOrderByWithNulls),
-        ("testOrderByDirection", testOrderByDirection),
-        ("testOrderByRandom", testOrderByRandom)
-    ]
 }

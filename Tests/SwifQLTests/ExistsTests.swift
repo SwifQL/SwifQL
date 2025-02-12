@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class ExistsTests: SwifQLTestCase {
+@Suite("Exists Tests")
+struct ExistsTests: SwifQLTests {
     //MARK: - EXISTS
     
-    func testExists() {
+    @Test("Test Exists")
+    func exists() {
         check(
             SwifQL.exists(1),
             .psql("EXISTS (1)"),
@@ -14,7 +17,8 @@ final class ExistsTests: SwifQLTestCase {
     
     //MARK: - NOT EXISTS
     
-    func testNotExists() {
+    @Test("Test Not Exists")
+    func notExists() {
         check(
             SwifQL.notExists(1),
             .psql("NOT EXISTS (1)"),
@@ -24,7 +28,8 @@ final class ExistsTests: SwifQLTestCase {
     
     //MARK: - WHERE EXISTS
     
-    func testWhereExists() {
+    @Test("Test Where Exists")
+    func whereExists() {
         check(
             SwifQL.whereExists(1),
             .psql("WHERE EXISTS (1)"),
@@ -34,18 +39,12 @@ final class ExistsTests: SwifQLTestCase {
     
     //MARK: - WHERE NOT EXISTS
     
-    func testWhereNotExists() {
+    @Test("Test Where Not Exists")
+    func whereNotExists() {
         check(
             SwifQL.whereNotExists(1),
             .psql("WHERE NOT EXISTS (1)"),
             .mysql("WHERE NOT EXISTS (1)")
         )
     }
-    
-    static var allTests = [
-        ("testExists", testExists),
-        ("testNotExists", testNotExists),
-        ("testWhereExists", testWhereExists),
-        ("testWhereNotExists", testWhereNotExists)
-    ]
 }

@@ -1,78 +1,8 @@
 import XCTest
 @testable import SwifQL
 
-class SwifQLTestCase: XCTestCase {
-    struct DeletedSchema: Schemable {
-        static var schemaName: String { "deleted" }
-    }
-    
-    enum GearboxType: String, SwifQLEnum {
-        case manual, auto, cvt
-    }
-    
-    struct SchemableCarBrands: Table, Schemable {
-        static var tableName: String { "CarBrands" }
-        
-        @Column("id")
-        var id: UUID
-        @Column("name")
-        var name: String
-        @Column("createdAt")
-        var createdAt: Date
-        
-        init() {}
-    }
-    
-    struct CarBrands: Table {
-        @Column("id")
-        var id: UUID
-        @Column("name")
-        var name: String
-        @Column("createdAt")
-        var createdAt: Date
-        
-        init() {}
-    }
-    
-    struct CarBrandReferences: Table {
-        @Column("id")
-        var id: UUID
-        @Column("model")
-        var model: String
-        @Column("available")
-        var available: Bool
-        @Column("score")
-        var score: Int
-        @Column("mainGers")
-        var mainGers: GearboxType
-        @Column("availableGers")
-        var availableGers: [GearboxType]
-        @Column("availableYears")
-        var availableYears: [Int]
-        @Column("knowedIssues")
-        var knowedIssues: [UUID]
-        @Column("tags")
-        var tags: [String]
-        
-        init() {}
-    }
-    
-    let cb = CarBrands.as("cb")
-    
-    struct QueryWithDialect {
-        let dialect: SQLDialect
-        let plainQuery: String
-        let bindedQuery: String?
-        
-        static func psql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
-            .init(dialect: .psql, plainQuery: plainQuery, bindedQuery: bindedQuery)
-        }
-        
-        static func mysql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
-            .init(dialect: .mysql, plainQuery: plainQuery, bindedQuery: bindedQuery)
-        }
-    }
-    
+protocol SwifQLTests {}
+extension SwifQLTests {
     func check(_ query: SwifQLable, _ dialects: QueryWithDialect...) {
         dialects.forEach {
             XCTAssertEqual(query.prepare($0.dialect).plain, $0.plainQuery)
@@ -88,5 +18,76 @@ class SwifQLTestCase: XCTestCase {
         SQLDialect.all.forEach {
             XCTAssertEqual(query.prepare($0).plain, rawQuery)
         }
+    }
+}
+
+struct DeletedSchema: Schemable {
+    static var schemaName: String { "deleted" }
+}
+
+enum GearboxType: String, SwifQLEnum {
+    case manual, auto, cvt
+}
+
+struct SchemableCarBrands: Table, Schemable {
+    static var tableName: String { "CarBrands" }
+    
+    @Column("id")
+    var id: UUID
+    @Column("name")
+    var name: String
+    @Column("createdAt")
+    var createdAt: Date
+    
+    init() {}
+}
+
+struct CarBrands: Table {
+    @Column("id")
+    var id: UUID
+    @Column("name")
+    var name: String
+    @Column("createdAt")
+    var createdAt: Date
+    
+    init() {}
+}
+
+struct CarBrandReferences: Table {
+    @Column("id")
+    var id: UUID
+    @Column("model")
+    var model: String
+    @Column("available")
+    var available: Bool
+    @Column("score")
+    var score: Int
+    @Column("mainGers")
+    var mainGers: GearboxType
+    @Column("availableGers")
+    var availableGers: [GearboxType]
+    @Column("availableYears")
+    var availableYears: [Int]
+    @Column("knowedIssues")
+    var knowedIssues: [UUID]
+    @Column("tags")
+    var tags: [String]
+    
+    init() {}
+}
+
+let cb = CarBrands.as("cb")
+
+struct QueryWithDialect {
+    let dialect: SQLDialect
+    let plainQuery: String
+    let bindedQuery: String?
+    
+    static func psql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
+        .init(dialect: .psql, plainQuery: plainQuery, bindedQuery: bindedQuery)
+    }
+    
+    static func mysql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
+        .init(dialect: .mysql, plainQuery: plainQuery, bindedQuery: bindedQuery)
     }
 }

@@ -1,10 +1,13 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class FnTests: SwifQLTestCase {
+@Suite("Fn Tests")
+struct FnTests: SwifQLTests {
     // MARK: - Fn.array_remove
     
-    func testFn_array_remove() {
+    @Test("Test array_remove")
+    func array_remove() {
         check(
             SwifQL.select(Fn.array_remove(PgArray(1,2,3,2), 2)),
             .psql("SELECT array_remove(ARRAY[1, 2, 3, 2], 2)"),
@@ -14,7 +17,8 @@ final class FnTests: SwifQLTestCase {
     
     // MARK: - Concat
     
-    func testConcat() {
+    @Test("Test concat")
+    func concat() {
         check(
             Fn.concat("Hello ", CarBrands.column("name")),
             .psql(#"concat('Hello ', "CarBrands"."name")"#),
@@ -29,7 +33,8 @@ final class FnTests: SwifQLTestCase {
     
     // MARK: - Fn.to_tsvector
     
-    func testFn_to_tsvector() {
+    @Test("Test to_tsvector")
+    func to_tsvector() {
         check(
             SwifQL.select(Fn.to_tsvector("english", "a fat  cat sat on a mat - it ate a fat rats")),
             .psql(#"SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')"#),
@@ -44,7 +49,8 @@ final class FnTests: SwifQLTestCase {
     
     // MARK: - Fn.to_tsquery
     
-    func testFn_to_tsquery() {
+    @Test("Test to_tsquery")
+    func to_tsquery() {
         check(
             SwifQL.select(Fn.to_tsquery("english", "The & Fat & Rats")),
             .psql("SELECT to_tsquery('english', 'The & Fat & Rats')"),
@@ -59,7 +65,8 @@ final class FnTests: SwifQLTestCase {
     
     // MARK: - Fn.plainto_tsquery
     
-    func testFn_plainto_tsquery() {
+    @Test("Test plainto_tsquery")
+    func plainto_tsquery() {
         check(
             SwifQL.select(Fn.plainto_tsquery("english", "The Fat Rats")),
             .psql("SELECT plainto_tsquery('english', 'The Fat Rats')"),
@@ -74,7 +81,8 @@ final class FnTests: SwifQLTestCase {
     
     // MARK: - Fn.ts_rank_cd
     
-    func testFn_ts_rank_cd() {
+    @Test("Test ts_rank_cd")
+    func ts_rank_cd() {
         check(
             SwifQL.select(Fn.ts_rank_cd(FormattedKeyPath(CarBrands.self, "id"), Fn.to_tsquery("The Fat Rats"))),
             .psql(#"SELECT ts_rank_cd("CarBrands"."id", to_tsquery('The Fat Rats'))"#),
@@ -84,7 +92,8 @@ final class FnTests: SwifQLTestCase {
     
     // MARK - Generate Series
     
-    func testGenerateSeriesNumbers() {
+    @Test("Test Generate Series Numbers")
+    func generateSeriesNumbers() {
         check(
             SwifQL.select(Fn.generate_series(1, 4)),
             .psql("SELECT generate_series(1, 4)"),
@@ -97,7 +106,8 @@ final class FnTests: SwifQLTestCase {
         )
     }
     
-    func testGenerateSeriesDates() {
+    @Test("Test Generate Series Dates")
+    func generateSeriesDates() {
         check(
             SwifQL.select(Fn.generate_series("2019-10-01", "2019-10-04", "1 day")),
             .psql("SELECT generate_series('2019-10-01', '2019-10-04', '1 day')"),
@@ -123,21 +133,12 @@ final class FnTests: SwifQLTestCase {
 
     // MARK: - MySQL DATE_FORMAT
 
-    func testFn_date_format() {
+    @Test("Test date_format")
+    func date_format() {
         check(
             SwifQL.select(Fn.date_format(CarBrands.column("createdAt"), "%y-%m")),
             .psql(#"SELECT DATE_FORMAT("CarBrands"."createdAt", '%y-%m')"#),
             .mysql("SELECT DATE_FORMAT(CarBrands.createdAt, '%y-%m')")
         )
     }
-    
-    static var allTests = [
-        ("testFn_to_tsvector", testFn_to_tsvector),
-        ("testFn_to_tsquery", testFn_to_tsquery),
-        ("testFn_plainto_tsquery", testFn_plainto_tsquery),
-        ("testConcat", testConcat),
-        ("testGenerateSeriesNumbers", testGenerateSeriesNumbers),
-        ("testGenerateSeriesDates", testGenerateSeriesDates),
-        ("testFn_date_format", testFn_date_format)
-    ]
 }

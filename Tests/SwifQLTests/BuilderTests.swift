@@ -1,8 +1,11 @@
-import XCTest
 @testable import SwifQL
+import Testing
+import XCTest
 
-final class BuilderTests: SwifQLTestCase {
-    func testSelectBuilderLimitShort() {
+@Suite("Builder Tests")
+struct BuilderTests: SwifQLTests {
+    @Test("Test Select Builder Limit Short")
+    func selectBuilderLimitShort() {
         let builder = SwifQLSelectBuilder()
         let query = builder.select(CarBrands.table.*).from(CarBrands.table).limit(0, 10).build()
         check(
@@ -12,7 +15,8 @@ final class BuilderTests: SwifQLTestCase {
         )
     }
     
-    func testSelectBuilderCopy() {
+    @Test("Test Select Builder Copy")
+    func selectBuilderCopy() {
         let builder = SwifQLSelectBuilder()
         builder.select(CarBrands.table.*).from(CarBrands.table).join(.left, CarBrands.table, on: "id1 = id2").where("item1 = item2").groupBy("item1").limit(10).offset(20).having("count > 10").orderBy(.asc("item1"))
         
@@ -28,7 +32,8 @@ final class BuilderTests: SwifQLTestCase {
         XCTAssertEqual(prepareBuildPSQL , prepareCopyPSQL)
     }
     
-    func testUpdateBuilderAddColumn() {
+    @Test("Test Update Builder Add Column")
+    func updateBuilderAddColumn() {
         check(
             UpdateTableBuilder<CarBrands>()
                 .addColumn(NewColumn.init("hello", .text)),
@@ -42,10 +47,4 @@ final class BuilderTests: SwifQLTestCase {
             .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;")
         )
     }
-    
-    static var allTests = [
-        ("testSelectBuilderLimitShort", testSelectBuilderLimitShort),
-        ("testSelectBuilderCopy", testSelectBuilderCopy),
-        ("testUpdateBuilderAddColumn", testUpdateBuilderAddColumn)
-    ]
 }
