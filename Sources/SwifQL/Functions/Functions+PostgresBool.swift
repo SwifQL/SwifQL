@@ -8,8 +8,8 @@
 import Foundation
 
 extension Fn.Name {
-    public static var bool_and: Self = .init("bool_and")
-    public static var bool_or: Self = .init("bool_or")
+    public static let bool_and: Self = .init("bool_and")
+    public static let bool_or: Self = .init("bool_or")
 }
 
 extension Fn {

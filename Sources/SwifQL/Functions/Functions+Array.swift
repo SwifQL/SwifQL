@@ -6,8 +6,8 @@
 //
 
 extension Fn.Name {
-    public static var array_agg: Self = .init("array_agg")
-    public static var array_remove: Self = .init("array_remove")
+    public static let array_agg: Self = .init("array_agg")
+    public static let array_remove: Self = .init("array_remove")
 }
 
 extension Fn {

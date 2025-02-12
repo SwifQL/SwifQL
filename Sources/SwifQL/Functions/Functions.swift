@@ -10,7 +10,7 @@ import Foundation
 public struct Fn {}
 
 extension Fn {
-    public struct Name {
+    public struct Name: Sendable {
         let name: String
         
         public init (_ name: String) {
