@@ -1,6 +1,6 @@
 @testable import SwifQL
+import Foundation
 import Testing
-import XCTest
 
 @Suite("Fn Tests")
 struct FnTests: SwifQLTests {

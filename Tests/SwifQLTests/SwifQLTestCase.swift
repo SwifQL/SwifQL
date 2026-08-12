@@ -1,22 +1,23 @@
-import XCTest
+import Foundation
+import Testing
 @testable import SwifQL
 
 protocol SwifQLTests {}
 extension SwifQLTests {
     func check(_ query: SwifQLable, _ dialects: QueryWithDialect...) {
         dialects.forEach {
-            XCTAssertEqual(query.prepare($0.dialect).plain, $0.plainQuery)
+            #expect(query.prepare($0.dialect).plain == $0.plainQuery)
             if let bindedQuery = $0.bindedQuery {
                 let prepared = query.prepare($0.dialect)
                 let splitted = prepared.splitted
-                XCTAssertEqual(splitted.query, bindedQuery)
+                #expect(splitted.query == bindedQuery)
             }
         }
     }
     
     func check(_ query: SwifQLable, all rawQuery: String) {
         SQLDialect.all.forEach {
-            XCTAssertEqual(query.prepare($0).plain, rawQuery)
+            #expect(query.prepare($0).plain == rawQuery)
         }
     }
 }

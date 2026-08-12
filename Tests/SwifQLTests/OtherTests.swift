@@ -1,6 +1,5 @@
 @testable import SwifQL
 import Testing
-import XCTest
 
 @Suite("Other Tests")
 struct OtherTests: SwifQLTests {
@@ -104,7 +103,7 @@ struct OtherTests: SwifQLTests {
     
     @Test("Test Array Type Autodetect")
     func enumArrayTypeAutodetect() {
-        XCTAssertEqual(Type.auto(from: [GearboxType].self).name, "gearboxtype[]")
+        #expect(Type.auto(from: [GearboxType].self).name == "gearboxtype[]")
     }
     
     // MARK: ANY operator
@@ -470,7 +469,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Binding For PostgreSQL")
     func bindingForPostgreSQL() {
         let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.psql).splitted.query
-        XCTAssertEqual(query, """
+        #expect(query == """
         WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
         """)
     }
@@ -478,7 +477,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Binding For MySQL")
     func bindingForMySQL() {
         let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.mysql).splitted.query
-        XCTAssertEqual(query, """
+        #expect(query == """
         WHERE CarBrands.name = ? OR CarBrands.name = ?
         """)
     }

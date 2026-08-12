@@ -1,38 +1,26 @@
 @testable import SwifQL
+import Foundation
 import Testing
-import XCTest
 
 @Suite("Table Encoding Tests")
 struct TableEncodingTests: SwifQLTests {
     @Test("Test Pure")
-    func pure() {
-        guard let encodedData = try? JSONEncoder().encode(PureTable()) else {
-            XCTFail("Unable to encode PureTable")
-            return
-        }
-        guard let _ = try? JSONDecoder().decode(PureStruct.self, from: encodedData) else {
-            XCTFail("Unable to decode PureTable into PureStruct")
-            return
-        }
+    func pure() throws {
+        let encodedData = try JSONEncoder().encode(PureTable())
+        _ = try JSONDecoder().decode(PureStruct.self, from: encodedData)
     }
     
     @Test("Test With Optional Column")
     func withOptionalColumn() {
         #if swift(>=5.4)
-        XCTAssertNil(TableWithOptionalColumn().firstName)
+        #expect(TableWithOptionalColumn().firstName == nil)
         #endif
     }
     
     @Test("Test With KeyPaths")
-    func withKeyPaths() {
-        guard let encodedData = try? JSONEncoder().encode(KeyPathTable()) else {
-            XCTFail("Unable to encode PureTable")
-            return
-        }
-        guard let _ = try? JSONDecoder().decode(KeyPathStruct.self, from: encodedData) else {
-            XCTFail("Unable to decode KeyPathTable into KeyPathStruct")
-            return
-        }
+    func withKeyPaths() throws {
+        let encodedData = try JSONEncoder().encode(KeyPathTable())
+        _ = try JSONDecoder().decode(KeyPathStruct.self, from: encodedData)
     }
 }
 

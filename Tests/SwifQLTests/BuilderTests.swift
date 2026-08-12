@@ -1,6 +1,5 @@
 @testable import SwifQL
 import Testing
-import XCTest
 
 @Suite("Builder Tests")
 struct BuilderTests: SwifQLTests {
@@ -24,12 +23,12 @@ struct BuilderTests: SwifQLTests {
         let prepareBuildMySQL = builder.build().prepare(.mysql).plain
         let prepareCopyMySQL = copy.build().prepare(.mysql).plain
         
-        XCTAssertEqual(prepareBuildMySQL , prepareCopyMySQL)
+        #expect(prepareBuildMySQL == prepareCopyMySQL)
         
         let prepareBuildPSQL = builder.build().prepare(.psql).plain
         let prepareCopyPSQL = copy.build().prepare(.psql).plain
         
-        XCTAssertEqual(prepareBuildPSQL , prepareCopyPSQL)
+        #expect(prepareBuildPSQL == prepareCopyPSQL)
     }
     
     @Test("Test Update Builder Add Column")
