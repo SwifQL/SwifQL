@@ -37,14 +37,23 @@ When binding behavior changes, validate the bind placeholder query, values order
 
 ## Current test helpers
 
-- `QueryWithDialect` currently provides `.psql(...)` and `.mysql(...)` helpers only.
+- `QueryWithDialect` should provide `.psql(...)`, `.mysql(...)`, and canonical `.duck(...)` helpers; the current unreleased `.duckdb(...)` helper is a pre-release naming defect to remove before further Duck work. The helpers can also assert an expected values array when binding order is part of the contract.
 - `check(_:all:)` currently iterates `SQLDialect.all` and compares plain output for each dialect.
-- The focused `check` helper can also compare a supplied binded query, but the current helper does not by itself assert the returned values array; binding-sensitive tests should inspect value order when that is relevant.
+- The focused `check` helper can compare a supplied binded query and, when supplied, the returned values array.
 
-The implemented dialect set is currently PostgreSQL and MySQL. Adding a third dialect changes the semantic reach of every `all` assertion, so audit and classify those tests before updating expectations; do not mechanically repair failing strings.
+The implemented dialect set is PostgreSQL, MySQL, and DuckDB. Adding a future dialect changes the semantic reach of every `all` assertion, so audit and classify those tests before updating expectations; do not mechanically repair failing strings.
+
+## SQL fidelity and Swift naming assertions
+
+- When a public API represents a concrete SQL keyword, type, function, operator, clause, or statement, focused tests assert that exact SQL construct rather than only a semantically similar result. For example, `Type.integer` must not be considered correct if it emits `SERIAL`, and Swift `Fn.jsonBuildArray(...)` must emit SQL `json_build_array(...)`, not `json_array(...)`.
+- New public Swift API uses idiomatic camelCase even when emitted SQL uses `snake_case` or uppercase. Tests should use the stable camelCase API and assert the exact database spelling in generated SQL.
+- Existing public snake_case `Fn` symbols use the stable additive naming migration: add a canonical camelCase counterpart and keep the old symbol as `@available(*, deprecated, renamed: "...")`. Migration tests must prove both spellings generate byte-for-byte identical SQL while ordinary feature tests/docs use the camelCase stable API.
+- Convenience APIs may intentionally render different dialect syntax only when the API is explicitly semantic/convenience-oriented rather than named as one concrete SQL construct. Such behavior still requires explicit per-dialect expectations.
+- New dialect-specific SQL should receive tests using its real SQL vocabulary and grammar, following the existing PostgreSQL-specific test style where applicable.
 
 ## Regression discipline
 
 - Existing PostgreSQL and MySQL output remains byte-for-byte unchanged unless a separately approved bug fix intentionally changes it.
 - A test-framework migration must not rewrite SQL expectations or production behavior.
+- New dialect work must not repair a compatibility regression by changing an old PostgreSQL/MySQL expected string.
 - Governance does not impose TDD or a blanket coverage percentage.

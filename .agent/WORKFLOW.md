@@ -7,19 +7,27 @@ DETAILED RESEARCH
 -> DETAILED PLAN
 -> SAVE PLAN INTO .artifacts
 -> INDEPENDENT PLAN AUDIT
+-> NUMBERED SURGICAL TASKS WHEN NEEDED
 -> PRECISE IMPLEMENTATION
--> INDEPENDENT DIFF / SOURCE AUDIT
--> CORRECTIONS IF NEEDED
+-> INDEPENDENT DIFF / SOURCE / GIT AUDIT
+-> NUMBERED CORRECTION WAVE IF NEEDED
 -> FINAL AUDIT
+-> EXPLICIT COMMIT GATE
 ```
+
+Detailed coordinator/executor roles and delegation rules are owned by `DEVELOPMENT_ORCHESTRATION.md`. Detailed `.artifacts/**` structure, task/report mechanics, `COORDINATOR_PROMPT.md`, `EXECUTION_REPORT.md`, and `NEW_CHAT.md` reconstruction are owned by `ARTIFACTS_WORKFLOW.md`.
 
 ## Gates
 
 - Trivial typo or format-only work may skip a formal artifact plan, but it still requires scope and result verification.
 - Non-trivial implementation cannot start directly from an unreviewed idea. Research must establish current behavior, scope, risks, and acceptance evidence before planning.
-- Material unresolved API or architecture choices are surfaced to the maintainer after research; they are not delegated to the implementation model.
-- The plan declares exact mutation scope, forbidden paths, compatibility constraints, validation, and stop conditions. Surgical tasks are used when work is broad.
+- Material unresolved API or architecture choices are surfaced to the maintainer after research; they are not delegated to the implementation executor.
+- The plan declares exact mutation scope, forbidden paths, compatibility constraints, validation, and stop conditions.
+- Broad or cognitively dense implementation/correction work is decomposed into numbered task files. The executor receives one short generic coordinator prompt and reads tasks one at a time.
+- The executor appends evidence after every task, continues automatically after PASS, and stops the whole run on a genuine out-of-scope blocker.
 - Validation starts with the smallest relevant check and expands with the change's risk and scope.
-- Implementation-model reports are evidence inputs, never proof of repository state. Independent review inspects the actual files, status, diff, links, and relevant source/tests.
+- Executor reports are evidence inputs, never proof of repository state. Independent review inspects the actual files, status, diff, direct callers, generated SQL/native evidence, and relevant tests.
+- Audit findings become a new focused numbered correction wave rather than one giant correction prompt.
 - Stable documentation is synchronized only when the durable fact owned by that document changes. Transient execution history remains in `.artifacts/`.
-- Git behavior, preservation, and authorization are owned by `.agent/COMMIT_RULES.md`.
+- Accepted intermediate stable/source checkpoints may be committed when the maintainer explicitly authorizes the exact scope; later work treats that commit as the new baseline.
+- Git behavior, preservation, staging, commit, and push authorization are owned by `.agent/COMMIT_RULES.md`.

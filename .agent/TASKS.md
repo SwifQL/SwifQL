@@ -2,9 +2,9 @@
 
 This file contains only approved executable work. Ideas, unresolved choices, verified debt, and completed history belong in their separate owners.
 
-## Next approved work
+## Current state
 
-- Detailed DuckDB dialect compatibility research and planning.
-- Code implementation remains blocked until the compatibility matrix, detailed `.artifacts` plan, and independent plan audit are complete.
+- No approved executable task is active. The additive `Fn` camelCase migration and the researched, planned, and audited DuckDB SQL-rendering support are complete.
+- Future changes require their own scoped research, plan, independent audit, and approval gates. Unsupported or unverified PostgreSQL-specific and DuckDB surfaces remain unclaimed.
 
-No governance implementation task remains active in this stable state.
+No implementation task remains active in this stable state.

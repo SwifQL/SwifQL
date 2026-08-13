@@ -8,6 +8,8 @@ Builders are ergonomic state and composition helpers that return normal `SwifQLa
 
 `SwifQLSelectBuilder` stores select and from state itself, keeps shared clause state in `queryParts`, and uses `queryParts.appended(to:)` when building. The result re-enters the normal `SwifQLable` preparation path. Not every future builder field is automatically a `QueryParts` concern.
 
+Dialect-specific statement builders follow the same model: feature-specific state stays in its dedicated builder type, while shared clause state remains owned by `QueryParts` and final output re-enters normal preparation.
+
 ## Rules
 
 ### BUILD-001 — Composition layer
