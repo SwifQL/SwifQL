@@ -12,7 +12,7 @@ struct SubqueryTests: SwifQLTests {
         // WRONG EXAMPLE because of `|` postfix operator near `alias1`
 //        let query = SwifQL.select(
 //            a~\.name,
-//            |SwifQL.select(Fn.json_agg(=>"alias1") => "test1" )
+//            |SwifQL.select(Fn.jsonAgg(=>"alias1") => "test1" )
 //                .from(
 //                    |SwifQL.select(b~\.name => "someName")
 //                        .from(b.table)
@@ -26,7 +26,7 @@ struct SubqueryTests: SwifQLTests {
             SwifQL
                 .select(
                     a.column("name"),
-                    |(SwifQL.select(Fn.json_agg(=>"alias1") => "test1")
+                    |(SwifQL.select(Fn.jsonAgg(=>"alias1") => "test1")
                         .from(
                             |SwifQL.select(b.column("name") => "someName")
                                 .from(b.table)

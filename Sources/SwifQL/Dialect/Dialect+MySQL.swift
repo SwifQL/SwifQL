@@ -31,7 +31,7 @@ class MySQLDialect: SQLDialect {
     }
     
     override func date(_ value: Date) -> String {
-        Fn.from_unixtime(value.timeIntervalSince1970).prepare(self).plain
+        Fn.fromUnixtime(value.timeIntervalSince1970).prepare(self).plain
     }
     
     override func bindKey(_ i: Int) -> String { "?" }

@@ -8,7 +8,9 @@
 extension Fn.Name {
     public static var substr: Self = .init("substr")
     public static var coalesce: Self = .init("coalesce")
-    public static var octet_length: Self = .init("octet_length")
+    public static var octetLength: Self = .init("octet_length")
+    @available(*, deprecated, renamed: "octetLength")
+    public static var octet_length: Self { .octetLength }
     public static var cast: Self = .init("cast")
     public static var ifnull: Self = .init("ifnull")
     public static var isnull: Self = .init("isnull")
@@ -42,8 +44,13 @@ extension Fn {
         return build(.coalesce, body: parts)
     }
     
+    public static func octetLength(_ string: SwifQLable) -> SwifQLable {
+        build(.octetLength, body: string.parts)
+    }
+
+    @available(*, deprecated, renamed: "octetLength(_:)")
     public static func octet_length(_ string: SwifQLable) -> SwifQLable {
-        build(.octet_length, body: string.parts)
+        octetLength(string)
     }
     
     public static func cast(_ queryPart: SwifQLable, _ to: Type) -> SwifQLable {

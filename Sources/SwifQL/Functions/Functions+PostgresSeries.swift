@@ -6,16 +6,18 @@
 //
 
 extension Fn.Name {
-    public static var generate_series: Self = .init("generate_series")
+    public static var generateSeries: Self = .init("generate_series")
+    @available(*, deprecated, renamed: "generateSeries")
+    public static var generate_series: Self { .generateSeries }
 }
 
 extension Fn {
     /// Generate series
     /// # Example
     /// ```swift
-    /// Fn.generate_series(1, 4)
-    /// Fn.generate_series(1, 4, 2)
-    /// Fn.generate_series('2019-10-01', '2019-10-04', '1 day')
+    /// Fn.generateSeries(1, 4)
+    /// Fn.generateSeries(1, 4, 2)
+    /// Fn.generateSeries('2019-10-01', '2019-10-04', '1 day')
     /// ```
     /// # Result
     /// ```
@@ -25,7 +27,7 @@ extension Fn {
     /// ```
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-srf.html)
-    public static func generate_series(_ start: SwifQLable, _ stop: SwifQLable, _ step: SwifQLable? = nil) -> SwifQLable {
+    public static func generateSeries(_ start: SwifQLable, _ stop: SwifQLable, _ step: SwifQLable? = nil) -> SwifQLable {
         var parts: [SwifQLPart] = start.parts
         parts.append(o: .comma)
         parts.append(o: .space)
@@ -35,6 +37,11 @@ extension Fn {
             parts.append(o: .space)
             parts.append(contentsOf: step.parts)
         }
-        return build(.generate_series, body: parts)
+        return build(.generateSeries, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "generateSeries(_:_:_:)")
+    public static func generate_series(_ start: SwifQLable, _ stop: SwifQLable, _ step: SwifQLable? = nil) -> SwifQLable {
+        generateSeries(start, stop, step)
     }
 }

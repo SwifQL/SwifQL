@@ -9,7 +9,7 @@ struct JsonTests: SwifQLTests {
     func jsonExtractPath() {
         let json = #"{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}"#
         check(
-            SwifQL.select(Fn.json_extract_path(json, path_elems: ["f4"])),
+            SwifQL.select(Fn.jsonExtractPath(json, pathElems: ["f4"])),
             .psql(#"SELECT json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#),
             .mysql(#"SELECT json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#)
         )
@@ -19,7 +19,7 @@ struct JsonTests: SwifQLTests {
     func jsonExtractPathText() {
         let json = #"{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}"#
         check(
-            SwifQL.select(Fn.json_extract_path_text(json, path_elems: ["f4", "f6"])),
+            SwifQL.select(Fn.jsonExtractPathText(json, pathElems: ["f4", "f6"])),
             .psql(#"SELECT json_extract_path_text('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4', 'f6')"#),
             .mysql(#"SELECT json_extract_path_text('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4', 'f6')"#)
         )
@@ -29,7 +29,7 @@ struct JsonTests: SwifQLTests {
     func jsonbExtractPath() {
         let json = #"{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}"#
         check(
-            SwifQL.select(Fn.jsonb_extract_path(json, path_elems: ["f4"])),
+            SwifQL.select(Fn.jsonbExtractPath(json, pathElems: ["f4"])),
             .psql(#"SELECT jsonb_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#),
             .mysql(#"SELECT jsonb_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#)
         )
@@ -39,7 +39,7 @@ struct JsonTests: SwifQLTests {
     func jsonbExtractPathText() {
         let json = #"{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}"#
         check(
-            SwifQL.select(Fn.jsonb_extract_path_text(json, path_elems: ["f4", "f6"])),
+            SwifQL.select(Fn.jsonbExtractPathText(json, pathElems: ["f4", "f6"])),
             .psql(#"SELECT jsonb_extract_path_text('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4', 'f6')"#),
             .mysql(#"SELECT jsonb_extract_path_text('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4', 'f6')"#)
         )

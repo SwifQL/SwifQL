@@ -6,17 +6,31 @@
 //
 
 extension Fn.Name {
-    public static var row_number: Self = .init("row_number")
+    public static var rowNumber: Self = .init("row_number")
+    @available(*, deprecated, renamed: "rowNumber")
+    public static var row_number: Self { .rowNumber }
     public static var rank: Self = .init("rank")
-    public static var dense_rank: Self = .init("dense_rank")
-    public static var percent_rank: Self = .init("percent_rank")
-    public static var cume_dist: Self = .init("cume_dist")
+    public static var denseRank: Self = .init("dense_rank")
+    @available(*, deprecated, renamed: "denseRank")
+    public static var dense_rank: Self { .denseRank }
+    public static var percentRank: Self = .init("percent_rank")
+    @available(*, deprecated, renamed: "percentRank")
+    public static var percent_rank: Self { .percentRank }
+    public static var cumeDist: Self = .init("cume_dist")
+    @available(*, deprecated, renamed: "cumeDist")
+    public static var cume_dist: Self { .cumeDist }
     public static var ntile: Self = .init("ntile")
     public static var lag: Self = .init("lag")
     public static var lead: Self = .init("lead")
-    public static var first_value: Self = .init("first_value")
-    public static var last_value: Self = .init("last_value")
-    public static var nth_value: Self = .init("nth_value")
+    public static var firstValue: Self = .init("first_value")
+    @available(*, deprecated, renamed: "firstValue")
+    public static var first_value: Self { .firstValue }
+    public static var lastValue: Self = .init("last_value")
+    @available(*, deprecated, renamed: "lastValue")
+    public static var last_value: Self { .lastValue }
+    public static var nthValue: Self = .init("nth_value")
+    @available(*, deprecated, renamed: "nthValue")
+    public static var nth_value: Self { .nthValue }
 }
 
 extension Fn {
@@ -24,15 +38,20 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.row_number()
+    /// Fn.rowNumber()
     /// ```
     /// # Result
     /// ```
     /// row_number()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func rowNumber() -> SwifQLable {
+        build(.rowNumber, body: [])
+    }
+
+    @available(*, deprecated, renamed: "rowNumber()")
     public static func row_number() -> SwifQLable {
-        build(.row_number, body: [])
+        rowNumber()
     }
     
     /// Rank of the current row with gaps
@@ -56,45 +75,60 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.dense_rank()
+    /// Fn.denseRank()
     /// ```
     /// # Result
     /// ```
     /// dense_rank()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func denseRank() -> SwifQLable {
+        build(.denseRank, body: [])
+    }
+
+    @available(*, deprecated, renamed: "denseRank()")
     public static func dense_rank() -> SwifQLable {
-        build(.dense_rank, body: [])
+        denseRank()
     }
     
     /// Relative rank of the current row: (rank - 1) / (total partition rows - 1)
     ///
     /// # Example
     /// ```swift
-    /// Fn.percent_rank()
+    /// Fn.percentRank()
     /// ```
     /// # Result
     /// ```
     /// percent_rank()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func percentRank() -> SwifQLable {
+        build(.percentRank, body: [])
+    }
+
+    @available(*, deprecated, renamed: "percentRank()")
     public static func percent_rank() -> SwifQLable {
-        build(.percent_rank, body: [])
+        percentRank()
     }
     
     /// Cumulative distribution: (number of partition rows preceding or peer with current row) / total partition rows
     ///
     /// # Example
     /// ```swift
-    /// Fn.cume_dist()
+    /// Fn.cumeDist()
     /// ```
     /// # Result
     /// ```
     /// cume_dist()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func cumeDist() -> SwifQLable {
+        build(.cumeDist, body: [])
+    }
+
+    @available(*, deprecated, renamed: "cumeDist()")
     public static func cume_dist() -> SwifQLable {
-        build(.cume_dist, body: [])
+        cumeDist()
     }
     
     /// Integer ranging from 1 to the argument value, dividing the partition as equally as possible
@@ -168,30 +202,40 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.first_value()
+    /// Fn.firstValue()
     /// ```
     /// # Result
     /// ```
     /// first_value()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func firstValue(_ value: SwifQLable) -> SwifQLable {
+        build(.firstValue, body: value.parts)
+    }
+
+    @available(*, deprecated, renamed: "firstValue(_:)")
     public static func first_value(_ value: SwifQLable) -> SwifQLable {
-        build(.first_value, body: value.parts)
+        firstValue(value)
     }
     
     /// Returns value evaluated at the row that is the last row of the window frame
     ///
     /// # Example
     /// ```swift
-    /// Fn.last_value()
+    /// Fn.lastValue()
     /// ```
     /// # Result
     /// ```
     /// last_value()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func lastValue(_ value: SwifQLable) -> SwifQLable {
+        build(.lastValue, body: value.parts)
+    }
+
+    @available(*, deprecated, renamed: "lastValue(_:)")
     public static func last_value(_ value: SwifQLable) -> SwifQLable {
-        build(.last_value, body: value.parts)
+        lastValue(value)
     }
     
     /// Returns `value` evaluated at the row that is the `nth` row of the window frame (counting from 1)
@@ -199,18 +243,23 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.nth_value()
+    /// Fn.nthValue()
     /// ```
     /// # Result
     /// ```
     /// nth_value()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
-    public static func nth_value(_ value: SwifQLable, _ nth: SwifQLable) -> SwifQLable {
+    public static func nthValue(_ value: SwifQLable, _ nth: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = value.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: nth.parts)
-        return build(.nth_value, body: parts)
+        return build(.nthValue, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "nthValue(_:_:)")
+    public static func nth_value(_ value: SwifQLable, _ nth: SwifQLable) -> SwifQLable {
+        nthValue(value, nth)
     }
 }

@@ -6,14 +6,24 @@
 //
 
 extension Fn.Name {
-    public static var bit_length: Self = .init("bit_length")
+    public static var bitLength: Self = .init("bit_length")
+    @available(*, deprecated, renamed: "bitLength")
+    public static var bit_length: Self { .bitLength }
     public static var btrim: Self = .init("btrim")
-    public static var char_length: Self = .init("char_length")
-    public static var character_length: Self = .init("character_length")
+    public static var charLength: Self = .init("char_length")
+    @available(*, deprecated, renamed: "charLength")
+    public static var char_length: Self { .charLength }
+    public static var characterLength: Self = .init("character_length")
+    @available(*, deprecated, renamed: "characterLength")
+    public static var character_length: Self { .characterLength }
     public static var initcap: Self = .init("initcap")
     public static var concat: Self = .init("concat")
-    public static var concat_ws: Self = .init("concat_ws")
-    public static var array_length: Self = .init("array_length")
+    public static var concatWs: Self = .init("concat_ws")
+    @available(*, deprecated, renamed: "concatWs")
+    public static var concat_ws: Self { .concatWs }
+    public static var arrayLength: Self = .init("array_length")
+    @available(*, deprecated, renamed: "arrayLength")
+    public static var array_length: Self { .arrayLength }
     public static var length: Self = .init("length")
     public static var lower: Self = .init("lower")
     public static var lpad: Self = .init("lpad")
@@ -28,8 +38,12 @@ extension Fn.Name {
     public static var translate: Self = .init("translate")
     public static var trim: Self = .init("trim")
     public static var upper: Self = .init("upper")
-    public static var string_agg: Self = .init("string_agg")
-    public static var regexp_replace: Self = .init("regexp_replace")
+    public static var stringAgg: Self = .init("string_agg")
+    @available(*, deprecated, renamed: "stringAgg")
+    public static var string_agg: Self { .stringAgg }
+    public static var regexpReplace: Self = .init("regexp_replace")
+    @available(*, deprecated, renamed: "regexpReplace")
+    public static var regexp_replace: Self { .regexpReplace }
 } 
 
 extension Fn {
@@ -51,8 +65,13 @@ extension Fn {
     /// Number of bits in string
     /// e.g. `bit_length('jose')` will return 32
     /// [Learn more →]()
+    public static func bitLength(_ string: SwifQLable) -> SwifQLable {
+        build(.bitLength, body: string.parts)
+    }
+
+    @available(*, deprecated, renamed: "bitLength(_:)")
     public static func bit_length(_ string: SwifQLable) -> SwifQLable {
-        build(.bit_length, body: string.parts)
+        bitLength(string)
     }
     
     /// Removes all specified characters from both the beginning and the end of a string
@@ -67,14 +86,24 @@ extension Fn {
     
     /// Returns the length of the specified string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/char_length.php)
+    public static func charLength(_ string: SwifQLable) -> SwifQLable {
+        build(.charLength, body: string.parts)
+    }
+
+    @available(*, deprecated, renamed: "charLength(_:)")
     public static func char_length(_ string: SwifQLable) -> SwifQLable {
-        build(.char_length, body: string.parts)
+        charLength(string)
     }
     
     /// Returns the length of the specified string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/character_length.php)
+    public static func characterLength(_ string: SwifQLable) -> SwifQLable {
+        build(.characterLength, body: string.parts)
+    }
+
+    @available(*, deprecated, renamed: "characterLength(_:)")
     public static func character_length(_ string: SwifQLable) -> SwifQLable {
-        build(.character_length, body: string.parts)
+        characterLength(string)
     }
     
     /// Converts the first letter of each word to uppercase and all other letters are converted to lowercase
@@ -125,29 +154,34 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.concat_ws(", ", "Hello", \User.name)
+    /// Fn.concatWs(", ", "Hello", \User.name)
     /// ```
     /// # Result
     /// ```
     /// concat_ws(', ', 'Hello', "User"."name")
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
+    public static func concatWs(_ values: SwifQLable...) -> SwifQLable {
+        concatWs(values)
+    }
+
+    @available(*, deprecated, renamed: "concatWs(_:)")
     public static func concat_ws(_ values: SwifQLable...) -> SwifQLable {
-        concat_ws(values)
+        concatWs(values)
     }
     
     /// Concatenate all arguments. NULL arguments are ignored.
     ///
     /// # Example
     /// ```swift
-    /// Fn.concat_ws(", ", "Hello", \User.name)
+    /// Fn.concatWs(", ", "Hello", \User.name)
     /// ```
     /// # Result
     /// ```
     /// concat_ws(', ', 'Hello', "User"."name")
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
-    public static func concat_ws(_ values: [SwifQLable]) -> SwifQLable {
+    public static func concatWs(_ values: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = []
         values.enumerated().forEach { offset, value in
             parts.append(contentsOf: value.parts)
@@ -156,16 +190,26 @@ extension Fn {
                 parts.append(o: .space)
             }
         }
-        return build(.concat_ws, body: parts)
+        return build(.concatWs, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "concatWs(_:)")
+    public static func concat_ws(_ values: [SwifQLable]) -> SwifQLable {
+        concatWs(values)
     }
     
     /// Returns the length of the requested array dimension
-    public static func array_length(_ anyArray: SwifQLable, _ dimension: Int = 1) -> SwifQLable {
+    public static func arrayLength(_ anyArray: SwifQLable, _ dimension: Int = 1) -> SwifQLable {
         var parts: [SwifQLPart] = anyArray.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(safe: dimension)
-        return build(.array_length, body: parts)
+        return build(.arrayLength, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "arrayLength(_:_:)")
+    public static func array_length(_ anyArray: SwifQLable, _ dimension: Int = 1) -> SwifQLable {
+        arrayLength(anyArray, dimension)
     }
     
     /// Returns the length of the specified string, expressed as the number of characters.
@@ -360,18 +404,23 @@ extension Fn {
 
     /// Concatenates non-null input values into a string, separated by delimiter
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-aggregate.html)
-    public static func string_agg(_ string: SwifQLable, _ separator: SwifQLable) -> SwifQLable {
+    public static func stringAgg(_ string: SwifQLable, _ separator: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = []
         parts.append(contentsOf: string.parts)
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: separator.parts)
-        return build(.string_agg, body: parts)
+        return build(.stringAgg, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "stringAgg(_:_:)")
+    public static func string_agg(_ string: SwifQLable, _ separator: SwifQLable) -> SwifQLable {
+        stringAgg(string, separator)
     }
     
     /// Replaces a sequence of characters in a string with another set of characters using regular expression pattern matching
     /// [Learn more →](https://www.techonthenet.com/oracle/functions/regexp_replace.php)
-    public static func regexp_replace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
+    public static func regexpReplace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = []
         parts.append(contentsOf: string.parts)
         parts.append(o: .comma)
@@ -380,6 +429,11 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: toSubstring.parts)
-        return build(.regexp_replace, body: parts)
+        return build(.regexpReplace, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "regexpReplace(_:_:_:)")
+    public static func regexp_replace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
+        regexpReplace(string, fromRegexp, toSubstring)
     }
 }

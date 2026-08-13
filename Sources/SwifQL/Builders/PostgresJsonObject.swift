@@ -44,7 +44,7 @@ public class PostgresJsonObject: SwifQLable {
             body.append(o: .space)
             body.append(contentsOf: v.value.parts)
         }
-        return Fn.build(.jsonb_build_object, body: body).parts
+        return Fn.build(.jsonbBuildObject, body: body).parts
     }
     
     public init () {}

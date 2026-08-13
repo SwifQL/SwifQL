@@ -225,10 +225,10 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select bit_length")
+    @Test("Select bitLength")
     func selectFnBitLength() {
         check(
-            SwifQL.select(Fn.bit_length("hello")),
+            SwifQL.select(Fn.bitLength("hello")),
             .psql("SELECT bit_length('hello')"),
             .mysql("SELECT bit_length('hello')")
         )
@@ -261,19 +261,19 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select char_length")
+    @Test("Select charLength")
     func selectFnCharLength() {
         check(
-            SwifQL.select(Fn.char_length("hello")),
+            SwifQL.select(Fn.charLength("hello")),
             .psql("SELECT char_length('hello')"),
             .mysql("SELECT char_length('hello')")
         )
     }
     
-    @Test("Select character_length")
-    func selectFnCharacter_length() {
+    @Test("Select characterLength")
+    func selectFnCharacterLength() {
         check(
-            SwifQL.select(Fn.character_length("hello")),
+            SwifQL.select(Fn.characterLength("hello")),
             .psql("SELECT character_length('hello')"),
             .mysql("SELECT character_length('hello')")
         )
@@ -575,19 +575,19 @@ struct SelectTests: SwifQLTests {
         )
     }
 
-    @Test("Select string_agg")
+    @Test("Select stringAgg")
     func selectFnStringAgg() {
         check(
-            SwifQL.select(Fn.string_agg(CarBrands.column("name"), ", ")),
+            SwifQL.select(Fn.stringAgg(CarBrands.column("name"), ", ")),
             .psql(#"SELECT string_agg("CarBrands"."name", ', ')"#),
             .mysql("SELECT string_agg(CarBrands.name, ', ')")
         )
     }
 
-    @Test("Select regexp_replace")
+    @Test("Select regexpReplace")
     func selectFnRegexpReplace() {
         check(
-            SwifQL.select(Fn.regexp_replace("/full/path/to/filename", "^.+/", "")),
+            SwifQL.select(Fn.regexpReplace("/full/path/to/filename", "^.+/", "")),
             .psql(#"SELECT regexp_replace('/full/path/to/filename', '^.+/', '')"#),
             .mysql("SELECT regexp_replace('/full/path/to/filename', '^.+/', '')")
         )
