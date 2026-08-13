@@ -281,3 +281,30 @@ Rules:
 - if the existing parts pipeline lacks enough semantic context to render a dialect correctly, improve the shared rendering architecture rather than accumulating neighboring-token heuristics or one-off database wrappers.
 
 The review target is simple: normal Swift query source should read like the SQL idea the user intends, not like an object model for a particular database driver.
+
+## DESIGN-015 - Query semantics survive incremental composition
+
+Public query APIs must remain correct when users compose queries incrementally rather than as one fluent expression.
+
+Equivalent query structure must preserve equivalent semantics when assembled through any reasonable combination of:
+
+- a single fluent chain;
+- `var query: SwifQLable` reassignment;
+- `if` / `guard` controlled clause inclusion;
+- helper methods returning `SwifQLable` fragments or expressions;
+- fragments created in different methods/files and combined later;
+- nested expressions, functions, subqueries, and builders.
+
+Do not implement meaning as ambient builder mode, source-order side state, or an assumption that related method calls occurred consecutively in Swift. Semantic metadata needed by rendering must travel with the composed part/expression that owns it.
+
+This does not make invalid SQL valid. If a caller conditionally omits a required parent construct but still appends a clause that only makes sense inside that construct, the resulting query may correctly be invalid. The invariant is that equivalent valid composition shapes render identically, not that SwifQL guesses missing grammar.
+
+## DESIGN-016 - Preserve established public extension contracts deliberately
+
+Public helper protocols and extension-oriented surfaces are compatibility contracts even when they look like implementation utilities.
+
+`KeyPathLastPath` is established public API and is used by public query surfaces such as RETURNING, conflict targets, constraints, key paths, and path types. It may also be useful as a precise grammar constraint for new clauses such as Duck simplified PIVOT `GROUP BY`.
+
+Do not remove or replace such a protocol merely to modernize internal architecture. If a future major version has a materially better replacement, first provide the clearest practical bridge/deprecation path and include a concise migration note with extension examples for downstream users who may conform their own local types.
+
+New internal architecture should expose a small public extension point when that falls naturally from the design and remains type-safe/maintainable. Do not contort the core model or leak mutable internals solely to make every mechanism externally customizable.

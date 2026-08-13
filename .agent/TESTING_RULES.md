@@ -57,3 +57,19 @@ The implemented dialect set is PostgreSQL, MySQL, and DuckDB. Adding a future di
 - A test-framework migration must not rewrite SQL expectations or production behavior.
 - New dialect work must not repair a compatibility regression by changing an old PostgreSQL/MySQL expected string.
 - Governance does not impose TDD or a blanket coverage percentage.
+
+## Contextual rendering and composition equivalence
+
+When semantic render scopes or another contextual-rendering mechanism is introduced or changed, tests must prove that semantics belong to the composed structure rather than one fluent call sequence.
+
+Cover, as applicable:
+
+- the same valid query written as one fluent chain;
+- incremental `SwifQLable` variable reassignment with conditional clause inclusion;
+- scoped expressions/fragments returned from helper functions and combined later;
+- nested functions/subqueries while an outer render scope remains active for the relevant descendants;
+- nested scopes with correct parent restoration;
+- placeholder/value ordering identical to the equivalent unscoped composition rules;
+- unaffected PostgreSQL/MySQL output remaining byte-for-byte stable.
+
+If render scopes expose a public downstream extension surface, add a temporary external consumer compile fixture that imports SwifQL normally and proves the intended extension pattern without `@testable import`. If custom `SQLDialect` subclassing is part of that claimed extension contract, the fixture must prove construction/subclassing from another module rather than relying only on in-module tests.

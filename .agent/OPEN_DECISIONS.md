@@ -13,15 +13,6 @@ This file records genuinely unresolved choices, not settled architecture rules o
 
 ## Active decisions
 
-### DIALECT-CONTEXT-001
-
-- Architecture owner: `architecture/DIALECT_RENDERING.md` with `architecture/dialects/DUCK.md` supporting the concrete case.
-- Question: What exact structured contextual-rendering primitive should be added to the existing `SwifQLable -> [SwifQLPart] -> prepare(dialect)` pipeline so the same user expression can render differently in a dialect-specific grammar position without token-neighbor heuristics or database-prefixed wrappers?
-- Why it matters: Duck simplified PIVOT proves the current flat part stream lacks semantic grammar context. The recommended research direction is scoped parts plus a value-semantic render-context stack and additive context-aware `SQLDialect` hooks that forward to established hooks for custom-dialect compatibility. A larger full semantic statement part remains an alternative if future grammar differences require it.
-- Status: blocking Duck PIVOT/API correction.
-- Resolution timing: maintainer discussion before any replacement P03 implementation plan.
-- Research: `.artifacts/planning/DIALECT_TRANSPARENT_DSL_RESEARCH.md`.
-
 ### DUCK-API-001
 
 - Architecture owner: `architecture/DSL_DESIGN_AND_UX.md` with `architecture/dialects/DUCK.md` supporting.

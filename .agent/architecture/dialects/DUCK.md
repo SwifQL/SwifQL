@@ -166,11 +166,13 @@ Duck simplified PIVOT is a verified case where source-qualified column reference
 
 Users should not have to replace normal SwifQL table/column expressions with Duck-prefixed wrappers merely to satisfy this renderer requirement.
 
-The approved architecture direction is dialect-transparent contextual rendering through the shared parts/preparation pipeline, consistent with `DIALECT-008` and DESIGN-014.
+The approved architecture is dialect-transparent semantic render scopes through the shared parts/preparation pipeline, consistent with `DIALECT-008` and DESIGN-014/015.
 
-The exact render-scope implementation is still under architecture review and must not be improvised as neighboring-token heuristics.
+For PIVOT grammar regions that accept normal expressions but require Duck-specific qualification behavior, the relevant expression parts carry a structural scope such as the ON/USING/ORDER BY grammar role. That scope travels with the expression regardless of whether the query is written as one fluent chain, assembled through `var`/conditionals, or produced by helper methods.
 
-The current `shouldGroupDuckDBKeyPath(...)` preparation heuristic is not a precedent for future contextual rendering and should eventually be replaced by a structured mechanism once that mechanism is approved and tested.
+Duck rendering reads this explicit scope from the recursive render context. It must not infer PIVOT context by inspecting neighboring raw operator strings or by keeping ambient mutable "inside PIVOT" state on the query.
+
+The current `shouldGroupDuckDBKeyPath(...)` preparation heuristic is not a precedent for future contextual rendering and must be replaced by the structured scope mechanism when that implementation lands.
 
 ## Collections and nested types
 
@@ -318,7 +320,9 @@ For simplified PIVOT `GROUP BY`, reuse the historical `KeyPathLastPath` protocol
 .groupBy(cities.column("country"))
 ```
 
-Do not introduce a PIVOT-specific column wrapper for this clause. The shared contextual-rendering architecture remains unresolved for ON/USING/ORDER BY and must be approved/planned before PIVOT source correction resumes.
+Do not introduce a PIVOT-specific column wrapper for this clause.
+
+For ON, USING, and ORDER BY, use the approved structural semantic render-scope architecture rather than PIVOT-specific expression wrappers. The implementation still requires detailed planning/audit before source correction resumes, including recursive context propagation, bind-order preservation, and incremental-composition tests.
 
 ## Native validation evidence
 
