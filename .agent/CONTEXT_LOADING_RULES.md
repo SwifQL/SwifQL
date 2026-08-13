@@ -13,7 +13,8 @@ This is the single owner of progressive context loading and the default context 
 7. Load `STYLE_GUIDELINES.md`, `SAFETY_RULES.md`, and/or `TESTING_RULES.md` only when the edit type needs those policies; policy documents do not consume architecture-owner slots.
 8. Use `SKILL_INDEX.md` when a reusable operational procedure applies; load at most one skill by default.
 9. Use `SOURCE_MAP.md` before broad source discovery, then inspect the smallest source/test subset needed. Use the PostgreSQL implementation as a local style reference only when `DSL_DESIGN_AND_UX.md` or the selected skill routes the task there; do not rediscover the whole repository by default.
-10. Treat external reference repositories as zero by default; route deliberate external evidence through `REFERENCE_PROJECTS.md`.
-11. Stop loading when ownership, design contract, scope, and evidence are sufficient.
+10. Treat `PUBLIC_CONTENT_IDEAS.md` and `.agent/public-content-ideas/**` as lazy communication context, not normal development context. Do not load them merely because they exist. First perform the public-content capture check from the current work; only if positive, or if the task explicitly concerns README/public docs/website docs/release notes/articles/posts, load the router and exactly the relevant shard(s). These files do not consume architecture-owner slots.
+11. Treat external reference repositories as zero by default; route deliberate external evidence through `REFERENCE_PROJECTS.md`.
+12. Stop loading when ownership, design contract, scope, and evidence are sufficient.
 
 Cross-cutting governance or architecture audits may deliberately exceed this default budget. Resume focused loading afterward.

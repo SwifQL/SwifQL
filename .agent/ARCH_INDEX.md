@@ -38,8 +38,9 @@ Operational development authorities are routed separately from technical archite
 - Git safety: `COMMIT_RULES.md`.
 - Progressive loading: `CONTEXT_LOADING_RULES.md`.
 - Source navigation: `SOURCE_MAP.md`.
+- Lazy durable README/docs/website/publication idea capture: `PUBLIC_CONTENT_IDEAS.md` plus focused `.agent/public-content-ideas/**` shards. Do not load during ordinary development unless the capture check is positive or the task is explicitly public-content work.
 - Source/value/testing policy: `STYLE_GUIDELINES.md`, `SAFETY_RULES.md`, and `TESTING_RULES.md`; these do not own architecture IDs.
 
-Operational orchestration/artifact owners do not consume architecture-owner slots.
+Operational orchestration/artifact/public-content owners do not consume architecture-owner slots.
 
 Normal work loads one primary owner and at most two supporting architecture owners. Dialect work uses one explicit context-budget bundle: `DIALECT_RENDERING.md` plus exactly one relevant dialect-specific owner, then at most the genuinely necessary supporting owners. Cross-cutting audits may be explicit exceptions.

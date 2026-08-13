@@ -303,9 +303,13 @@ agent/orchestration rules required for continuation
 
 Machine-local paths/tool context IDs are allowed in `NEW_CHAT.md` because it is transient, but stable `.agent/**` documentation must remain portable.
 
-## Promotion to Stable Documentation
+## Promotion to Stable Documentation and Public-Content Capture
 
 At the end of an accepted implementation/correction cycle, decide what learned information is durable.
+
+At the same continuity-critical checkpoints where `.artifacts/NEW_CHAT.md` is refreshed, also perform the lazy public-content capture check owned by `PUBLIC_CONTENT_IDEAS.md`. This does **not** mean opening the idea bank every time. First decide from the current work whether a genuinely useful README/docs/website/publication example, capability, migration note, validation result, or explanation appeared. Only on a positive result open the router plus one relevant shard and append the compact entry while its context is fresh.
+
+`NEW_CHAT.md` and the public-content bank have different lifecycles: `NEW_CHAT.md` is transient/disposable execution continuity; `PUBLIC_CONTENT_IDEAS.md` and its shards are durable versioned candidate communication material.
 
 Promote only durable facts/rules into the correct `.agent/**` owner:
 

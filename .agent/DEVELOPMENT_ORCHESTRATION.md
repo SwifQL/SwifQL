@@ -19,6 +19,7 @@ For non-trivial work, the stronger reasoning/review layer:
 - independently inspects actual source, diff, Git state, and validation after execution;
 - turns audit findings into focused correction task files;
 - synchronizes durable stable documentation after accepted work;
+- performs the lazy public-content capture check after meaningful work and appends only genuinely valuable README/docs/publication material to the relevant `PUBLIC_CONTENT_IDEAS.md` shard while the context is fresh;
 - keeps commit and push as separate explicit gates.
 
 Executor reports are evidence, never proof.
@@ -114,6 +115,7 @@ Do not bulk-load all task files into coordinator/executor context.
 
 - Coordinator/reviewer loads only the artifacts, stable owners, and source needed for the current planning/audit step.
 - Executor reads the next numbered task immediately before executing it.
+- `PUBLIC_CONTENT_IDEAS.md` and its shards are not normal development context. Perform the capture check from memory/current work first; open the router plus one relevant shard only when the check is positive or the current task is explicitly public documentation/content work.
 - Operational docs do not consume architecture-owner slots; architecture loading remains governed by `CONTEXT_LOADING_RULES.md`.
 
 ## Git Gates
