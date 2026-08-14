@@ -2,7 +2,7 @@
 
 SwifQL is a strongly typed, declarative, composable Swift SQL-building library. It builds SQL; database execution belongs to database drivers or wrappers outside this repository.
 
-PostgreSQL and MySQL are established SQL-building dialects. The current working tree also contains an unreleased Duck SQL-rendering implementation under native-validation and public-UX correction. Database execution belongs to database drivers or wrappers outside this repository.
+PostgreSQL and MySQL are established SQL-building dialects. Duck is unreleased; current source provides a minimal `.duck` rendering/context foundation while the broader Duck SQL surface is under fresh API/semantics research and design. Database execution belongs to database drivers or wrappers outside this repository.
 
 ## Repository layout
 

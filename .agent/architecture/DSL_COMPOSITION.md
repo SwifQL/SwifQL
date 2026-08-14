@@ -10,7 +10,7 @@ The model is parts-based composition, not parser, AST, tokenizer, or parser-driv
 
 Current ordinary scalar conformances such as `String`, numeric types, `UUID`, and `Decimal` produce `SwifQLPartUnsafeValue`; `Date` and other special cases use their dedicated part representations. The public API also contains raw/custom structural escape hatches. They exist for deliberate structure and are not the default extension path for dynamic data.
 
-DuckDB-specific functions, types, builders, and parts use the same `SwifQLable`/`SwifQLPart` composition model and re-enter the standard preparation pipeline; they do not form a parallel DuckDB renderer or mini-framework.
+Any future Duck functions, types, builders, and parts must use the same `SwifQLable`/`SwifQLPart` composition model and re-enter the standard preparation pipeline; they must not form a parallel Duck renderer or mini-framework.
 
 ## Rules
 
@@ -37,3 +37,7 @@ All composition continues into the standard preparation pipeline rather than a p
 ### DSL-006 — Composition preserves the chosen SQL contract
 
 Part composition must preserve the public SQL identity and UX contract selected under `DESIGN-*`; composition is not a place to introduce hidden semantic substitution. See `DSL_DESIGN_AND_UX.md` for the owning SQL-first/API-design rules.
+
+### DSL-007 — Preserve established part shape
+
+New dialect work must not globally replace or wrap the normal part shape of established operators and fluent helpers merely to carry context for one feature. Context belongs at the semantic construct that owns it. If a new internal layer forces unrelated established consumers to unwrap that layer, redesign the layer.

@@ -14,6 +14,7 @@ For non-trivial work, the stronger reasoning/review layer:
 - performs or directs focused research;
 - designs and independently audits the implementation plan;
 - surfaces unresolved architecture/API decisions to the maintainer before implementation;
+- rejects implementation-driven architecture: green tests, executor convenience, or an existing prototype never outrank DESIGN-001/015, compatibility, or clean implementation requirements;
 - decomposes substantial work into numbered surgical task files;
 - gives the implementation executor only a short coordinator prompt;
 - independently inspects actual source, diff, Git state, and validation after execution;
@@ -31,6 +32,7 @@ The executor implements an already-reviewed task contract:
 - reads the next numbered task immediately before work;
 - modifies only its explicit scope/allowlist;
 - follows closed mechanics without redesigning architecture;
+- stops rather than inventing a workaround, temporary bridge, compatibility unwrap, duplicate state, hidden routing layer, raw SQL escape, or other smell when the reviewed task cannot be implemented cleanly as written;
 - runs required validation and inspects the actual diff;
 - appends execution evidence;
 - continues automatically to the next already-approved task after PASS;
@@ -74,7 +76,7 @@ If the coordinator prompt starts duplicating task details, fix the decomposition
 
 Non-trivial production work requires reviewed planning when it crosses multiple files/owners or changes public API, SQL semantics, dialect behavior, preparation/binding, builders, concurrency, package/toolchain behavior, or compatibility boundaries.
 
-The plan must be grounded in current source/Git/dependency facts and close:
+The plan must be grounded in current source/Git/dependency facts and must first prove that the proposed architecture satisfies SQL-first DESIGN-001, composition-invariant DESIGN-015, established-user compatibility, and the repository's no-workaround policy. It must then close:
 
 - scope/non-goals;
 - ownership and SQL/API semantics;

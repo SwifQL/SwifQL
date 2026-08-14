@@ -48,13 +48,7 @@ The article can argue that a major-version boundary is necessary permission for 
 
 #### 1. Dialect support without database-prefixed query rewrites
 
-Bad migration pressure:
-
-```swift
-DuckDBPivotColumn("year")
-DuckDBPivotOn(...)
-DuckDBPivotAggregate(...)
-```
+Bad migration pressure: forcing users to replace normal SwifQL paths, expressions, and functions with database-prefixed PIVOT wrapper types.
 
 Better direction:
 
@@ -108,7 +102,7 @@ This illustrates a useful maintainer habit: inspect whether an apparently low-le
 
 Compatibility discipline does not mean keeping every mistake forever.
 
-The current Duck implementation is unreleased/uncommitted, so incorrect names such as `.duckdb` or public `DuckDB...` wrappers can be corrected directly before users depend on them.
+Duck support is still unreleased, so incorrect pre-release names or API shapes can be corrected directly before users depend on them.
 
 This creates a clear line:
 
@@ -207,11 +201,35 @@ SwifQL's architecture should make source-compatible evolution easier by design:
 
 This lets the library modernize the engine while keeping the user's language stable.
 
+### Article candidate - Green Tests Can Still Cement the Wrong Architecture
+
+**Status:** architecture-approved article idea; source examples must track the current mainline.
+
+A useful engineering article can show a failure mode that is common in mature libraries:
+
+```text
+speculative internal layer
+-> tests written around that layer
+-> regressions patched with more tests
+-> every suite green
+-> architecture still wrong
+```
+
+SwifQL's architecture policy provides a concrete lesson: tests are evidence for an already accepted design, not a voting system that can make a workaround clean. When a new abstraction changes old structural behavior and requires compatibility handling elsewhere, the correct response may be to reject the abstraction even if its dedicated tests are perfect.
+
+Potential titles:
+
+- **Green Tests, Wrong Architecture**
+- **Why Passing Tests Are Not a Design Review**
+- **Delete the Workaround, Not the Regression Test Expectation**
+
+The user-facing angle is compatibility: mature-library users should not become unpaid debuggers of an internal redesign simply because the maintainer can make CI green.
+
 ### Evidence / provenance
 
 Stable architecture/governance:
 
-- `.agent/architecture/DSL_DESIGN_AND_UX.md` DESIGN-010, DESIGN-014, DESIGN-015, DESIGN-016
+- `.agent/architecture/DSL_DESIGN_AND_UX.md` DESIGN-001, DESIGN-010, DESIGN-014, DESIGN-015, DESIGN-016, DESIGN-017
 - `.agent/architecture/DIALECT_RENDERING.md` DIALECT-008, DIALECT-009, DIALECT-012, DIALECT-013
 - `.agent/architecture/dialects/DUCK.md`
 - `.agent/TESTING_RULES.md`
@@ -223,4 +241,4 @@ Relevant architecture commits:
 
 ### Publication caveat
 
-The compatibility philosophy is stable architecture. Some examples, especially clean Duck PIVOT and semantic render scopes, are architecture-approved but not yet implemented/shipped. Future publication must clearly separate established current SwifQL compatibility behavior from examples of the approved next architecture.
+The compatibility philosophy is stable architecture. Generic semantic render scopes exist on the current mainline but are not released yet; clean Duck PIVOT remains architecture direction rather than an approved implementation. Future publication must clearly separate established released SwifQL behavior, current unreleased infrastructure, and still-planned Duck APIs.

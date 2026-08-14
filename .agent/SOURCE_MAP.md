@@ -26,16 +26,11 @@ Core source:
 - `Sources/SwifQL/Dialect/Dialect.swift`
 - `Sources/SwifQL/Dialect/Dialect+Postgres.swift`
 - `Sources/SwifQL/Dialect/Dialect+MySQL.swift`
-- current unreleased Duck file: `Sources/SwifQL/Dialect/Dialect+DuckDB.swift`
+- `Sources/SwifQL/Dialect/Dialect+Duck.swift`
+- `Sources/SwifQL/Dialect/SwifQLRenderContext.swift`
+- `Sources/SwifQL/SwifQLable+Parts/SwifQLable+Scoped.swift`
 
-The current unreleased Duck source still contains `DuckDB...` / `duckDB...` filenames and symbols. Do not treat that spelling as naming authority. The approved Swift convention is `.duck`, `Duck...`, and `duck...`; the source tree is queued for pre-release cleanup after the dialect-transparent API design is finalized.
-
-Current Duck-specific values, types, and paths:
-
-- `Sources/SwifQL/Type+DuckDB.swift`
-- `Sources/SwifQL/Parts/DataPart.swift`
-- `Sources/SwifQL/Parts/CatalogPart.swift`
-- `Sources/SwifQL/Path/Path+DuckDB*.swift`
+Current Duck production source is intentionally narrow: `.duck`, `DuckDialect`, render scopes/context, and scoped preparation. Broader Duck SQL features, Data rendering, catalog paths, and statement APIs are not yet part of the active source surface.
 
 ## Hybrid syntax
 
@@ -57,19 +52,6 @@ Current Duck-specific values, types, and paths:
 
 - `Sources/SwifQL/Functions/**` — function helpers and function-related extensions.
 
-DuckDB functions:
-
-- `Sources/SwifQL/Functions/Functions+DuckDB*.swift`
-
-DuckDB builders and compositional parts:
-
-- `Sources/SwifQL/Builders/DuckDB*.swift`
-- `Sources/SwifQL/SwifQLable+Parts/SwifQLable+DuckDB*.swift`
-- `Sources/SwifQL/SwifQLable+Parts/SwifQLable+OrderByAll.swift`
-- `Sources/SwifQL/SwifQLable+Parts/SwifQLable+Qualify.swift`
-- `Sources/SwifQL/SwifQLable+Parts/SwifQLable+Sample.swift`
-- `Sources/SwifQL/SwifQLable+Parts/SwifQLable+UnionByName.swift`
-
 ## Types, casts, predicates, and adjacent values
 
 - `Sources/SwifQL/Type.swift`
@@ -87,8 +69,9 @@ DuckDB builders and compositional parts:
 
 ## Tests
 
-- `Tests/SwifQLTests/SwifQLTestCase.swift` — shared test helpers.
-- `Tests/SwifQLTests/DuckDB*.swift` — DuckDB dialect and feature coverage.
-- `Tests/SwifQLTests/**` — focused feature and query tests.
+- `Tests/SwifQLTests/SwifQLTestCase.swift` - shared test helpers.
+- `Tests/SwifQLTests/DuckDBDialectTests.swift` - focused Duck foundation coverage.
+- `Tests/SwifQLTests/EstablishedOperatorCompatibilityTests.swift` - PostgreSQL/MySQL compatibility guard for an established operator shape.
+- `Tests/SwifQLTests/**` - established focused feature and query tests.
 
-Editor settings, generated output, local user state, and transient `.artifacts/**` are not product architecture authority.
+Editor settings, generated output, local user state, backup branches, and transient `.artifacts/**` are not product architecture authority.

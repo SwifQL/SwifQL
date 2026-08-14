@@ -8,7 +8,7 @@ This file intentionally distinguishes:
 
 - stable Duck API/rendering contracts;
 - verified DuckDB v1.5.5 engine behavior;
-- current unreleased implementation state;
+- current implementation state;
 - pre-release blockers that must be corrected before the Duck dialect can be considered finished.
 
 Do not duplicate these details in the cross-dialect base owner.
@@ -35,13 +35,9 @@ Ordinary preparation is:
 query.prepare(.duck)
 ```
 
-The final supported-dialect collection is expected to use:
+The public Duck factory is `.duck`. `SQLDialect.all` intentionally remains `[.psql, .mysql]` until Duck passes its final support/compatibility/native-validation closure gate, because adding Duck changes the semantic reach of every existing `check(..., all:)` assertion.
 
-```swift
-[.psql, .mysql, .duck]
-```
-
-The current unreleased local implementation still contains `.duckdb` in source/tests. That spelling is a pre-release naming defect and must be removed directly, not preserved as a deprecated alias.
+Focused Duck tests use `.duck` explicitly. Internal product identity may still use `"duckdb"`.
 
 ### DUCK-002 - Internal database identity
 
@@ -122,15 +118,9 @@ TIMESTAMPTZ 'YYYY-MM-DD HH:MM:SS.ffffff+00:00'
 
 Do not use local time zone behavior for Duck Date rendering.
 
-### DUCK-007 - Foundation Data
+### DUCK-007 - Foundation Data rendering is not yet designed for Duck
 
-Foundation `Data` uses Duck base64 decoding semantics:
-
-```sql
-from_base64('<base64>')
-```
-
-This is dialect rendering of the existing Foundation value API, not a public `Fn.fromBase64` substitution.
+Duck Data rendering remains a future design item. Preserve the established Data composition contract unless fresh design/research proves a clean additive dialect-aware mechanism.
 
 ## Paths, JSON, and contextual rendering
 
@@ -172,7 +162,9 @@ For PIVOT grammar regions that accept normal expressions but require Duck-specif
 
 Duck rendering reads this explicit scope from the recursive render context. It must not infer PIVOT context by inspecting neighboring raw operator strings or by keeping ambient mutable "inside PIVOT" state on the query.
 
-The current `shouldGroupDuckDBKeyPath(...)` preparation heuristic is not a precedent for future contextual rendering and must be replaced by the structured scope mechanism when that implementation lands.
+Do not attach a generic Duck operator scope to every ordinary predicate/arithmetic/operator constructor. Contextual scopes belong only to the semantic construct whose grammar actually requires them; ordinary established part shape must remain unchanged.
+
+Neighbor-token heuristics such as inspecting previous/next raw operators are not acceptable architecture for Duck grammar context. Remaining Duck operator-precedence requirements must be researched and solved at the narrowest truthful semantic boundary without changing ordinary PostgreSQL/MySQL composition.
 
 ## Collections and nested types
 
@@ -185,7 +177,7 @@ Duck distinguishes:
 
 A fixed ARRAY length must be strictly positive.
 
-The current corrected public type API uses clean SQL-shaped names under `Type`, including:
+The future public type API uses clean SQL-shaped names under `Type`, including:
 
 ```swift
 Type.list(...)
@@ -210,7 +202,7 @@ not `structure(...)` and not `structType(...)`.
 
 Nested STRUCT/UNION identifiers must use proper quoted identifier rendering, including reserved words, spaces, Unicode, and embedded quotes.
 
-The current unreleased value-construction types still include `DuckDBList`, `DuckDBArray`, `DuckDBMap`, `DuckDBStruct`, `DuckDBUnion`, and `DuckDBVariant`. Their final public UX is not approved. They must be reviewed against the dialect-transparent DSL rules before release rather than mechanically renamed.
+Public value-construction APIs for LIST/ARRAY/MAP/STRUCT/UNION/VARIANT are not yet approved. Fresh research must decide whether each concept reuses existing SwifQL, receives a clean SQL-shaped surface, stays internal, or needs no dedicated API.
 
 ## Type mapping
 
@@ -220,7 +212,7 @@ Do not claim PostgreSQL-only type semantics as Duck equivalents merely because n
 
 The Duck type surface may reuse exact shared SQL type names where semantics are compatible, but PostgreSQL-specific serial/range/OID/catalog/jsonb/network/geometry helpers are not automatically Duck APIs.
 
-The dialect-aware `Type.auto(from:dialect:isPrimary:)` path must return `nil` when SwifQL cannot infer a semantics-preserving Duck type/default behavior.
+If a future dialect-aware `Type.auto(from:dialect:isPrimary:)` convenience is approved, it must return `nil` when SwifQL cannot infer a semantics-preserving Duck type/default behavior. Reuse one semantic mapping owner rather than duplicating type inference across dialect-specific helpers.
 
 In particular, primary-key integer inference must not silently invent PostgreSQL `serial` semantics for Duck.
 
@@ -232,7 +224,7 @@ Sequence/default behavior is modeled separately.
 
 Duck-specific SQL functions live under normal camelCase `Fn.*` Swift names while emitted SQL retains the exact Duck function spelling.
 
-Examples already implemented/researched include JSON, numeric, string, time, and sequence functions.
+Researched candidate coverage includes JSON, numeric, string, time, and sequence functions.
 
 Do not prefix ordinary function calls with `Duck` merely because current support is Duck-only.
 
@@ -255,7 +247,7 @@ Do not add parallel Duck builders only for visual symmetry.
 
 ### DUCK-016 - Native Duck query features remain clean at call sites
 
-Duck-specific/native features currently implemented or researched include:
+Duck-specific/native features already researched as candidate SwifQL coverage include:
 
 - QUALIFY;
 - ORDER BY ALL;
@@ -297,7 +289,7 @@ Do not misclassify the no-IN preparation limitation as a general placeholder or 
 
 ### DUCK-018 - PIVOT UX contract
 
-The rejected wrapper design (`DuckDBPivotColumn`, `DuckDBPivotOn`, `DuckDBPivotAggregate`, PIVOT-specific order wrappers) must not be implemented.
+Do not introduce PIVOT-specific public wrapper types for columns, ON expressions, aggregates, or ordering when existing SwifQL expressions and paths can model the SQL cleanly.
 
 Ordinary PIVOT source should stay clean and use existing SwifQL expressions, paths, functions, aliases, and ordering concepts.
 
@@ -314,7 +306,7 @@ SwifQL.pivot(cities)
 
 The dialect renderer, not the user, owns Duck's unqualification requirement in PIVOT grammar zones.
 
-For simplified PIVOT `GROUP BY`, reuse the historical `KeyPathLastPath` protocol as the public input constraint. DuckDB v1.5.5 accepts column names there and rejects qualified/expression forms; `KeyPathLastPath` models that grammar without changing the normal clean call site:
+For simplified PIVOT `GROUP BY`, reuse the established public `KeyPathLastPath` protocol as the public input constraint. DuckDB v1.5.5 accepts column names there and rejects qualified/expression forms; `KeyPathLastPath` models that grammar without changing the normal clean call site:
 
 ```swift
 .groupBy(cities.column("country"))
@@ -322,7 +314,7 @@ For simplified PIVOT `GROUP BY`, reuse the historical `KeyPathLastPath` protocol
 
 Do not introduce a PIVOT-specific column wrapper for this clause.
 
-For ON, USING, and ORDER BY, use the approved structural semantic render-scope architecture rather than PIVOT-specific expression wrappers. The implementation still requires detailed planning/audit before source correction resumes, including recursive context propagation, bind-order preservation, and incremental-composition tests.
+For ON, USING, and ORDER BY, use the approved structural semantic render-scope architecture rather than PIVOT-specific expression wrappers. PIVOT source implementation still requires detailed planning/audit, including exact scope ownership, bind-order preservation, and incremental-composition tests.
 
 ## Native validation evidence
 
@@ -332,7 +324,7 @@ Renderer tests prove SwifQL output, not DuckDB parser/binder/execution acceptanc
 
 For new grammar-sensitive Duck features, native DuckDB validation is required when the API relies on assumptions that string tests cannot prove.
 
-Current v1.5.5 correction evidence has already proven:
+Native DuckDB v1.5.5 validation has already established:
 
 - COLUMNS regex prepared form;
 - COLUMNS explicit-name prepared form;
@@ -341,7 +333,7 @@ Current v1.5.5 correction evidence has already proven:
 - representative MERGE;
 - the complete PIVOT qualification/binding matrix described in DUCK-017.
 
-The broader mandatory native matrix has not yet completed because work stopped at the PIVOT architecture correction point.
+The broader mandatory native matrix is not yet complete.
 
 UNPIVOT, remaining sequence/macro/ATTACH/COPY cases and any other not-yet-reached mandatory cases must not be described as native-validated until the continuation matrix actually runs.
 
@@ -351,7 +343,7 @@ UNPIVOT, remaining sequence/macro/ATTACH/COPY cases and any other not-yet-reache
 
 Duck DML/DDL support is additive and exact-SQL oriented.
 
-Implemented/researched surface includes normal INSERT/UPDATE/DELETE compatibility plus Duck extensions, CREATE/ALTER/DROP forms, schemas, enums, sequences, indexes, MERGE, COPY, macros, and catalog/database statements.
+Researched candidate surface includes normal INSERT/UPDATE/DELETE compatibility plus Duck extensions, CREATE/ALTER/DROP forms, schemas, enums, sequences, indexes, MERGE, COPY, macros, and catalog/database statements.
 
 Do not hide unsupported Duck semantics behind PostgreSQL-looking helpers. Examples from research include PostgreSQL index methods and unsupported constraint/foreign-key behaviors that must remain unclaimed unless current Duck documentation/native tests prove support.
 
@@ -361,11 +353,7 @@ The detailed feature matrix should be expanded here as each advanced area comple
 
 ### DUCK-021 - Catalog is a SQL namespace concept, not a Duck-branded user concept
 
-The current unreleased source uses `Path.DuckDBCatalog...` types and `duckDBCatalogPathParts(...)`.
-
-That public naming is not approved.
-
-Target direction is a clean generic catalog namespace API such as:
+Public catalog qualification should use a clean generic SQL namespace API rather than a Duck-branded user concept. Target direction is:
 
 ```swift
 Path.Catalog("warehouse")
@@ -385,13 +373,13 @@ Duck support has not shipped from this working tree.
 
 Therefore incorrect new Duck API names/shapes should be fixed directly before release, without compatibility aliases whose only purpose would be preserving an unreleased mistake.
 
-This explicitly includes the current `.duckdb` Swift factory and new `DuckDB...` / `duckDB...` Swift symbols where they violate the approved naming/UX rules.
+The canonical unreleased spelling is already `.duck`; no compatibility alias for `.duckdb` is required because that spelling has not shipped. New Duck API symbols still require the full API review described by DUCK-023.
 
 This rule does not authorize changing established pre-Duck SwifQL APIs used by existing users.
 
 ### DUCK-023 - Complete API-surface review before continuing feature implementation
 
-Before resuming the blocked PIVOT/C02 path, classify the entire new unreleased Duck public surface into:
+Before any new Duck feature implementation resumes, classify the intended unreleased Duck surface into:
 
 1. reuse existing SwifQL API unchanged;
 2. generic clean SQL-concept API;
@@ -399,6 +387,6 @@ Before resuming the blocked PIVOT/C02 path, classify the entire new unreleased D
 4. genuinely Duck-specific implementation symbol using `Duck...` / `duck...`;
 5. unresolved UX requiring focused research.
 
-Known areas requiring this review include PIVOT, UNPIVOT, MERGE, COLUMNS, star modifiers, nested values, sequences, macros, catalog paths, sampling helper types, COPY/ATTACH option types, and remaining `DuckDB...` symbols.
+Known areas requiring this review include PIVOT, UNPIVOT, MERGE, COLUMNS, star modifiers, nested values, sequences, macros, catalog paths, sampling helper types, and COPY/ATTACH option types.
 
-No new implementation task should treat the current unreleased `DuckDB...` surface as design authority.
+Current live source, stable architecture owners, current official DuckDB semantics, and fresh focused research define the next plan.

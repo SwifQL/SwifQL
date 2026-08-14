@@ -1,10 +1,18 @@
 # Active Tasks
 
-This file contains only approved executable work. Ideas, unresolved choices, verified debt, and completed history belong in their separate owners.
+This file contains only approved current work. Ideas, unresolved choices, verified debt, and completed history belong in their separate owners.
 
 ## Current state
 
-- No approved executable task is active. The additive `Fn` camelCase migration and the researched, planned, and audited DuckDB SQL-rendering support are complete.
-- Future changes require their own scoped research, plan, independent audit, and approval gates. Unsupported or unverified PostgreSQL-specific and DuckDB surfaces remain unclaimed.
+Fresh Duck API/SQL-surface research and design is the only approved substantial work.
 
-No implementation task remains active in this stable state.
+Goals:
+
+- inventory the full intended Duck SQL surface from current live source and current DuckDB semantics;
+- design clean SQL-shaped user-facing Swift APIs before implementation mechanics;
+- reuse existing SwifQL composition wherever it already expresses the SQL cleanly;
+- identify only the semantic render-scope integration points that verified grammar actually requires;
+- preserve PostgreSQL/MySQL and downstream-extension compatibility under DESIGN-017;
+- produce a detailed independently audited plan before any new Duck feature implementation.
+
+No Duck implementation wave, Swift 6/Sendable implementation, or unrelated modernization is executable until that research/design/plan audit is complete.

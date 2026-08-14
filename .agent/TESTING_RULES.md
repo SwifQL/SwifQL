@@ -11,9 +11,31 @@ This file defines SwifQL testing policy. Architecture-specific assertions remain
 - Throwing operations whose failure should fail the test normally use a throwing test function with direct `try`.
 - Do not reintroduce XCTest imports or assertions without a separately justified compatibility reason.
 
+## Tests follow design, never justify it
+
+Architecture, SQL semantics, public DSL shape, and user experience are reviewed and accepted before tests are treated as evidence for an implementation.
+
+A green test suite proves only that the implementation matches those tests. It does not prove that the architecture is clean, the abstraction is necessary, the UX is acceptable, or the compatibility cost is justified.
+
+Rules:
+
+- do not create tests whose practical purpose is to legitimize a workaround, compatibility unwrap, hidden routing layer, speculative abstraction, duplicated state, or bridge introduced only because another new layer disturbed established behavior;
+- when a new implementation requires such a special case, review the implementation architecture first. If the layer is not independently necessary, remove the layer and its defensive tests rather than freezing the workaround as a contract;
+- tests must encode an already accepted semantic/API contract, a real regression contract, or an independently verified database behavior;
+- implementation/design review may reject code even when every test is green;
+- test count is never a quality target by itself.
+
+The development priority is:
+
+```text
+architecture / SQL semantics / DSL UX
+-> clean implementation
+-> tests and external evidence that prove the accepted behavior
+```
+
 ## Coverage layers
 
-Meaningful SQL behavior is covered through the applicable combination of three layers:
+Meaningful accepted SQL behavior is covered through the applicable combination of three layers:
 
 1. **Focused SQL fragment/API coverage** for each meaningful SQL part, operator, builder method, helper or function overload, edge case, and value shape.
 2. **Real-life composed query coverage** showing the feature inside realistic full or multi-part query construction when composition is part of its intended use.
@@ -37,11 +59,11 @@ When binding behavior changes, validate the bind placeholder query, values order
 
 ## Current test helpers
 
-- `QueryWithDialect` should provide `.psql(...)`, `.mysql(...)`, and canonical `.duck(...)` helpers; the current unreleased `.duckdb(...)` helper is a pre-release naming defect to remove before further Duck work. The helpers can also assert an expected values array when binding order is part of the contract.
+- `QueryWithDialect` provides `.psql(...)`, `.mysql(...)`, and canonical `.duck(...)` helpers.
 - `check(_:all:)` currently iterates `SQLDialect.all` and compares plain output for each dialect.
-- The focused `check` helper can compare a supplied binded query and, when supplied, the returned values array.
+- The focused `check` helper can compare a supplied binded query.
 
-The implemented dialect set is PostgreSQL, MySQL, and DuckDB. Adding a future dialect changes the semantic reach of every `all` assertion, so audit and classify those tests before updating expectations; do not mechanically repair failing strings.
+`SQLDialect.all` intentionally remains PostgreSQL + MySQL until Duck reaches its final support/compatibility/native-validation closure gate. Focused Duck tests use `.duck` explicitly. Adding Duck to `SQLDialect.all` changes the semantic reach of every `all` assertion, so audit and classify those tests before expanding the collection.
 
 ## SQL fidelity and Swift naming assertions
 
@@ -54,9 +76,18 @@ The implemented dialect set is PostgreSQL, MySQL, and DuckDB. Adding a future di
 ## Regression discipline
 
 - Existing PostgreSQL and MySQL output remains byte-for-byte unchanged unless a separately approved bug fix intentionally changes it.
+- Existing PostgreSQL and MySQL placeholder/value ordering remains unchanged for established query shapes unless a separately approved bug fix intentionally changes it.
 - A test-framework migration must not rewrite SQL expectations or production behavior.
 - New dialect work must not repair a compatibility regression by changing an old PostgreSQL/MySQL expected string.
 - Governance does not impose TDD or a blanket coverage percentage.
+
+## Downstream compatibility fixtures
+
+Repository-local tests cannot see private extension code used by real consumers. Substantial changes to core composition, public protocols, operators, path types, `SwifQLable.parts`, or dialect hooks therefore require a temporary external consumer fixture when compatibility risk is material.
+
+The fixture should import SwifQL normally and exercise representative patterns such as `extension SwifQLable` fluent helpers, custom Swift operators that compose `parts`, public helper-protocol conformances such as `KeyPathLastPath`, a custom `SQLDialect` subclass overriding established hooks, and incremental PostgreSQL/MySQL query construction.
+
+If a new internal design breaks representative downstream extension code, treat the design as blocked unless the old public contract itself is explicitly and independently approved for change. The fixture protects established users; it is not an excuse to preserve a bad new API.
 
 ## Contextual rendering and composition equivalence
 

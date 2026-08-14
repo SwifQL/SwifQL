@@ -103,7 +103,9 @@ Traversal order, marker replacement, value collection, and prepared-output mecha
 
 Every supported dialect needs an explicit representation for `SwifQLHybridOperator` or any future dialect-polymorphic operator mechanism.
 
-A new dialect must never silently inherit another dialect's syntax as a fallback.
+Preserve the established public two-argument PostgreSQL/MySQL initializer for downstream source compatibility. A future additive three-argument initializer may provide an explicit Duck representation. Before Duck reaches final closure, separately decide/document what preparing an old two-argument custom hybrid with `.duck` means.
+
+A new dialect support claim must not rely on another dialect's syntax as semantic evidence.
 
 ### DIALECT-007 - Rendering follows the public design contract
 
@@ -118,6 +120,10 @@ When the same structured part requires different rendering in a particular SQL g
 Do not accumulate database-specific `previous token` / `next token` parsing heuristics inside `prepare(_:)` as a normal architecture pattern.
 
 The approved mechanism is a structural semantic render scope carried with the affected nested parts. Scope is metadata about the grammar role of those parts, not ambient mutable state on a builder/query and not begin/end raw tokens.
+
+Render scopes must be attached by the semantic owner that actually needs contextual rendering. Do not globally wrap ordinary predicates, arithmetic, LIKE/IN/BETWEEN/NULL operators, or other established expression constructors merely so one dialect can infer a grammar position. If a scope leaks into unrelated structural consumers and needs compatibility unwraps or special-case bridges, that is evidence that the scope was attached at the wrong layer and the design must be reconsidered.
+
+The canonical public Duck factory is `SQLDialect.duck`; the product identity remains DuckDB and the internal dialect id may remain `"duckdb"`.
 
 A scoped part must remain one composable structural unit when it is copied, appended, stored in a `SwifQLable` variable, returned by a helper, conditionally included, nested inside a function/subquery, or assembled later in another method. Rendering semantics must therefore not depend on one uninterrupted fluent call chain or on neighboring clauses remaining adjacent in the original Swift source.
 
@@ -144,7 +150,7 @@ open func keyPath(
 
 Context-aware overloads should continue to forward to established hooks by default so existing behavior does not need to understand new scopes.
 
-Current source has an access-control gap: `SQLDialect` is `open`, but its base initializer is not public/open. Do not claim that third-party modules can currently construct arbitrary `SQLDialect` subclasses until an external consumer compile fixture proves the supported path. The render-scope implementation plan must explicitly validate this and either make the intended subclassing surface usable without breaking compatibility or document the actual supported extension boundary.
+Current source exposes a public `SQLDialect.init()`. The external-consumer fixture verified custom subclass construction from another module and the additive context-aware hook path. Future hook changes must preserve that source-compatible boundary.
 
 ### DIALECT-010 - Dialect-transparent ordinary query source
 
@@ -166,18 +172,20 @@ This keeps normal context loading bounded while allowing each dialect owner to b
 
 The render-scope abstraction should provide a narrow public, value-semantic extension point when that can be done without exposing mutable preparation state or requiring third-party code to invent an unknown `SwifQLPart` that the core renderer would silently drop.
 
-The intended direction is that external Swift extensions can wrap normal `SwifQLable` expressions in a library-owned scoped-part mechanism and, where a supported custom-dialect extension point exists, inspect semantic scope through additive context-aware dialect hooks.
+The current narrow extension point is the public, value-semantic `SwifQLRenderScope(namespace:name:)` plus `SwifQLable.scoped(_:)`. `SwifQLRenderContext` is public and read-only, while the concrete scoped part and recursive renderer remain library-owned. A downstream module can define a semantic scope, wrap a normal `SwifQLable`, and observe that scope through an additive context-aware dialect hook without relying on mutable ambient state.
 
-The exact public names/identifier representation must be reviewed with the implementation plan. Avoid raw global strings with collision-prone semantics when a small namespaced/value type can express the same extension point cleanly.
+Keep scope identifiers namespaced and value-semantic. Do not expose mutable preparation state, raw global strings with collision-prone semantics, or unknown-part escape hatches.
 
 Extensibility is a design goal, not permission to add unsafe escape hatches. If a clean public extension point would require leaking renderer internals or false compatibility guarantees, keep that portion internal until the underlying API can support it honestly.
 
-### DIALECT-013 - Semantic statement parts are the deliberate escalation path
+### DIALECT-013 - Semantic statement representation is an escalation path, not a foundation
 
 Render scopes solve local contextual rendering differences while preserving the existing parts pipeline. They are not required to model every possible cross-dialect statement transformation forever.
 
-If verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement rendering decisions that cannot be expressed truthfully by scoped nested parts, introduce a focused semantic statement part for that construct rather than stretching scopes into a hidden AST/parser.
+Do not pre-install generic semantic-statement routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely because a future unreleased builder might benefit from hidden state retention through type erasure. That changes old composition semantics for speculative future needs and is not an acceptable foundation.
 
-Future semantic statement parts must re-enter the same recursive preparation/binding pipeline and coexist with normal/scoped parts. Do not build a general full-query AST or parallel dialect renderer preemptively merely to reserve this possibility.
+Only if verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement decisions that cannot be expressed truthfully by ordinary/scoped parts may a focused semantic statement representation be proposed. That proposal requires its own research, compatibility analysis, plan audit, and maintainer approval before implementation.
 
-This is an intentional architecture extension boundary, not current technical debt.
+Any future semantic statement representation must re-enter the same recursive preparation/binding pipeline and must not become a generalized full-query AST or parallel renderer unless a separate architecture decision explicitly proves that such a redesign is required.
+
+This is a documented extension boundary, not current technical debt and not permission to build the layer preemptively.

@@ -18,7 +18,9 @@ Therefore:
 - `.artifacts/**` is ignored by Git;
 - plans/reports/task files in `.artifacts/**` are evidence and execution instructions, not permanent product authority;
 - after meaningful durable changes, synchronize the relevant stable `.agent/**` owner instead of relying on an artifact forever;
-- if artifacts disappear, reconstruct only what is still supported by current Git/source/stable docs; never invent lost historical evidence.
+- if artifacts disappear, reconstruct only what is still supported by current Git/source/stable docs; never invent lost historical evidence;
+- keep exactly one clearly active research/plan/task lineage for the current substantial objective. When a maintainer-authorized course correction invalidates an old lineage, remove or consolidate the obsolete artifacts instead of leaving multiple plausible executor entry points side by side;
+- historical evidence worth preserving after such cleanup should be summarized into the smallest audit/rationale artifact that explains the invalidated path and durable facts. Do not keep obsolete task packages merely because they once passed their own audits.
 
 ## Mandatory Use for Non-Trivial Iterative Work
 

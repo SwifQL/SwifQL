@@ -22,7 +22,10 @@ Detailed coordinator/executor roles and delegation rules are owned by `DEVELOPME
 - Trivial typo or format-only work may skip a formal artifact plan, but it still requires scope and result verification.
 - Non-trivial implementation cannot start directly from an unreviewed idea. Research must establish current behavior, scope, risks, and acceptance evidence before planning.
 - Material unresolved API or architecture choices are surfaced to the maintainer after research; they are not delegated to the implementation executor.
-- The plan declares exact mutation scope, forbidden paths, compatibility constraints, validation, and stop conditions.
+- Public/API/core-composition work must pass the SQL-first DESIGN-001 gate and incremental-composition DESIGN-015 gate before implementation planning is considered complete.
+- The plan must explain why the proposed implementation is architecturally necessary and clean, not merely how to make it pass tests. Workarounds, speculative routing layers, compatibility unwraps, duplicate state, token-neighbor heuristics, and renderer-driven public wrappers are blockers unless their necessity is independently demonstrated and explicitly approved.
+- Tests/native validation prove an accepted design after implementation; they never upgrade a smell into an accepted architecture merely by passing.
+- The plan declares exact mutation scope, forbidden paths, compatibility constraints, downstream-extension risk, validation, and stop conditions.
 - Broad or cognitively dense implementation/correction work is decomposed into numbered task files. The executor receives one short generic coordinator prompt and reads tasks one at a time.
 - The executor appends evidence after every task, continues automatically after PASS, and stops the whole run on a genuine out-of-scope blocker.
 - Validation starts with the smallest relevant check and expands with the change's risk and scope.

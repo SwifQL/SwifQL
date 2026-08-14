@@ -4,6 +4,15 @@ This document is the sole owner of SwifQL's durable public-API design and develo
 
 Detailed part composition lives in `DSL_COMPOSITION.md`. Dialect rendering mechanics live in `DIALECT_RENDERING.md`. Preparation mechanics live in `QUERY_PREPARATION.md`. Builder state/materialization lives in `BUILDERS_AND_QUERY_PARTS.md`.
 
+## Primary design gates
+
+`DESIGN-001` and `DESIGN-015` are the first two gates for every new public API or internal architecture that can affect query composition.
+
+1. **SQL DSL first:** the user should feel that they are writing the SQL idea directly in Swift, with type safety and composition, not operating a database-driver object model or accommodating renderer internals.
+2. **Composition invariance:** the same valid query must keep the same semantics when written as one fluent chain or assembled incrementally through variables, conditions, helpers, nested expressions, and separate methods/files.
+
+If a proposal violates either gate, reject or redesign it before implementation even if it would be easy to test or internally convenient.
+
 ## DESIGN-001 — SQL-first mental model
 
 SwifQL is type-safe Swift for writing SQL. It is not an ORM, database abstraction language, or semantic query language that hides SQL behind unrelated concepts.
@@ -297,6 +306,8 @@ Equivalent query structure must preserve equivalent semantics when assembled thr
 
 Do not implement meaning as ambient builder mode, source-order side state, or an assumption that related method calls occurred consecutively in Swift. Semantic metadata needed by rendering must travel with the composed part/expression that owns it.
 
+Do not introduce generic hidden statement-routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely to make a new unreleased builder retain private state through type erasure. That changes the meaning and structural behavior of old DSL entry points for the benefit of a new implementation layer. First seek a design where the new construct composes honestly through ordinary parts and scoped metadata. Escalate to focused semantic statement representation only when verified grammar proves whole-statement structural control is genuinely required and the compatibility impact has been independently reviewed.
+
 This does not make invalid SQL valid. If a caller conditionally omits a required parent construct but still appends a clause that only makes sense inside that construct, the resulting query may correctly be invalid. The invariant is that equivalent valid composition shapes render identically, not that SwifQL guesses missing grammar.
 
 ## DESIGN-016 - Preserve established public extension contracts deliberately
@@ -308,3 +319,19 @@ Public helper protocols and extension-oriented surfaces are compatibility contra
 Do not remove or replace such a protocol merely to modernize internal architecture. If a future major version has a materially better replacement, first provide the clearest practical bridge/deprecation path and include a concise migration note with extension examples for downstream users who may conform their own local types.
 
 New internal architecture should expose a small public extension point when that falls naturally from the design and remains type-safe/maintainable. Do not contort the core model or leak mutable internals solely to make every mechanism externally customizable.
+
+## DESIGN-017 - Existing users do not pay for internal evolution
+
+SwifQL is an established library whose users may own hundreds or thousands of queries and private extension code. Repository-visible call sites are only a fraction of the real compatibility surface.
+
+Therefore:
+
+- existing PostgreSQL/MySQL query source must continue compiling unchanged unless a separately approved bug fix proves a specific old behavior wrong;
+- established generated PostgreSQL/MySQL SQL and binding order remain byte-for-byte regression contracts unless that same explicitly approved bug fix changes them;
+- downstream `extension SwifQLable`, custom operators, helper methods, public-protocol conformances, path abstractions, and `SQLDialect` subclasses are first-class compatibility concerns even when their source cannot be inspected here;
+- internal data-shape changes must not silently alter overload resolution, `parts` composition, public protocol meaning, or dialect-hook dispatch relied on by downstream code;
+- a new feature must adapt to established contracts whenever that can be done cleanly; established users must not be forced to rewrite their DSL merely because a new internal model would be easier for the implementation;
+- a major release is not a waiver for avoidable breakage. Use a breaking change only when the old public contract itself must change for a demonstrated correctness/design reason and no clean source-compatible path exists;
+- when a breaking change is genuinely unavoidable, document the exact reason, migration path, and downstream-extension impact before implementation.
+
+The standard is not merely "our test suite still passes." The standard is that a normal user updating SwifQL should not inherit a debugging project because the library changed its internals.

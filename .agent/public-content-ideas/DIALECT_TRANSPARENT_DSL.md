@@ -32,15 +32,7 @@ let query = SwifQL.pivot(cities)
 let sql = query.prepare(.duck)
 ```
 
-The user should not need call-site concepts such as:
-
-```swift
-DuckDBPivotColumn(...)
-DuckDBPivotOn(...)
-DuckDBPivotAggregate(...)
-```
-
-because those describe implementation/database mechanics rather than the SQL idea the user is expressing.
+The user should not need database-prefixed PIVOT wrapper types for columns, ON expressions, or aggregates, because those describe implementation/database mechanics rather than the SQL idea the user is expressing.
 
 Simple visual:
 
@@ -73,7 +65,7 @@ Architecture checkpoint:
 
 ### Publication caveat
 
-The clean PIVOT API and semantic render-scope mechanism are architecture-approved but not yet implemented or shipped. Do not present the exact conceptual API above as currently available until implementation/native-validation/release status is promoted.
+The generic semantic render-scope mechanism exists on the current unreleased mainline, but the clean Duck PIVOT API is still design/research work and is not implemented or shipped. Do not present the conceptual PIVOT API above as currently available until implementation/native-validation/release status is promoted.
 
 ## Semantic render scopes: context travels with the expression
 
@@ -168,12 +160,12 @@ is only a valid PIVOT query when the parent PIVOT construct is actually present.
 - `.agent/architecture/DSL_DESIGN_AND_UX.md` DESIGN-015
 - `.agent/architecture/DIALECT_RENDERING.md` DIALECT-008
 - `.agent/TESTING_RULES.md`, contextual rendering/composition equivalence contract
-- `.artifacts/reviews/SEMANTIC_RENDER_SCOPE_DECISION_AUDIT.md`
 - architecture commit `65879f7248af6488222655aa33d1316a516a594f`
+- current unreleased mainline source: `SwifQLRenderScope`, `SwifQLRenderContext`, `SwifQLable.scoped(_:)`, and recursive scoped preparation.
 
 ### Publication caveat
 
-Architecture-approved, not yet implemented. Exact public type/method names for the render-scope extension mechanism are intentionally not final.
+The generic render-scope mechanism exists on the current unreleased mainline but is not shipped yet. Duck PIVOT APIs that may consume scopes remain separately researched/planned and must not be presented as shipped.
 
 ## Nested expressions keep their grammar context
 
@@ -266,22 +258,23 @@ Do not describe `KeyPathLastPath` as internal implementation detail. It is estab
 
 ## Public extension point for semantic scopes
 
-Status: architecture-approved
+Status: present on current unreleased mainline
 Good for: advanced website docs | article | extension-author docs
 
 ### Why users should care
 
-A strong future extension story is that the same semantic-scope mechanism used internally by SwifQL may be available to downstream Swift extensions without exposing mutable renderer internals.
+The semantic-scope mechanism used by SwifQL is available to downstream Swift extensions without exposing mutable renderer internals.
 
-This would let advanced users build clean custom DSL helpers that preserve semantic rendering context instead of falling back to raw SQL or private implementation knowledge.
+Advanced users can build clean custom DSL helpers that preserve semantic rendering context instead of falling back to raw SQL or private implementation knowledge.
 
 ### Candidate example / visual
 
-**Pseudocode only, names intentionally not final:**
-
 ```swift
 extension SwifQLRenderScope {
-    static let myFeature = /* namespaced scope identity */
+    static let myFeature = SwifQLRenderScope(
+        namespace: "com.example.my-library",
+        name: "myFeature"
+    )
 }
 
 extension SwifQLable {
@@ -316,17 +309,16 @@ external code
 
 ### Evidence / provenance
 
-- DIALECT-012
-- DESIGN-016
-- `SEMANTIC_RENDER_SCOPE_DECISION_AUDIT.md`
+- `DIALECT_RENDERING.md` DIALECT-009 and DIALECT-012
+- `DSL_DESIGN_AND_UX.md` DESIGN-015 and DESIGN-016
 
-A verified current compatibility gap also exists: `SQLDialect` is declared `open`, but its base initializer is currently internal. A real downstream compile fixture is required before claiming arbitrary external custom-dialect subclassing as supported.
+External-consumer validation established that `SQLDialect.init()` is public, a downstream module can subclass `SQLDialect`, and the additive context-aware hook forwards to the established hook by default.
 
 ### Publication caveat
 
-This is a design goal, not shipped API. Do not publish the pseudocode names as final. Do not claim external custom-dialect subclassing until a downstream fixture proves/fixes the actual access-control surface.
+The scope/extensibility architecture exists on the current unreleased mainline but is not a released Duck feature yet. The generic scope extension API and still-unapproved Duck statement APIs must be described separately.
 
-## Scopes first, semantic statement parts when grammar truly needs more
+## Scopes first, focused semantic statement representation only when grammar truly needs more
 
 Status: architecture-approved
 Good for: technical article | architecture docs | conference/post material
@@ -337,7 +329,7 @@ This is a useful engineering story: SwifQL avoids both extremes.
 
 It does not accumulate token-neighbor hacks, but it also does not prematurely replace its proven parts pipeline with a giant full-query AST.
 
-Semantic render scopes solve local contextual differences. A focused semantic statement part is reserved for the day a verified dialect difference really needs whole-statement structural transformation.
+Semantic render scopes solve local contextual differences. A focused semantic statement representation is reserved for the day a verified dialect difference really needs whole-statement structural transformation.
 
 ### Candidate example / visual
 
@@ -370,7 +362,7 @@ same SQL meaning, local contextual rendering difference
 
 verified dialect needs structural reorder / omission / duplication /
 whole-statement decision
-    -> focused semantic statement part
+    -> focused semantic statement representation
 ```
 
 No second general renderer is introduced preemptively.
@@ -381,7 +373,7 @@ No second general renderer is introduced preemptively.
 
 ### Publication caveat
 
-Semantic statement parts are a documented extension boundary, not an implemented feature and not current technical debt.
+Focused semantic statement representation is a documented extension boundary, not an implemented feature and not current technical debt.
 
 ## Native PIVOT validation as a trust story
 
@@ -410,7 +402,7 @@ This native matrix directly motivated the clean dialect-transparent rendering de
 
 ### Evidence / provenance
 
-Transient native evidence is recorded under the current `.artifacts/corrections/duckdb-dialect/` P01/P02 reports and stable Duck facts are owned by `.agent/architecture/dialects/DUCK.md`.
+Stable Duck facts are owned by `.agent/architecture/dialects/DUCK.md`. Current transient research/native evidence belongs only to the active Duck research artifact lineage.
 
 ### Publication caveat
 
