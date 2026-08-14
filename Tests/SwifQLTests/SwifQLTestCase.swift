@@ -91,4 +91,8 @@ struct QueryWithDialect {
     static func mysql(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
         .init(dialect: .mysql, plainQuery: plainQuery, bindedQuery: bindedQuery)
     }
+
+    static func duck(_ plainQuery: String, _ bindedQuery: String? = nil) -> Self {
+        .init(dialect: .duck, plainQuery: plainQuery, bindedQuery: bindedQuery)
+    }
 }

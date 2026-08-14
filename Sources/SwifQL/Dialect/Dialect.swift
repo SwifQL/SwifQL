@@ -17,6 +17,10 @@ open class SQLDialect {
     public static var psql: SQLDialect {
         PostgreSQLDialect()
     }
+
+    public static var duck: SQLDialect {
+        DuckDialect()
+    }
     
     public static var all: [SQLDialect] {
         [.psql, .mysql]
@@ -27,7 +31,7 @@ open class SQLDialect {
         .init()
     }
     
-    init () {}
+    public init () {}
     
     open func boolValue(_ value: Bool) -> String {
         value ? "TRUE" : "FALSE"
@@ -61,6 +65,13 @@ open class SQLDialect {
     
     open func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
         "<key_path_should_be_here: override dialect function to fix>"
+    }
+
+    open func keyPath(
+        _ keyPath: SwifQLPartKeyPath,
+        context: SwifQLRenderContext
+    ) -> String {
+        self.keyPath(keyPath)
     }
     
     open func date(_ value: Date) -> String {
