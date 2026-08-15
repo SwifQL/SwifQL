@@ -94,7 +94,9 @@ Existing examples include:
 - `Type.auto(...)`
 - `OrderByItem.random` / `SwifQLHybridOperator.random`.
 
-A semantic convenience may render dialect-specific syntax, but each dialect branch must be explicit and tested. Legacy conveniences do not authorize creating new hidden translations in SQL-named APIs.
+A semantic convenience may render dialect-specific syntax only when it names a genuinely semantic intent rather than collapsing distinct exact SQL constructs. Each dialect branch must be explicit and tested. Legacy conveniences do not authorize creating new hidden translations in SQL-named APIs.
+
+A convenience must not become a portability facade that silently swaps one named SQL construct for another. For example, PostgreSQL `decode(..., 'base64')` and Duck/MySQL `from_base64(...)` are distinct SQL functions and therefore require distinct exact SQL APIs. Selecting a dialect may change harmless spelling/casing or syntax required by the same exact construct, but it must not translate `decode` into `from_base64` or vice versa.
 
 ### D. Explicit expert escape hatch
 
@@ -111,6 +113,8 @@ Prefer a truthful SQL API with an explicit dialect support boundary over a gener
 Rules:
 
 - do not rename functions/types/statements behind the user's back;
+- do not translate one exact named SQL function/construct into a differently named construct merely because another dialect offers similar semantics;
+- dialect-specific casing of the same SQL function name may vary where the databases spell that same construct differently, e.g. `FROM_BASE64` versus `from_base64`, while the Swift API remains the exact camelCase `fromBase64`;
 - do not degrade semantics silently;
 - do not claim support merely because another dialect parser might accept similar text;
 - do not introduce automatic lifecycle behavior, such as hidden sequence creation, unless the public API explicitly models that lifecycle;
@@ -194,7 +198,7 @@ SwifQL distinguishes SQL structure from dynamic data.
 - Trusted structural SQL may use explicit operator/custom/raw mechanisms only where appropriate.
 - Do not interpolate untrusted runtime values or identifiers into raw SQL strings to simplify a builder implementation.
 
-Convenience around Swift-native values such as `Date` or `Data` may have dialect-specific SQL representation because the public API names the Swift value, not a concrete SQL function.
+Swift-native values such as `Date` may have dialect-specific literal/value rendering when the public API genuinely names that Swift value rather than a concrete SQL function. This does not authorize a new semantic wrapper to choose among differently named SQL functions. Historical direct `Data.parts` remains a protected compatibility shape; new Duck binary/base64 support must use exact SQL APIs and normal value/binding primitives rather than a cross-dialect `binary(...)` facade.
 
 ## DESIGN-010 — Backwards compatibility is part of UX
 
@@ -255,7 +259,7 @@ The repository contains historical public `snake_case` `Fn` symbols. They are le
 
 The camelCase conversion is deterministic: remove underscore separators and capitalize the first letter of each following underscore-delimited token without inventing new word boundaries inside an existing SQL token. Examples: `json_build_array` -> `jsonBuildArray`, `array_agg` -> `arrayAgg`, `row_number` -> `rowNumber`, `generate_series` -> `generateSeries`, `jsonb_agg` -> `jsonbAgg`, `make_timestamptz` -> `makeTimestamptz`, `to_tsvector` -> `toTsvector`, `from_unixtime` -> `fromUnixtime`.
 
-Canonical implementations and ordinary tests/docs use the camelCase stable API. Deprecated snake_case declarations delegate to the canonical camelCase implementation and must generate byte-for-byte identical SQL. New work must not introduce additional public snake_case Swift identifiers.
+Canonical implementations and ordinary tests/docs use the camelCase stable API. Deprecated snake_case declarations delegate to the canonical camelCase implementation and must generate byte-for-byte identical SQL. New work normally must not introduce additional public snake_case Swift identifiers. A maintainer-approved compatibility alias may be added only as an immediately deprecated `renamed:` bridge to the canonical camelCase API; it must never become the documented/canonical surface. For the planned exact SQL `from_base64` helper, the canonical Swift spelling is `Fn.fromBase64(...)`, while `Fn.from_base64(...)` is only a deprecated renamed bridge if included by the approved migration plan.
 
 ## DESIGN-013 — Decision checklist for a new API
 
@@ -286,7 +290,7 @@ Rules:
 - use the selected `SQLDialect`, structured parts, dialect hooks, or other reviewed contextual rendering mechanisms to adapt syntax/qualification where the SQL concept is the same but the dialect grammar differs;
 - do not make users replace normal table/column/function/order expressions with database-prefixed wrappers merely to satisfy a renderer limitation;
 - database-specific implementation types may exist when needed, but ordinary call sites should not have to name them when type inference or a clean generic entry point can hide them;
-- dialect-transparent rendering may adapt syntax required by the same SQL meaning, but it must not silently substitute a different SQL construct or degrade semantics in violation of DESIGN-002/004;
+- dialect-transparent rendering may adapt syntax/qualification/casing required by the same exact modeled SQL construct, but it must not silently substitute a differently named SQL function/statement/type/operator or degrade semantics in violation of DESIGN-002/004;
 - if the existing parts pipeline lacks enough semantic context to render a dialect correctly, improve the shared rendering architecture rather than accumulating neighboring-token heuristics or one-off database wrappers.
 
 The review target is simple: normal Swift query source should read like the SQL idea the user intends, not like an object model for a particular database driver.
@@ -306,7 +310,11 @@ Equivalent query structure must preserve equivalent semantics when assembled thr
 
 Do not implement meaning as ambient builder mode, source-order side state, or an assumption that related method calls occurred consecutively in Swift. Semantic metadata needed by rendering must travel with the composed part/expression that owns it.
 
-Do not introduce generic hidden statement-routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely to make a new unreleased builder retain private state through type erasure. That changes the meaning and structural behavior of old DSL entry points for the benefit of a new implementation layer. First seek a design where the new construct composes honestly through ordinary parts and scoped metadata. Escalate to focused semantic statement representation only when verified grammar proves whole-statement structural control is genuinely required and the compatibility impact has been independently reviewed.
+Do not introduce generic hidden statement-routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely to make a new unreleased builder retain private state through type erasure. That changes the meaning and structural behavior of old DSL entry points for the benefit of a new implementation layer. First seek a design where the new construct composes honestly through ordinary parts and scoped metadata.
+
+For the current Duck PIVOT/UNPIVOT/MERGE design wave, semantic render scopes are the approved mechanism and focused semantic-statement/structural-clause routing is explicitly rejected unless a later maintainer decision reopens that architecture after new evidence. A scope-only compile/downstream diagnostic must prove the composition model before production planning is executable.
+
+Focused semantic statement representation remains only a future architecture escalation boundary for genuinely different evidence, not a fallback that an implementation task may choose automatically.
 
 This does not make invalid SQL valid. If a caller conditionally omits a required parent construct but still appends a clause that only makes sense inside that construct, the resulting query may correctly be invalid. The invariant is that equivalent valid composition shapes render identically, not that SwifQL guesses missing grammar.
 

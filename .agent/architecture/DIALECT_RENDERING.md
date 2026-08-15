@@ -109,7 +109,7 @@ A new dialect support claim must not rely on another dialect's syntax as semanti
 
 ### DIALECT-007 - Rendering follows the public design contract
 
-Dialect hooks may adapt the syntax/qualification required to express the same modeled SQL idea, but must not silently substitute a different SQL construct or degrade semantics.
+Dialect hooks may adapt syntax, qualification, placeholder spelling, or harmless SQL keyword/function casing required to express the same exact modeled SQL construct, but must not silently substitute a differently named SQL function/type/operator/statement or degrade semantics. For example, the same exact `from_base64` function may render with dialect-preferred casing such as `FROM_BASE64` versus `from_base64`, but a `decode` API must never be translated into `from_base64` merely because both can participate in base64 workflows.
 
 Use `DSL_DESIGN_AND_UX.md` for exact-SQL identity, convenience boundaries, and dialect-transparent user-facing API rules.
 
@@ -185,6 +185,8 @@ Render scopes solve local contextual rendering differences while preserving the 
 Do not pre-install generic semantic-statement routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely because a future unreleased builder might benefit from hidden state retention through type erasure. That changes old composition semantics for speculative future needs and is not an acceptable foundation.
 
 Only if verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement decisions that cannot be expressed truthfully by ordinary/scoped parts may a focused semantic statement representation be proposed. That proposal requires its own research, compatibility analysis, plan audit, and maintainer approval before implementation.
+
+For the current Duck PIVOT/UNPIVOT/MERGE wave, that escalation is not approved: the maintainer explicitly requires a scope-only proof first and rejected semantic-statement/structural-clause routing as the implementation fallback. If the scope-only diagnostic fails, stop at an architecture blocker rather than silently activating this escalation boundary.
 
 Any future semantic statement representation must re-enter the same recursive preparation/binding pipeline and must not become a generalized full-query AST or parallel renderer unless a separate architecture decision explicitly proves that such a redesign is required.
 

@@ -118,9 +118,19 @@ TIMESTAMPTZ 'YYYY-MM-DD HH:MM:SS.ffffff+00:00'
 
 Do not use local time zone behavior for Duck Date rendering.
 
-### DUCK-007 - Foundation Data rendering is not yet designed for Duck
+### DUCK-007 - Foundation Data and exact base64 SQL stay transparent
 
-Duck Data rendering remains a future design item. Preserve the established Data composition contract unless fresh design/research proves a clean additive dialect-aware mechanism.
+Historical direct `Data.parts` is protected compatibility surface and remains PostgreSQL-shaped. Duck support must not globally reinterpret that existing expression and must not introduce a semantic `binary(...)` facade that chooses different named SQL functions by dialect.
+
+Base64 SQL is modeled through exact function identity:
+
+- PostgreSQL `decode(..., 'base64')` remains the `decode` construct;
+- Duck `from_base64(...)` and MySQL `FROM_BASE64(...)` are the same exact function name with dialect-preferred casing and use canonical Swift `Fn.fromBase64(...)`;
+- when included by the approved migration plan, `Fn.from_base64(...)` exists only as an immediately deprecated `renamed: "fromBase64"` compatibility bridge.
+
+Selecting `.duck` may change casing/rendering details of the same exact function, bind markers, identifiers, and other dialect-owned syntax. It must not silently translate `decode` into `from_base64` or vice versa.
+
+Any direct Duck BLOB/Data binding support must use normal explicit value/binding primitives and exact SQL APIs without changing historical direct `Data.parts`.
 
 ## Paths, JSON, and contextual rendering
 
@@ -314,7 +324,9 @@ For simplified PIVOT `GROUP BY`, reuse the established public `KeyPathLastPath` 
 
 Do not introduce a PIVOT-specific column wrapper for this clause.
 
-For ON, USING, and ORDER BY, use the approved structural semantic render-scope architecture rather than PIVOT-specific expression wrappers. PIVOT source implementation still requires detailed planning/audit, including exact scope ownership, bind-order preservation, and incremental-composition tests.
+For ON, USING, and ORDER BY, use the approved structural semantic render-scope architecture rather than PIVOT-specific expression wrappers. The current Duck PIVOT/UNPIVOT/MERGE wave must remain scope-only: focused semantic-statement parts, structural clause-ownership routing in established fluent methods, ambient statement modes, and token scanning are not approved fallbacks. A dedicated compile/downstream diagnostic must prove a clean scope lifetime/representation across `var SwifQLable`, conditionals, helpers, copied parts, nested expressions, and separate methods/files before production implementation is authorized.
+
+If that diagnostic cannot satisfy DESIGN-015/017 without hidden routing or legacy behavior changes, stop at an architecture blocker and return to the maintainer. Do not automatically escalate to semantic statement objects.
 
 ## Native validation evidence
 
@@ -389,4 +401,18 @@ Before any new Duck feature implementation resumes, classify the intended unrele
 
 Known areas requiring this review include PIVOT, UNPIVOT, MERGE, COLUMNS, star modifiers, nested values, sequences, macros, catalog paths, sampling helper types, and COPY/ATTACH option types.
 
-Current live source, stable architecture owners, current official DuckDB semantics, and fresh focused research define the next plan.
+The fresh `duck-sql-surface-redesign` research has completed this classification at planning level. Production implementation is still blocked by the scope-only diagnostic and independent plan audit; future source changes must follow the audited final plan rather than repeating a broad API inventory.
+
+### DUCK-024 - First `.duck` closure boundary
+
+The first release that adds `.duck` to `SQLDialect.all` must cover and native-/compatibility-validate the ordinary application/analytics/schema surface approved by the maintainer: core rendering/binds/values/date exact behavior; paths/catalogs/JSON; exact scalar/nested types and values that do not require the deferred generic `:=` abstraction; high-value exact functions/operators; SELECT-family clauses; GROUPING SETS/ROLLUP/CUBE; future-safe lambdas/list functions; joins; set operations; star/COLUMNS; scope-proven PIVOT/UNPIVOT; DML/RETURNING/MERGE where clean composition is proven; truthful CREATE/ALTER/DROP for tables/schemas/views/types/indexes/constraints; sequences/macros only where they do not require the deferred generic `:=` abstraction; ATTACH/DETACH/USE; COPY; common table/file functions; full DuckDB v1.5.5 native validation; and downstream compatibility validation.
+
+Later typed waves do not block `.duck` closure: INSTALL/LOAD, CREATE SECRET, broad PRAGMA/configuration, CHECKPOINT, VACUUM/ANALYZE administration, SET/RESET VARIABLE, EXPORT/IMPORT DATABASE, SHOW/DESCRIBE/SUMMARIZE convenience, and extension-specific SQL universes.
+
+`SQLDialect.all` remains `[.psql, .mysql]` until that first closure passes.
+
+### DUCK-025 - Generic SQL `name := expression` is deferred
+
+Do not introduce a premature generic `name := expression` public abstraction in the current Duck wave. STRUCT/UNION value constructors, macro defaults/named calls, or other features that strictly require a reusable first-class `:=` abstraction are deferred unless they can be represented cleanly through an already-established exact API without inventing a generic named-argument layer.
+
+Do not conflate SQL `name := expression` with table-function `name = value` options. The future generic `:=` design remains explicit technical/API debt, not an implementation shortcut for this closure.

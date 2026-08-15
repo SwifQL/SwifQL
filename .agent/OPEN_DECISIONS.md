@@ -13,16 +13,6 @@ This file records genuinely unresolved choices, not settled architecture rules o
 
 ## Active decisions
 
-### DUCK-API-001
-
-- Architecture owner: `architecture/DSL_DESIGN_AND_UX.md` with `architecture/dialects/DUCK.md` supporting.
-- Question: What are the final clean SQL-shaped public APIs and internal ownership boundaries for the entire unreleased Duck surface?
-- Why it matters: the final design must satisfy DESIGN-001, DESIGN-015, DESIGN-017, reuse existing SwifQL wherever possible, keep dialect mechanics behind the DSL, and preserve every established PostgreSQL/MySQL contract.
-- Status: blocking all new Duck feature implementation.
-- Resolution timing: perform a fresh live-source/API inventory and independently audit the classification/migration plan before creating implementation tasks.
-
-Current live source, stable architecture owners, and current DuckDB semantics define this decision. Disposable artifacts are evidence/planning only.
-
 ### DUCK-HYBRID-001
 
 - Architecture owner: `architecture/DIALECT_RENDERING.md` with `architecture/dialects/DUCK.md` supporting.

@@ -4,15 +4,15 @@ This file contains only approved current work. Ideas, unresolved choices, verifi
 
 ## Current state
 
-Fresh Duck API/SQL-surface research and design is the only approved substantial work.
+Duck SQL-surface research/classification is complete enough to enter the final architecture-proof and planning gates. No production Duck feature implementation is authorized yet.
 
-Goals:
+Current approved sequence:
 
-- inventory the full intended Duck SQL surface from current live source and current DuckDB semantics;
-- design clean SQL-shaped user-facing Swift APIs before implementation mechanics;
-- reuse existing SwifQL composition wherever it already expresses the SQL cleanly;
-- identify only the semantic render-scope integration points that verified grammar actually requires;
-- preserve PostgreSQL/MySQL and downstream-extension compatibility under DESIGN-017;
-- produce a detailed independently audited plan before any new Duck feature implementation.
+1. run the evidence-only scope-only compile/downstream diagnostic defined under `.artifacts/planning/duck-sql-surface-redesign/`;
+2. if PASS, independently reconcile the diagnostic evidence into the detailed Duck `IMPLEMENTATION_PLAN.md` without changing the approved SQL-first/scope-only design;
+3. run an independent plan audit against DESIGN-001/015/017, Duck v1.5.5 semantics, PostgreSQL/MySQL regression contracts, and downstream extension compatibility;
+4. only after a clean plan audit create numbered surgical implementation tasks and the short executor coordinator prompt.
 
-No Duck implementation wave, Swift 6/Sendable implementation, or unrelated modernization is executable until that research/design/plan audit is complete.
+The approved first Duck closure includes ordinary application/analytics/schema SQL including views, while administrative/runtime families and the generic SQL `name := expression` abstraction are deferred. Exact SQL identity is mandatory: do not introduce semantic portability facades such as a cross-dialect `binary(...)` API that substitutes differently named SQL functions.
+
+No Duck implementation wave, Swift 6/Sendable implementation, or unrelated modernization is executable until the diagnostic and plan audit are complete.
