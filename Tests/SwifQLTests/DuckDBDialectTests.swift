@@ -63,4 +63,14 @@ struct DuckDBDialectTests: SwifQLTests {
         #expect(legacy.prepare(.duck).plain == "<duck_hybrid_operator_requires_explicit_duck_branch>")
         #expect(explicit.prepare(.duck).plain == "duck()")
     }
+
+    @Test("Duck fromBase64 uses exact SQL identity and normal binds")
+    func fromBase64() {
+        let query = SwifQL.select(Fn.fromBase64("O'Reilly"), Fn.fromBase64("данные 🦆"))
+        let prepared = query.prepare(.duck)
+
+        #expect(prepared.plain == "SELECT from_base64('O''Reilly'), from_base64('данные 🦆')")
+        #expect(prepared.splitted.query == "SELECT from_base64($1), from_base64($2)")
+        #expect(prepared.splitted.values.map { $0 as? String } == ["O'Reilly", "данные 🦆"])
+    }
 }

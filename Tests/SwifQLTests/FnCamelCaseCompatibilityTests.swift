@@ -110,4 +110,16 @@ struct FnCamelCaseCompatibilityTests {
             dialect: .mysql
         )
     }
+
+    @Test("Base64 uses the canonical camelCase API")
+    func base64CanonicalAPI() {
+        #expect(
+            SwifQL.select(Fn.fromBase64("SGVsbG8=")).prepare(.duck).plain
+                == "SELECT from_base64('SGVsbG8=')"
+        )
+        #expect(
+            SwifQL.select(Fn.fromBase64("SGVsbG8=")).prepare(.mysql).plain
+                == "SELECT FROM_BASE64('SGVsbG8=')"
+        )
+    }
 }

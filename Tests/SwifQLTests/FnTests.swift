@@ -141,4 +141,62 @@ struct FnTests: SwifQLTests {
             .mysql("SELECT DATE_FORMAT(CarBrands.createdAt, '%y-%m')")
         )
     }
+
+    // MARK: - Exact Base64 function
+
+    @Test("Test fromBase64 exact SQL and bindings")
+    func fromBase64() {
+        let query = SwifQL.select(Fn.fromBase64("SGVsbG8="))
+        check(
+            query,
+            .psql("SELECT from_base64('SGVsbG8=')", "SELECT from_base64($1)"),
+            .mysql("SELECT FROM_BASE64('SGVsbG8=')", "SELECT FROM_BASE64(?)"),
+            .duck("SELECT from_base64('SGVsbG8=')", "SELECT from_base64($1)")
+        )
+
+        #expect(query.prepare(.psql).plain.contains("from_base64"))
+        #expect(!query.prepare(.psql).plain.contains("decode"))
+    }
+
+    @Test("fromBase64 keeps ordinary string binding and order")
+    func fromBase64StringValues() {
+        let first = "O'Reilly"
+        let second = "Привет 🦆"
+        let query = SwifQL.select(Fn.fromBase64(first), Fn.fromBase64(second))
+
+        let duck = query.prepare(.duck)
+        #expect(duck.plain == "SELECT from_base64('O''Reilly'), from_base64('Привет 🦆')")
+        #expect(duck.splitted.query == "SELECT from_base64($1), from_base64($2)")
+        #expect(duck.splitted.values[0] as? String == first)
+        #expect(duck.splitted.values[1] as? String == second)
+
+        let mysql = query.prepare(.mysql)
+        #expect(mysql.splitted.query == "SELECT FROM_BASE64(?), FROM_BASE64(?)")
+        #expect(mysql.splitted.values[0] as? String == first)
+        #expect(mysql.splitted.values[1] as? String == second)
+    }
+
+    @Test("Historical Data parts and SQL remain unchanged")
+    func historicalDataParts() {
+        let data = Data([1, 2, 3])
+        let expectedTypes = [
+            "SwifQLPartOperator",
+            "SwifQLPartOperator",
+            "SwifQLPartSafeValue",
+            "SwifQLPartOperator",
+            "SwifQLPartOperator",
+            "SwifQLPartSafeValue",
+            "SwifQLPartOperator"
+        ]
+
+        #expect(data.parts.count == 7)
+        #expect(data.parts.map { String(describing: type(of: $0)) } == expectedTypes)
+
+        let query = SwifQL.select(data)
+        let expectedSQL = "SELECT decode('AQID', 'base64')"
+        #expect(query.prepare(.psql).plain == expectedSQL)
+        #expect(query.prepare(.psql).splitted.query == expectedSQL)
+        #expect(query.prepare(.mysql).plain == expectedSQL)
+        #expect(query.prepare(.mysql).splitted.query == expectedSQL)
+    }
 }
