@@ -303,7 +303,7 @@ Do not introduce PIVOT-specific public wrapper types for columns, ON expressions
 
 Ordinary PIVOT source should stay clean and use existing SwifQL expressions, paths, functions, aliases, and ordering concepts.
 
-Target direction under architecture discussion:
+Required clean source direction:
 
 ```swift
 SwifQL.pivot(cities)
@@ -316,17 +316,25 @@ SwifQL.pivot(cities)
 
 The dialect renderer, not the user, owns Duck's unqualification requirement in PIVOT grammar zones.
 
-For simplified PIVOT `GROUP BY`, reuse the established public `KeyPathLastPath` protocol as the public input constraint. DuckDB v1.5.5 accepts column names there and rejects qualified/expression forms; `KeyPathLastPath` models that grammar without changing the normal clean call site:
+For simplified PIVOT `GROUP BY`, the documented correct source remains a column-name path such as:
 
 ```swift
 .groupBy(cities.column("country"))
 ```
 
-Do not introduce a PIVOT-specific column wrapper for this clause.
+DuckDB v1.5.5 accepts column names there and rejects qualified/expression forms. However, after `var query: SwifQLable` existential erasure, the unchanged global `.groupBy(_ fields: SwifQLable...)` surface cannot truthfully become a PIVOT-only compile-time `KeyPathLastPath` constraint without either changing ordinary GROUP BY overload behavior, adding hidden PIVOT routing, or changing the clean call shape. Do not add a global PIVOT-validation overload or wrapper to simulate a static guarantee the erased receiver cannot express.
 
-For ON, USING, and ORDER BY, use the approved structural semantic render-scope architecture rather than PIVOT-specific expression wrappers. The current Duck PIVOT/UNPIVOT/MERGE wave must remain scope-only: focused semantic-statement parts, structural clause-ownership routing in established fluent methods, ambient statement modes, and token scanning are not approved fallbacks. A dedicated compile/downstream diagnostic must prove a clean scope lifetime/representation across `var SwifQLable`, conditionals, helpers, copied parts, nested expressions, and separate methods/files before production implementation is authorized.
+`KeyPathLastPath` remains established public compatibility/extension surface and remains appropriate for APIs whose own static grammar is genuinely column-name-only. For PIVOT GROUP BY, preserve the generic SQL DSL surface, render correct column paths according to the structural owner, document/native-test the valid Duck grammar, and allow DuckDB to reject dialect-invalid arbitrary expressions rather than distorting established global GROUP BY semantics.
 
-If that diagnostic cannot satisfy DESIGN-015/017 without hidden routing or legacy behavior changes, stop at an architecture blocker and return to the maintainer. Do not automatically escalate to semantic statement objects.
+For ON and USING expression regions, use bounded structural semantic render scopes rather than PIVOT-specific expression wrappers. The reconciled diagnostic has established that bounded scopes survive `var SwifQLable`, helpers, copied parts, nesting, independent scopes, and ordered binding collection when the semantic owner can attach the scope to a bounded subtree.
+
+For simplified PIVOT `GROUP BY` and `ORDER BY`, clause ownership remains separate from grammar validity. The structural frame owns qualification/rendering context; it does not attempt to turn the erased global GROUP BY API into a PIVOT-only compile-time grammar checker.
+
+The independent root clause-ownership audit and focused disposable evidence diagnostic have validated the cross-dialect major-version architecture: a generic SQL-region frame selects ownership for open clause kinds through one generic root-frame-aware continuation primitive; dedicated owner-sensitive GROUP BY / ORDER BY parts persist the selected owner; bounded semantic render scopes apply Duck's contextual qualification rules only to the affected children. PIVOT is a consumer of this shared composition architecture, not the owner of it.
+
+The focused Gate B diagnostic passed the required nested SELECT/PIVOT, nested PIVOT, set-result/CTE, copied-`parts`, external-extension, binding-order, QueryParts/builder, raw-composition, and byte-for-byte PostgreSQL/MySQL compatibility matrix. `PIVOT-CLAUSE-OWNERSHIP-001` is closed. This validates the architecture, not broad Duck production implementation; implementation still requires the reconciled and independently audited production plan.
+
+Do not automatically escalate to semantic statement objects. Do not implement Duck-specific frame routing, scan receiver history for PIVOT, use free-floating forward ownership directives, infer ownership from paths/tables, or expose `belong: .pivot` / PIVOT-specific wrappers in ordinary query source.
 
 ## Native validation evidence
 
@@ -401,7 +409,7 @@ Before any new Duck feature implementation resumes, classify the intended unrele
 
 Known areas requiring this review include PIVOT, UNPIVOT, MERGE, COLUMNS, star modifiers, nested values, sequences, macros, catalog paths, sampling helper types, and COPY/ATTACH option types.
 
-The fresh `duck-sql-surface-redesign` research has completed this classification at planning level. Production implementation is still blocked by the scope-only diagnostic and independent plan audit; future source changes must follow the audited final plan rather than repeating a broad API inventory.
+The fresh `duck-sql-surface-redesign` research has completed this classification at planning level. Bounded semantic render scope has passed Gate A, and the focused clause-ownership diagnostic has passed Gate B. Production implementation remains blocked only on reconciliation and independent audit of the detailed implementation/migration plan. Future source changes must follow the audited final plan rather than repeating a broad API inventory.
 
 ### DUCK-024 - First `.duck` closure boundary
 

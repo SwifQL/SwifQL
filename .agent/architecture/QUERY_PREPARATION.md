@@ -41,3 +41,11 @@ Plain and splitted output derive from the same prepared query and value ordering
 ### PREP-006 — No parallel pipeline
 
 No dialect may introduce a parallel SQL-generation or binding pipeline.
+
+### PREP-007 — Structural SQL-region frames recurse through the same renderer
+
+The evidence-proven major-version structural composition model may place opaque statement/subquery/set-result frame parts inside `parts`. Preparation recursively renders a frame's child parts through the same `prepare(_:)` traversal and the same ordered `values` / `formattedValues` collectors. A frame must not create a second renderer, formatter, or binding pass.
+
+Entering a nested SQL-region frame establishes a fresh statement-local `SwifQLRenderContext`, so semantic render scopes owned by the parent statement do not leak into the nested statement/set-result region. This context reset does not reset or fork the binding collectors: value collection remains one deterministic depth-first traversal across the full structural tree.
+
+Dedicated owner-sensitive clause parts persist already-selected ownership and may derive bounded child render scopes from that stored owner. Preparation must never rediscover clause ownership by scanning earlier parts, tokens, paths, or statement history.

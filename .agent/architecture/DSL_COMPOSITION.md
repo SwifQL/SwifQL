@@ -41,3 +41,39 @@ Part composition must preserve the public SQL identity and UX contract selected 
 ### DSL-007 — Preserve established part shape
 
 New dialect work must not globally replace or wrap the normal part shape of established operators and fluent helpers merely to carry context for one feature. Context belongs at the semantic construct that owns it. If a new internal layer forces unrelated established consumers to unwrap that layer, redesign the layer.
+
+This rule does not prohibit an explicitly approved major-version migration of the shared composition model when a cross-cutting structural boundary is required to preserve SQL-region semantics for multiple constructs. Such a migration must be generic, parts-native, independently audited, and justified by composition correctness rather than one dialect's renderer convenience.
+
+### DSL-008 — Structural SQL-region ownership is a major-version tool
+
+When an established flat clause cannot preserve required semantic ownership through normal `SwifQLable` composition, a dedicated value-semantic `SwifQLPart` for that clause is an allowed architecture tool. The clause part contains its normal child parts plus explicit ownership metadata selected by the current structural SQL region.
+
+Ownership selection and persistence are separate responsibilities:
+
+- a generic value-semantic SQL-region or set-result frame is the structural composition container that selects ownership for a clause kind;
+- a dedicated owner-sensitive clause part persists the selected owner permanently with its child parts;
+- preparation/rendering must not rediscover ownership from earlier tokens, receiver history, mutable query state, table/path identity, or dialect-specific inference.
+
+The current root structural frame, not the deepest nested frame or latest semantic marker, is the target for standard continuation-style fluent composition. Standard continuation APIs must use one generic frame-aware structural composition primitive rather than directly appending top-level sibling parts when a root frame is present. That primitive may ask the current root frame for the owner of an open clause kind, but it must contain no PIVOT/dialect branch and must not scan earlier receiver contents for semantic history.
+
+Real nested SQL statement/subquery/set-result regions are opaque nested structural parts. They establish their own composition frame and therefore prevent ownership from leaking into or out of the nested region. Ordinary expression parentheses are syntax only and do not establish a frame.
+
+Requirements:
+
+- ownership metadata must be stored structurally with the clause and copied as part of `parts`;
+- ownership selection must come from the current root structural SQL-region frame through the generic composition primitive, never from a search for a specific previous construct;
+- rendering may use the clause's explicit ownership to attach bounded semantic render scopes to the exact child expressions that need contextual rendering;
+- the ordinary/no-owner case must preserve established SQL and binding behavior exactly;
+- the structural frame must be an opaque nested value-semantic part, not begin/end markers, mutable ranges, or free-floating forward directives;
+- SQL-region frames may exist only at real structural SQL boundaries such as statement/subquery or set-result regions; do not structuralize every expression merely to carry ownership;
+- this pattern must not grow into a parallel statement AST or renderer merely because one clause needs explicit ownership.
+
+Ownership identity and clause-kind identity are open extension domains. The focused structural diagnostic validated the public namespaced value-semantic `SwifQLClauseOwner` / `SwifQLClauseKind` direction, with ordinary/no-owner represented by absence (`nil`) rather than a magic `"none"` value. Closed enums are appropriate only when the domain is genuinely exhaustive. Production implementation must preserve this extension model unless a later independently audited plan proves a materially better open-value API.
+
+Because `SwifQLable.parts` is public, library-owned structural frame/clause parts intentionally introduced into that array must remain safely inspectable by downstream code. Prefer public read-only structural types/state for the root frame and owner-sensitive clauses, rather than placing opaque internal concrete values into a public array and forcing downstream users to guess around them. Public inspection does not imply mutable renderer/preparation internals.
+
+Retrofitting established statement/subquery/set-result composition from historically flattened children to opaque structural frames, or retrofitting an established fluent clause to a dedicated structural clause part, changes the observable `SwifQLable.parts` shape. Treat these as one explicit major-version public-contract migration even when normal Swift query call sites and generated SQL remain unchanged. It requires explicit maintainer approval, downstream-extension/`parts` compatibility analysis, migration guidance, and release communication before implementation ships.
+
+Downstream helpers that manually append to `self.parts` may need to migrate to a public generic structural continuation API when their intent is to continue the current framed SQL region. Copying `parts` must remain meaningful and preserve the structural tree. The evidence-proven raw-composition contract is: a framed lhs plus an unframed rhs may continue the current root structurally, while two independently framed roots remain independent values rather than having ownership merged by guesswork. Production `~` design must preserve that semantic distinction and must not infer intent from tokens or semantic history.
+
+When this migration is released, document the reason and downstream impact in README/release/migration documentation and public release material so users who inspect, copy, or extend `parts` are not surprised by the structural change.

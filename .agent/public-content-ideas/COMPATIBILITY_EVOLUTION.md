@@ -242,3 +242,50 @@ Relevant architecture commits:
 ### Publication caveat
 
 The compatibility philosophy is stable architecture. Generic semantic render scopes exist on the current mainline but are not released yet; clean Duck PIVOT remains architecture direction rather than an approved implementation. Future publication must clearly separate established released SwifQL behavior, current unreleased infrastructure, and still-planned Duck APIs.
+
+## Migration story: Structural `parts` Without Rewriting Query Source
+
+Status: validated
+Good for: migration guide | release notes | README | article | maintainer post
+
+### Why users should care
+
+The next major version may deliberately change the internal/public `SwifQLable.parts` shape at true SQL statement/subquery/set-result boundaries so semantic ownership survives incremental composition, copied parts, helpers, nested SQL, CTEs, and set operations without hidden mutable state or token scanning.
+
+The important user-facing promise is the contrast:
+
+```text
+internal composition becomes structurally richer
+while ordinary SQL-shaped query source stays familiar
+```
+
+For example, the intended source remains:
+
+```swift
+var query: SwifQLable = SwifQL
+query = query.pivot(cities)
+query = query.on(cities.column("year"), in: 2000, 2010)
+query = query.using(Fn.sum(cities.column("population")) => "total")
+query = query.groupBy(cities.column("country"))
+query = query.orderBy(.desc(cities.column("country")))
+```
+
+The migration cost is concentrated where downstream code intentionally manipulates the structural representation itself, for example helpers that manually append to `self.parts` or code that pattern-matches historically flattened GROUP BY / ORDER BY / nested-statement token sequences. Those users should receive a public structural continuation API plus exact before/after migration examples.
+
+### Engineering story
+
+The useful story is not merely "we introduced an AST." The accepted architecture explicitly avoids a full SQL AST and parallel renderer. It introduces only thin value-semantic SQL-region frames at real ownership boundaries, dedicated clause parts only where ownership must persist, and keeps ordinary expression/operator parts unchanged.
+
+This creates a strong explanation of why a breaking internal/public representation change can be justified in a major release while still protecting the higher-value compatibility contract: users should not have to rewrite ordinary queries because the library learned how to model nested SQL ownership correctly.
+
+### Evidence / provenance
+
+- `.agent/architecture/DSL_COMPOSITION.md` `DSL-008`
+- `.agent/architecture/DSL_DESIGN_AND_UX.md` DESIGN-015/017/018
+- `.artifacts/planning/duck-sql-surface-redesign/CLAUSE_OWNERSHIP_ROOT_AUDIT.md`
+- `.artifacts/planning/duck-sql-surface-redesign/CLAUSE_OWNERSHIP_EVIDENCE_REPORT.md`
+- `.artifacts/planning/duck-sql-surface-redesign/CLAUSE_OWNERSHIP_EVIDENCE_REVIEW.md`
+
+### Publication caveat
+
+The architecture is validated by a disposable real-source prototype, exact PostgreSQL/MySQL compatibility matrix, 20-case structural matrix, and external consumer, but it is not yet implemented or shipped in production SwifQL source. Do not present structural SQL-region frames, `SwifQLClauseOwner` / `SwifQLClauseKind`, or the migration API as released behavior until production implementation, production compatibility/native audit, and release gates pass.

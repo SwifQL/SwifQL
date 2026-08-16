@@ -43,7 +43,7 @@ Approved additive primitives are value-semantic render scopes/context, a library
 
 Attach scopes only at the semantic construct that truly owns the grammar context. Do not globally rewrite ordinary predicate/arithmetic/operator part shape for one dialect.
 
-Focused semantic statement representation remains only a future escalation boundary after a separate maintainer decision proves ordinary/scoped parts genuinely insufficient. For the current Duck PIVOT/UNPIVOT/MERGE wave, the maintainer explicitly rejected semantic-statement/structural-clause routing as a fallback and requires a scope-only compile/downstream proof. Do not pre-install hidden routing into established `groupBy`, `orderBy`, `limit`, `returning`, or similar DSL methods.
+Focused semantic statement representation remains only a future escalation boundary after a separate maintainer decision proves ordinary/scoped parts plus the evidence-proven structural SQL-region model genuinely insufficient. For the current Duck PIVOT/UNPIVOT/MERGE wave, bounded semantic render scopes remain canonical for contextual rendering and Gate B has now passed with a generic major-version SQL-region/set-result frame architecture plus dedicated owner-sensitive clauses. Do not pre-install hidden routing into established `groupBy`, `orderBy`, `limit`, `returning`, or similar DSL methods; the generic continuation path must operate only on the current root frame and contain no dialect/PIVOT branch.
 
 ## Duck direction
 
@@ -51,7 +51,7 @@ Canonical public spelling is `.duck`. Ordinary Duck query source remains SQL-sha
 
 A target PIVOT call should remain conceptually clean, e.g. `SwifQL.pivot(cities).on(cities.column("year"), in: 2000, 2010)...`, with dialect-specific qualification handled behind the DSL rather than exposed as wrapper objects.
 
-For simplified PIVOT, native DuckDB v1.5.5 evidence already proves qualified ON/USING/GROUP BY/ORDER BY forms fail, explicit bound IN values work, bound LIMIT works with explicit IN, and no-IN dynamic PIVOT cannot be prepared as one C statement. PIVOT GROUP BY should reuse established `KeyPathLastPath`.
+For simplified PIVOT, native DuckDB v1.5.5 evidence already proves qualified ON/USING/GROUP BY/ORDER BY forms fail, explicit bound IN values work, bound LIMIT works with explicit IN, and no-IN dynamic PIVOT cannot be prepared as one C statement. The correct GROUP BY source remains a column path, but after `SwifQLable` existential erasure do not distort the established generic GROUP BY API with a fake PIVOT-only compile-time `KeyPathLastPath` restriction; preserve `KeyPathLastPath` as public compatibility surface for APIs that can truthfully own such static grammar constraints.
 
 The approved first `.duck` closure covers ordinary application/analytics/schema SQL, including views, and leaves administration/runtime families such as INSTALL/LOAD, secrets, broad PRAGMA/configuration, checkpoint/vacuum/analyze administration, variables, export/import, SHOW/DESCRIBE/SUMMARIZE convenience, and extension-specific universes for later typed waves. The generic SQL `name := expression` abstraction is also deferred; current closure work must not invent it indirectly.
 
@@ -59,12 +59,11 @@ The approved first `.duck` closure covers ordinary application/analytics/schema 
 
 Before any new Duck feature implementation executor runs:
 
-1. inventory/classify the intended Duck SQL surface from current live source and current DuckDB semantics;
-2. design concrete SQL-shaped user-facing Swift examples before implementation mechanics and preserve exact SQL identity rather than semantic portability facades;
-3. prove the approved semantic-render-scope architecture for PIVOT-style incremental composition with the dedicated evidence-only compile/downstream diagnostic; if it cannot satisfy DESIGN-015/017 cleanly, stop at an architecture blocker;
-4. lock the detailed implementation/migration plan from the current clean mainline, respecting the approved first closure and the deferred generic `name := expression` work;
-5. independently audit that plan against DESIGN-001/015/017, dialect rules, PostgreSQL/MySQL/downstream-extension compatibility, and official/native DuckDB semantics;
-6. only then create numbered surgical tasks and run an implementation executor.
+1. keep the completed Duck SQL-surface research/classification and SQL-shaped user-facing API decisions as the planning baseline;
+2. treat Gate A bounded semantic render scopes and Gate B structural clause ownership as evidence-proven architecture gates;
+3. keep the corrected detailed implementation/migration plan aligned with the completed Gate B prototype evidence, explicit major-version migration surface, approved first closure, and deferred generic `name := expression` work;
+4. resolve all findings from the blocked first independent plan audit, then independently re-audit the corrected plan against DESIGN-001/015/017/018, dialect rules, PostgreSQL/MySQL/downstream-extension compatibility, and official/native DuckDB semantics;
+5. only after the latest plan-audit lineage returns PASS create numbered surgical tasks and run an implementation executor.
 
 Current live source and stable architecture owners define the implementation baseline. Disposable artifacts may record the current research/plan/evidence, but they do not override those authorities.
 

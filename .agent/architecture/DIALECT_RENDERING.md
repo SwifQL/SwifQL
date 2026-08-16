@@ -131,6 +131,8 @@ Preparation should recursively render nested scoped parts with a value-semantic 
 
 The scope primitive must remain compatible with the existing parts pipeline and established `SQLDialect` hooks.
 
+Under the evidence-proven major-version structural SQL-region frame architecture in `DSL-008`, entering a nested statement/subquery/set-result frame establishes a statement-local render-context isolation boundary: semantic scopes owned by an outer statement region do not automatically leak into the nested SQL region. This rule is cross-dialect composition infrastructure, not a PIVOT-specific dialect exception. The focused Gate B diagnostic validated this behavior with both built-in PIVOT-style cases and an external custom dialect/scope consumer.
+
 ### DIALECT-009 - Preserve custom dialect subclasses
 
 When evolving an existing `SQLDialect` hook, prefer an additive context-aware overload whose default implementation forwards to the established hook.
@@ -184,9 +186,15 @@ Render scopes solve local contextual rendering differences while preserving the 
 
 Do not pre-install generic semantic-statement routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely because a future unreleased builder might benefit from hidden state retention through type erasure. That changes old composition semantics for speculative future needs and is not an acceptable foundation.
 
-Only if verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement decisions that cannot be expressed truthfully by ordinary/scoped parts may a focused semantic statement representation be proposed. That proposal requires its own research, compatibility analysis, plan audit, and maintainer approval before implementation.
+A dedicated value-semantic clause part that carries its own explicit ownership metadata is not, by itself, the forbidden hidden statement-routing mechanism. `DSL-008` permits that representation as part of the audited major-version structural composition model when an established flat clause genuinely needs structural ownership. The clause must carry its own metadata through `parts`; an established fluent method must not discover ownership by scanning receiver history, neighboring tokens, or ambient mutable state.
 
-For the current Duck PIVOT/UNPIVOT/MERGE wave, that escalation is not approved: the maintainer explicitly requires a scope-only proof first and rejected semantic-statement/structural-clause routing as the implementation fallback. If the scope-only diagnostic fails, stop at an architecture blocker rather than silently activating this escalation boundary.
+The evidence-proven architecture selects ownership through the current root structural SQL-region/set-result frame. Standard continuation-style fluent methods use one generic frame-aware structural composition primitive: they may ask the current root frame for the owner associated with an open clause kind, build the dedicated clause with that owner, and append it through the same generic path. They must not search the receiver for PIVOT or another semantic construct. The generic structural primitive contains no dialect/PIVOT branch.
+
+A frame is an opaque nested value-semantic structural part, not a free-floating forward directive or begin/end marker. Nested statement/set-result frames prevent clause ownership and statement-local semantic render scopes from leaking across real SQL-region boundaries. Ordinary parentheses remain ordinary syntax and do not themselves create a frame.
+
+Only if verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement decisions that cannot be expressed truthfully by ordinary/scoped parts plus the evidence-proven structural-region model may a focused semantic statement representation be proposed. That proposal requires its own research, compatibility analysis, plan audit, and maintainer approval before implementation.
+
+For the current Duck PIVOT/UNPIVOT/MERGE wave, bounded render scopes remain approved. The independent root clause-ownership audit and focused disposable diagnostic validate the generic structural-frame + dedicated-clause architecture; the PIVOT ownership blocker is closed. Focused semantic-statement representation remains unapproved. The next gate is reconciliation and independent audit of the production implementation/migration plan, not another architecture redesign.
 
 Any future semantic statement representation must re-enter the same recursive preparation/binding pipeline and must not become a generalized full-query AST or parallel renderer unless a separate architecture decision explicitly proves that such a redesign is required.
 

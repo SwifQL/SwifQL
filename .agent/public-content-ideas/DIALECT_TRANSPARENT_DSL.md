@@ -215,46 +215,40 @@ Architecture decision in `DIALECT_RENDERING.md` DIALECT-008 and Duck-specific qu
 
 Architecture-approved. Exact nested-path support must be demonstrated by implementation tests/native validation before presenting the SQL examples as shipped behavior.
 
-## Reuse `KeyPathLastPath` instead of inventing PIVOT wrappers
+## Preserve `KeyPathLastPath` without faking a PIVOT-only overload
 
-Status: architecture-approved
+Status: validated architecture lesson
 Good for: article | maintainer/developer docs | migration/extension docs
 
 ### Why users should care
 
-SwifQL already has a public abstraction for grammar positions that need a column name rather than a full arbitrary expression: `KeyPathLastPath`.
+SwifQL already has a public abstraction for APIs whose own static grammar truly requires a column name: `KeyPathLastPath`.
 
-Duck simplified PIVOT `GROUP BY` is exactly such a grammar position. Reusing the established contract gives stronger typing without making the call site uglier.
+Duck simplified PIVOT `GROUP BY` also requires column-name grammar, but after an incremental chain is erased to `var query: SwifQLable`, the unchanged global `.groupBy(_ fields: SwifQLable...)` call cannot honestly become PIVOT-only at compile time. A more-specific global `KeyPathLastPath` overload would still leave the generic fallback available for arbitrary expressions and could perturb ordinary overload resolution.
 
-### Candidate example / visual
-
-The user still writes:
+The cleaner design is to preserve the natural source:
 
 ```swift
 .groupBy(cities.column("country"))
 ```
 
-while the API can constrain the input conceptually to:
+without pretending Swift can express a PIVOT-only static guarantee after receiver erasure. SwifQL preserves the generic SQL DSL, structural ownership handles rendering context, and DuckDB remains the authority that rejects invalid PIVOT GROUP BY expressions.
 
-```swift
-func groupBy(_ columns: KeyPathLastPath...) -> SwifQLable
-```
-
-This avoids user-facing inventions such as:
+This avoids both user-facing inventions such as:
 
 ```swift
 DuckPivotColumn("country")
 ```
 
-and demonstrates an important SwifQL design principle: improve internals and type safety while preserving the natural SQL-shaped DSL.
+and a misleading global overload that would look stricter than it actually is.
 
 ### Evidence / provenance
 
-Live source confirms `KeyPathLastPath` is public and already participates in existing public query/path APIs. Stable contract: DESIGN-016 and DUCK-018.
+Live source confirms `KeyPathLastPath` is public and already participates in existing public query/path APIs. The independent plan audit exposed the erased-receiver overload contradiction; the reconciled decision is recorded in `architecture/dialects/DUCK.md`, DESIGN-015/016, and `.artifacts/planning/duck-sql-surface-redesign/PIVOT_GROUP_BY_CONSTRAINT_RECONCILIATION.md`.
 
 ### Publication caveat
 
-Do not describe `KeyPathLastPath` as internal implementation detail. It is established public compatibility surface. No migration is currently required because it is being preserved, not removed.
+Do not describe `KeyPathLastPath` as an internal detail or as removed. It remains established public compatibility surface. The lesson is specifically that a dialect-specific compile-time restriction must not be simulated through an established erased global method when the type system cannot truthfully enforce it.
 
 ## Public extension point for semantic scopes
 

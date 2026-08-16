@@ -27,3 +27,11 @@ Builder output re-enters normal `SwifQLable` preparation.
 ### BUILD-004 — Reuse without duplication
 
 New builder state reuses `QueryParts` when it is one of the shared clause concerns already owned there, rather than duplicating that state. Other builder-specific state may remain with its builder when appropriate.
+
+### BUILD-005 — Builders use the shared structural continuation contract
+
+Under the evidence-proven major-version SQL-region frame architecture, `QueryParts`, `SwifQLSelectBuilder`, UNION/set-result materialization, and other continuation-style builders must use the same generic root-frame-aware structural composition primitive as ordinary fluent APIs. Builders must not maintain a parallel ownership map, hidden current-statement mode, or dialect-specific routing state.
+
+Final ORDER BY on a set result belongs to the set-result root rather than the rightmost operand. CTE bodies and nested statement inputs remain opaque nested SQL-region frames. Builder materialization must preserve that structure while producing byte-for-byte historical PostgreSQL/MySQL SQL and binding order on neutral/no-owner paths.
+
+Downstream helpers that intentionally continue a framed query should receive the same safe public structural continuation extension point rather than manually assuming top-level array append always means statement continuation.

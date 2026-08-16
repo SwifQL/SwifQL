@@ -277,6 +277,7 @@ Before implementing a new public API, answer these questions in order:
 10. What realistic query proves the API composes naturally?
 11. Could the implementation change existing PostgreSQL/MySQL output or source compatibility?
 12. Is the target-dialect behavior established by current official documentation rather than similarity or memory?
+13. Could a downstream user reasonably need to add their own value, helper, dialect behavior, or protocol conformance here without changing SwifQL itself, and does the proposed public shape preserve that extension path?
 
 If these questions do not have clear answers, research/plan the API further before implementation.
 
@@ -312,17 +313,17 @@ Do not implement meaning as ambient builder mode, source-order side state, or an
 
 Do not introduce generic hidden statement-routing into established methods such as `groupBy`, `orderBy`, `limit`, or `returning` merely to make a new unreleased builder retain private state through type erasure. That changes the meaning and structural behavior of old DSL entry points for the benefit of a new implementation layer. First seek a design where the new construct composes honestly through ordinary parts and scoped metadata.
 
-For the current Duck PIVOT/UNPIVOT/MERGE design wave, semantic render scopes are the approved mechanism and focused semantic-statement/structural-clause routing is explicitly rejected unless a later maintainer decision reopens that architecture after new evidence. A scope-only compile/downstream diagnostic must prove the composition model before production planning is executable.
+For the current Duck PIVOT/UNPIVOT/MERGE design wave, bounded semantic render scopes remain the approved contextual-rendering mechanism. The root clause-ownership audit plus focused disposable evidence diagnostic have now validated a generic major-version composition architecture under `DSL-008`: the current root SQL-region/set-result frame selects an open clause owner by clause kind through one generic frame-aware continuation primitive; a dedicated owner-sensitive clause part persists that selection; bounded render scopes adapt only the affected children. This is not permission for hidden receiver-history routing: continuation methods must not search for PIVOT or inspect semantic history.
 
 Focused semantic statement representation remains only a future architecture escalation boundary for genuinely different evidence, not a fallback that an implementation task may choose automatically.
 
-This does not make invalid SQL valid. If a caller conditionally omits a required parent construct but still appends a clause that only makes sense inside that construct, the resulting query may correctly be invalid. The invariant is that equivalent valid composition shapes render identically, not that SwifQL guesses missing grammar.
+This does not make invalid SQL valid. If a caller conditionally omits a required parent construct but still appends a clause that only makes sense inside that construct, the resulting query may correctly be invalid. Likewise, SwifQL is not required to distort an established global SQL API merely to make every dialect-specific invalid form unrepresentable at Swift compile time after semantic ownership has been erased. If a stricter dialect grammar cannot be expressed truthfully without changing ordinary overload behavior, adding hidden routing, or exposing renderer accommodation in user source, preserve the direct SQL DSL and let target-dialect validation reject invalid SQL. The invariant is that equivalent valid composition shapes render identically, not that SwifQL guesses or proves all grammar.
 
 ## DESIGN-016 - Preserve established public extension contracts deliberately
 
 Public helper protocols and extension-oriented surfaces are compatibility contracts even when they look like implementation utilities.
 
-`KeyPathLastPath` is established public API and is used by public query surfaces such as RETURNING, conflict targets, constraints, key paths, and path types. It may also be useful as a precise grammar constraint for new clauses such as Duck simplified PIVOT `GROUP BY`.
+`KeyPathLastPath` is established public API and is used by public query surfaces such as RETURNING, conflict targets, constraints, key paths, and path types. It remains useful as a precise grammar constraint for new APIs whose own static signature truthfully owns column-name-only grammar. Do not force it into an established erased global method merely to simulate a dialect-specific compile-time restriction that overload resolution cannot actually enforce.
 
 Do not remove or replace such a protocol merely to modernize internal architecture. If a future major version has a materially better replacement, first provide the clearest practical bridge/deprecation path and include a concise migration note with extension examples for downstream users who may conform their own local types.
 
@@ -343,3 +344,45 @@ Therefore:
 - when a breaking change is genuinely unavoidable, document the exact reason, migration path, and downstream-extension impact before implementation.
 
 The standard is not merely "our test suite still passes." The standard is that a normal user updating SwifQL should not inherit a debugging project because the library changed its internals.
+
+An explicitly approved major-version structural composition migration may change the observable `parts` tree when that is required to preserve SQL-region ownership through existential/copy/nested composition. In that case ordinary SQL-shaped query call sites should remain source-compatible, while downstream code that assumes flattened statement/clause parts or manually appends continuation parts receives a documented migration to the public structural composition API.
+
+## DESIGN-018 - Downstream extensibility is a first-class API requirement
+
+SwifQL is intentionally extendable from application code and downstream packages. A user should not need to fork SwifQL or submit a pull request merely to add a legitimate private SQL/dialect/semantic value that the core library does not need to know exhaustively.
+
+When a public semantic category is open in principle, do not model it as a closed Swift `enum` merely because SwifQL currently knows only a few values. Prefer an extensible public value-semantic type with a public initializer and stable public identity representation, with library-known values exposed as static conveniences. A namespaced string-backed identity is an appropriate pattern when arbitrary downstream names are meaningful and the core can carry unknown values opaquely.
+
+Illustrative shape:
+
+```swift
+public struct SemanticRole: Hashable, Sendable {
+    public let namespace: String
+    public let name: String
+
+    public init(namespace: String, name: String) {
+        self.namespace = namespace
+        self.name = name
+    }
+
+    public static let builtIn: Self = .init(
+        namespace: "swifql",
+        name: "builtIn"
+    )
+}
+
+extension SemanticRole {
+    public static let applicationSpecific: Self = .init(
+        namespace: "com.example.application",
+        name: "applicationSpecific"
+    )
+}
+```
+
+Use a closed `enum` only when the modeled SQL grammar/domain is genuinely exhaustive and an unknown downstream value would be invalid or unsafe rather than merely unknown to SwifQL.
+
+For optional semantic ownership, prefer absence (`nil`) for the ordinary/no-owner case instead of reserving a magic open-domain identity such as `"none"`, unless evidence shows that an explicit ordinary owner is materially required.
+
+The same extensibility rule applies to visibility. When a type, initializer, protocol hook, value wrapper, or structural helper is a plausible safe downstream extension point, prefer making that boundary public from the start instead of keeping it internal solely to minimize API surface. Public extensibility must remain value-semantic and must not expose mutable renderer/preparation internals or weaken safety invariants.
+
+Review downstream extensibility proactively. Existing users may maintain private `SwifQLable` helpers, custom parts/operators, path abstractions, protocol conformances, and `SQLDialect` subclasses that will never appear in this repository. Preserving their ability to extend SwifQL is part of the product design, not an accidental implementation detail.

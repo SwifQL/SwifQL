@@ -21,7 +21,25 @@ public struct SwifQLableParts: SwifQLable {
         self.init(parts: parts)
     }
     public init (parts: [SwifQLPart]) {
-        self.parts = parts
+        guard let frame = parts.first as? SwifQLStructuralFramePart else {
+            self.parts = parts
+            return
+        }
+
+        var appended = Array(parts.dropFirst())
+        if let first = appended.first as? SwifQLPartOperator, first._value == " " {
+            let rootAlreadyEndsInSpace: Bool
+            if let last = frame.children.last as? SwifQLPartOperator {
+                rootAlreadyEndsInSpace = last._value == " "
+            } else {
+                rootAlreadyEndsInSpace = false
+            }
+            if frame.children.isEmpty || rootAlreadyEndsInSpace {
+                appended.removeFirst()
+            }
+        }
+
+        self.parts = [frame.appending(appended)]
     }
 }
 
@@ -53,6 +71,8 @@ extension SwifQLable {
                 }
 
                 switch part {
+                case let v as SwifQLStructuralFramePart:
+                    return render(v.children, context: SwifQLRenderContext())
                 case let v as SwifQLPartArray:
                     guard v.elements.count > 0 else {
                         return dialect.emptyArrayStart + dialect.emptyArrayEnd

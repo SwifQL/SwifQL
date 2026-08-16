@@ -14,23 +14,29 @@ public func SwifQL(_ query: SwifQLable) -> SwifQLable {
 }
 
 private struct _SwifQL: SwifQLable {
-    public var parts: [SwifQLPart] = []
-    
+    public var parts: [SwifQLPart]
+
     public init (_ query: SwifQLable? = nil) {
-        if let parts = query?.parts {
-            self.parts = parts
-        }
+        self.parts = query?.parts ?? [SwifQLStructuralFramePart(region: .statement)]
     }
 }
 
 infix operator ~
 public func ~ (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
-    var parts = lhs.parts
-    parts.append(contentsOf: rhs.parts)
-    return SwifQLableParts(parts: parts)
+    if lhs.parts.first is SwifQLStructuralFramePart {
+        if rhs.parts.first is SwifQLStructuralFramePart {
+            return SwifQLableParts(rawParts: lhs.parts + rhs.parts)
+        }
+        return lhs.structurallyAppending(rhs)
+    }
+
+    return SwifQLableParts(rawParts: lhs.parts + rhs.parts)
 }
 public func ~ (lhs: SwifQLable, rhs: SwifQLPartOperator) -> SwifQLable {
-    var parts = lhs.parts
-    parts.append(o: rhs)
-    return SwifQLableParts(parts: parts)
+    let fragment = SwifQLableParts(parts: rhs)
+    if lhs.parts.first is SwifQLStructuralFramePart {
+        return lhs.structurallyAppending(fragment)
+    }
+
+    return SwifQLableParts(rawParts: lhs.parts + fragment.parts)
 }
