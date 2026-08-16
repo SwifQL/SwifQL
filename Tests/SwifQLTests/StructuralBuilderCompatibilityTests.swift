@@ -1,0 +1,260 @@
+import Foundation
+import Testing
+@testable import SwifQL
+
+private final class StructuralBuilderScopeDialect: SQLDialect {
+    private let observedScope: SwifQLRenderScope
+
+    init(observedScope: SwifQLRenderScope) {
+        self.observedScope = observedScope
+        super.init()
+    }
+
+    override func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
+        "plain"
+    }
+
+    override func keyPath(
+        _ keyPath: SwifQLPartKeyPath,
+        context: SwifQLRenderContext
+    ) -> String {
+        context.contains(observedScope) ? "scoped" : "plain"
+    }
+}
+
+@Suite("Structural builder compatibility")
+struct StructuralBuilderCompatibilityTests: SwifQLTests {
+    private let outerOwner = SwifQLClauseOwner(namespace: "example", name: "outer")
+    private let nestedOwner = SwifQLClauseOwner(namespace: "example", name: "nested")
+
+    private func root(of query: SwifQLable) -> SwifQLStructuralFramePart {
+        query.parts.first as! SwifQLStructuralFramePart
+    }
+
+    private func groupByPart(in frame: SwifQLStructuralFramePart) -> SwifQLGroupByPart? {
+        frame.children.compactMap { $0 as? SwifQLGroupByPart }.first
+    }
+
+    private func orderByPart(in frame: SwifQLStructuralFramePart) -> SwifQLOrderByPart? {
+        frame.children.compactMap { $0 as? SwifQLOrderByPart }.first
+    }
+
+    private func ownedStatement(_ owner: SwifQLClauseOwner) -> SwifQLable {
+        SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            owners: [.groupBy: owner, .orderBy: owner],
+            children: [SwifQLPartOperator.custom("SELECT")]
+        ))
+    }
+
+    @Test("Nested statement frames remain opaque inside an owned outer frame")
+    func nestedStatementOwnership() {
+        let nested = ownedStatement(nestedOwner).groupBy("nested")
+        let outer = SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            owners: [.groupBy: outerOwner, .orderBy: outerOwner],
+            children: nested.parts
+        ))
+        let query = outer.groupBy("outer").orderBy(.asc("outerOrder"))
+        let outerFrame = root(of: query)
+        let nestedFrame = outerFrame.children.compactMap { $0 as? SwifQLStructuralFramePart }.first!
+
+        #expect(groupByPart(in: outerFrame)?.owner == outerOwner)
+        #expect(orderByPart(in: outerFrame)?.owner == outerOwner)
+        #expect(groupByPart(in: nestedFrame)?.owner == nestedOwner)
+    }
+
+    @Test("An owned nested frame does not claim an ordinary outer clause")
+    func nestedOwnerDoesNotLeakOutward() {
+        let nested = ownedStatement(nestedOwner).orderBy(.desc("nestedOrder"))
+        let outer = SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            children: nested.parts
+        ))
+        let query = outer.groupBy("outer")
+        let outerFrame = root(of: query)
+        let nestedFrame = outerFrame.children.compactMap { $0 as? SwifQLStructuralFramePart }.first!
+
+        #expect(groupByPart(in: outerFrame)?.owner == nil)
+        #expect(orderByPart(in: nestedFrame)?.owner == nestedOwner)
+    }
+
+    @Test("Helper, variable, conditional, and copied assembly preserve structural parts")
+    func incrementalCopiedAssembly() {
+        func appendHelper(_ query: SwifQLable) -> SwifQLable {
+            let fragmentParts: [SwifQLPart] = [
+                SwifQLPartOperator.space,
+                SwifQLPartOperator.custom("HELPER_TAIL")
+            ]
+            return query.structurallyAppending(SwifQLableParts(parts: fragmentParts))
+        }
+
+        let table = Path.Table("events")
+        var query: SwifQLable = SwifQL.select(table.column("id")).from(table)
+        if true {
+            query = query.groupBy(table.column("id"))
+        }
+        query = SwifQLableParts(parts: query.parts)
+        query = appendHelper(query)
+
+        let frame = root(of: query)
+        #expect(groupByPart(in: frame)?.owner == nil)
+        #expect(frame.children.contains { ($0 as? SwifQLPartOperator)?._value == "HELPER_TAIL" })
+        #expect(query.prepare(.psql).plain == #"SELECT "events"."id" FROM "events" GROUP BY "events"."id" HELPER_TAIL"#)
+    }
+
+    @Test("WITH bodies are nested statement frames and keep outer clauses separate")
+    func withIsolation() {
+        let table = Path.Table("events")
+        let body = ownedStatement(nestedOwner).groupBy(table.column("kind"))
+        let outer = SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            owners: [.groupBy: outerOwner],
+            children: []
+        ))
+        let query = outer
+            .with(.init(Path.Table("grouped"), body))
+            .groupBy(table.column("kind"))
+
+        let outerFrame = root(of: query)
+        let nestedFrames = outerFrame.children.compactMap { $0 as? SwifQLStructuralFramePart }
+        #expect(groupByPart(in: outerFrame)?.owner == outerOwner)
+        #expect(nestedFrames.contains { groupByPart(in: $0)?.owner == nestedOwner })
+
+        let ordinary = SwifQL
+            .with(.init(Path.Table("recent"), SwifQL.select(table.column("id")).from(table)))
+            .select(Path.Table("recent").column("id"))
+            .from(Path.Table("recent"))
+        check(
+            ordinary,
+            .psql(#"WITH "recent" as (SELECT "events"."id" FROM "events") SELECT "recent"."id" FROM "recent""#),
+            .mysql("WITH recent as (SELECT events.id FROM events) SELECT recent.id FROM recent")
+        )
+    }
+
+    @Test("UNION and UNION ALL use a set-result root and final ORDER BY")
+    func unionSetResultOwnership() {
+        let leftTable = Path.Table("left_table")
+        let rightTable = Path.Table("right_table")
+        let left = SwifQL.select(leftTable.column("id")).from(leftTable)
+        let right = SwifQL.select(rightTable.column("id")).from(rightTable)
+
+        let union = Union([left, right]).orderBy(.asc(leftTable.column("id")))
+        let unionFrame = root(of: union)
+        let operands = unionFrame.children.compactMap { $0 as? SwifQLStructuralFramePart }
+
+        #expect(unionFrame.region == .setResult)
+        #expect(operands.count == 2)
+        #expect(orderByPart(in: unionFrame)?.owner == nil)
+        #expect(orderByPart(in: operands[1]) == nil)
+        check(
+            union,
+            .psql(#"(SELECT "left_table"."id" FROM "left_table") UNION (SELECT "right_table"."id" FROM "right_table") ORDER BY "left_table"."id" ASC"#),
+            .mysql("(SELECT left_table.id FROM left_table) UNION (SELECT right_table.id FROM right_table) ORDER BY left_table.id ASC")
+        )
+
+        let unionAll = Union(all: left, right)
+        check(
+            unionAll,
+            .psql(#"(SELECT "left_table"."id" FROM "left_table") UNION ALL (SELECT "right_table"."id" FROM "right_table")"#),
+            .mysql("(SELECT left_table.id FROM left_table) UNION ALL (SELECT right_table.id FROM right_table)")
+        )
+
+        let methodUnion = left.union(right).orderBy(.desc(leftTable.column("id")))
+        #expect(root(of: methodUnion).region == .setResult)
+    }
+
+    @Test("Nested SELECT, set-result, and builder outputs preserve exact SQL and bind order")
+    func nestedAndBuilderCompatibility() {
+        let users = Path.Table("users")
+        let id = users.column("id")
+        let age = users.column("age")
+        let nested = SwifQL
+            .select(id)
+            .from(|SwifQL.select(id).from(users).where(age > 18)|)
+        check(
+            nested,
+            .psql(#"SELECT "users"."id" FROM (SELECT "users"."id" FROM "users" WHERE "users"."age" > 18)"#),
+            .mysql("SELECT users.id FROM (SELECT users.id FROM users WHERE users.age > 18)")
+        )
+
+        let builder = SwifQLSelectBuilder()
+            .select(users.*)
+            .from(users)
+            .where(age > 18)
+            .groupBy(users.column("name"))
+            .having(Fn.count(users.column("score")) > 1)
+            .orderBy(.asc(users.column("name")))
+            .limit(20)
+            .offset(2)
+        check(
+            builder.build(),
+            .psql(
+                #"SELECT "users".* FROM "users" WHERE "users"."age" > 18 GROUP BY "users"."name" HAVING count("users"."score") > 1 ORDER BY "users"."name" ASC LIMIT 20 OFFSET 2"#,
+                #"SELECT "users".* FROM "users" WHERE "users"."age" > $1 GROUP BY "users"."name" HAVING count("users"."score") > $2 ORDER BY "users"."name" ASC LIMIT $3 OFFSET $4"#
+            ),
+            .mysql(
+                "SELECT users.* FROM users WHERE users.age > 18 GROUP BY users.name HAVING count(users.score) > 1 ORDER BY users.name ASC LIMIT 20 OFFSET 2",
+                "SELECT users.* FROM users WHERE users.age > ? GROUP BY users.name HAVING count(users.score) > ? ORDER BY users.name ASC LIMIT ? OFFSET ?"
+            )
+        )
+        #expect(builder.build().prepare(.psql).splitted.values.map { String(describing: $0) } == ["18", "1", "20", "2"])
+    }
+
+    @Test("Expression parentheses stay syntax-only and raw tilde semantics remain distinct")
+    func parenthesesAndTilde() {
+        let expression = |(Path.Table("events").column("year") + 1)|
+        #expect(expression.parts.first is SwifQLStructuralFramePart == false)
+
+        let continuationParts: [SwifQLPart] = [
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.custom("TAIL")
+        ]
+        let continued = SwifQL.select(1) ~ SwifQLableParts(parts: continuationParts)
+        #expect(continued.parts.count == 1)
+        #expect(continued.prepare(.psql).plain == "SELECT 1 TAIL")
+
+        let independent = SwifQL.select(1) ~ SwifQL.select(2)
+        #expect(independent.parts.count == 2)
+        #expect(independent.parts.allSatisfy { $0 is SwifQLStructuralFramePart })
+
+        let flatParts: [SwifQLPart] = [
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.custom("RIGHT")
+        ]
+        let flat = SwifQLableParts(parts: SwifQLPartOperator.custom("LEFT")) ~ SwifQLableParts(parts: flatParts)
+        #expect(flat.prepare(.psql).plain == "LEFT RIGHT")
+    }
+
+    @Test("Nested statement frames reset scopes and preserve depth-first bindings")
+    func scopeAndBindingIsolation() {
+        let scope = SwifQLRenderScope(namespace: "example", name: "outer")
+        let outerExpression = Path.Table("outer").column("value").scoped(scope)
+        let nestedFrame = SwifQLStructuralFramePart(
+            region: .statement,
+            children: [
+                SwifQLPartUnsafeValue("insideNested"),
+                SwifQLPartOperator.space,
+                SwifQLPartUnsafeValue("nestedWhere")
+            ]
+        )
+        let rootFrame = SwifQLStructuralFramePart(
+            region: .statement,
+            children: [
+                outerExpression.parts[0],
+                SwifQLPartOperator.space,
+                nestedFrame,
+                SwifQLPartOperator.space,
+                SwifQLPartUnsafeValue("after")
+            ]
+        )
+        let query = SwifQLableParts(parts: rootFrame)
+        let dialect = StructuralBuilderScopeDialect(observedScope: scope)
+        let prepared = query.prepare(dialect)
+
+        #expect(prepared.plain == "scoped 'insideNested' 'nestedWhere' 'after'")
+        #expect(prepared.splitted.values.map { String(describing: $0) } == [
+            "insideNested", "nestedWhere", "after"
+        ])
+    }
+}

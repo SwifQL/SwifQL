@@ -69,6 +69,6 @@ public class QueryParts {
     public func appended(to query: SwifQLable) -> SwifQLable {
         let q = buildQuery()
         guard q.parts.count > 0 else { return query }
-        return query.addQuery(q)
+        return _SwifQLStructuralComposition.appendStatementContents(from: q, to: query)
     }
 }

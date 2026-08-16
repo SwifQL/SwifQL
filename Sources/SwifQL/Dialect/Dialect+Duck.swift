@@ -7,6 +7,10 @@ import Foundation
 class DuckDialect: SQLDialect {
     override var id: String? { "duckdb" }
 
+    override func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
+        hybrid._duck ?? SwifQLPartOperator("<duck_hybrid_operator_requires_explicit_duck_branch>")
+    }
+
     private var utcCalendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "en_US_POSIX")

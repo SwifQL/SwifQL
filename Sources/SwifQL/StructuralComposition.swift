@@ -24,6 +24,13 @@ public struct SwifQLClauseOwner: Hashable, Sendable {
         self.namespace = namespace
         self.name = name
     }
+
+    internal func renderScope(for kind: SwifQLClauseKind) -> SwifQLRenderScope {
+        SwifQLRenderScope(
+            namespace: "swifql.clause-owner",
+            name: "\(namespace).\(name).\(kind.namespace).\(kind.name)"
+        )
+    }
 }
 
 /// The real SQL-region boundaries represented by the structural composition
@@ -70,15 +77,80 @@ enum _SwifQLStructuralComposition {
         rootFrame(in: parts)?.owner(for: kind)
     }
 
+    static func statementFrame(for query: SwifQLable) -> SwifQLStructuralFramePart {
+        if let frame = rootFrame(in: query.parts), frame.region == .statement {
+            return frame
+        }
+
+        return SwifQLStructuralFramePart(region: .statement, children: query.parts)
+    }
+
+    static func setResult(from query: SwifQLable) -> SwifQLable {
+        if let frame = rootFrame(in: query.parts), frame.region == .setResult {
+            return query
+        }
+
+        return SwifQLableParts(rawParts: [
+            SwifQLStructuralFramePart(
+                region: .setResult,
+                children: [statementFrame(for: query)]
+            )
+        ])
+    }
+
     static func append(
         _ base: SwifQLable,
         parts newParts: [SwifQLPart]
     ) -> SwifQLable {
-        guard let root = rootFrame(in: base.parts) else {
-            return SwifQLableParts(rawParts: base.parts + newParts)
+        func continuationParts(
+            _ parts: [SwifQLPart],
+            after existingParts: [SwifQLPart]
+        ) -> [SwifQLPart] {
+            guard let first = parts.first as? SwifQLPartOperator,
+                  first._value == " " else {
+                return parts
+            }
+
+            if existingParts.isEmpty,
+               !parts.isEmpty {
+                return Array(parts.dropFirst())
+            }
+
+            if let last = existingParts.last as? SwifQLPartOperator,
+               last._value == " " {
+                return Array(parts.dropFirst())
+            }
+
+            return parts
         }
 
-        return SwifQLableParts(rawParts: [root.appending(newParts)])
+        guard let root = rootFrame(in: base.parts) else {
+            return SwifQLableParts(rawParts: base.parts + continuationParts(newParts, after: base.parts))
+        }
+
+        let appendedParts = continuationParts(newParts, after: root.children)
+        return SwifQLableParts(rawParts: [root.appending(appendedParts)])
+    }
+
+    static func appendStatementContents(
+        from fragment: SwifQLable,
+        to base: SwifQLable
+    ) -> SwifQLable {
+        let contents: [SwifQLPart]
+        if let frame = rootFrame(in: fragment.parts), frame.region == .statement {
+            contents = frame.children
+        } else {
+            contents = fragment.parts
+        }
+
+        guard !contents.isEmpty else {
+            return base
+        }
+
+        return append(
+            base,
+            parts: [SwifQLPartOperator.space] + contents
+        )
     }
 }
 

@@ -11,7 +11,9 @@ extension SwifQLHybridOperator {
     
     public typealias HybridResult = SwifQLHybridOperator
     
-    public static var random: HybridResult { .init("random()".operator, "rand()".operator) }
+    public static var random: HybridResult {
+        .init("random()".operator, "rand()".operator, "random()".operator)
+    }
     
     private func concatWith(_ hybrid: HybridResult) -> HybridResult {
         return hybrid

@@ -30,7 +30,7 @@ public class With: SwifQLable {
         parts.append(o: .as)
         parts.append(o: .space)
         parts.append(o: .openBracket)
-        parts.append(contentsOf: query.parts)
+        parts.append(_SwifQLStructuralComposition.statementFrame(for: query))
         parts.append(o: .closeBracket)
     }
 }

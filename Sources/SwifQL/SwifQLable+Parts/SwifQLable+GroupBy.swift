@@ -14,19 +14,11 @@ extension SwifQLable {
         groupBy(fields)
     }
     public func groupBy(_ fields: [SwifQLable]) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .group)
-        parts.append(o: .space)
-        parts.append(o: .by)
-        parts.append(o: .space)
-        for (i, v) in fields.enumerated() {
-            if i > 0 {
-                parts.append(o: .comma)
-                parts.append(o: .space)
-            }
-            parts.append(contentsOf: v.parts)
-        }
-        return SwifQLableParts(parts: parts)
+        let clause = SwifQLGroupByPart(
+            owner: structuralOwner(for: .groupBy),
+            fields: fields.map(\.parts)
+        )
+        let fragment = SwifQLableParts(parts: [SwifQLPartOperator.space, clause])
+        return structurallyAppending(fragment)
     }
 }

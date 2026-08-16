@@ -15,18 +15,27 @@ public class Union: SwifQLable {
     public convenience init (_ selection: SwifQLable...) {
         self.init(selection)
     }
+
+    public convenience init (all selection: SwifQLable...) {
+        self.init(selection, all: true)
+    }
     
-    public init (_ selections: [SwifQLable]) {
-        parts = [SwifQLPartOperator.openBracket]
+    public init (_ selections: [SwifQLable], all: Bool = false) {
+        var children: [SwifQLPart] = [SwifQLPartOperator.openBracket]
         for (i, v) in selections.enumerated() {
             if i > 0 {
-                parts.append(o: .space)
-                parts.append(o: .union)
-                parts.append(o: .space)
-                parts.append(o: .openBracket)
+                children.append(o: .space)
+                children.append(o: .union)
+                if all {
+                    children.append(o: .space)
+                    children.append(o: .all)
+                }
+                children.append(o: .space)
+                children.append(o: .openBracket)
             }
-            parts.append(contentsOf: v.parts)
-            parts.append(o: .closeBracket)
+            children.append(_SwifQLStructuralComposition.statementFrame(for: v))
+            children.append(o: .closeBracket)
         }
+        parts = [SwifQLStructuralFramePart(region: .setResult, children: children)]
     }
 }

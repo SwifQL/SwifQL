@@ -34,17 +34,18 @@ extension SwifQLable {
     }
     
     public func with(_ withs: [With]) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .with)
-        parts.append(o: .space)
+        var fragmentParts: [SwifQLPart] = [
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.with,
+            SwifQLPartOperator.space
+        ]
         for (i, v) in withs.enumerated() {
             if i > 0 {
-                parts.append(o: .comma)
-                parts.append(o: .space)
+                fragmentParts.append(o: .comma)
+                fragmentParts.append(o: .space)
             }
-            parts.append(contentsOf: v.parts)
+            fragmentParts.append(contentsOf: v.parts)
         }
-        return SwifQLableParts(parts: parts)
+        return structurallyAppending(SwifQLableParts(parts: fragmentParts))
     }
 }

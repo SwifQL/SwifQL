@@ -73,6 +73,17 @@ open class SQLDialect {
     ) -> String {
         self.keyPath(keyPath)
     }
+
+    open func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
+        switch self {
+        case .psql:
+            return hybrid._psql
+        case .mysql:
+            return hybrid._mysql
+        default:
+            return hybrid._mysql
+        }
+    }
     
     open func date(_ value: Date) -> String {
         "<date_should_be_here: override dialect function to fix>"

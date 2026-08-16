@@ -73,6 +73,40 @@ extension SwifQLable {
                 switch part {
                 case let v as SwifQLStructuralFramePart:
                     return render(v.children, context: SwifQLRenderContext())
+                case let v as SwifQLGroupByPart:
+                    let childContext = v.owner.map {
+                        context.appending($0.renderScope(for: .groupBy))
+                    } ?? context
+                    var clauseParts: [SwifQLPart] = []
+                    clauseParts.append(o: .group)
+                    clauseParts.append(o: .space)
+                    clauseParts.append(o: .by)
+                    clauseParts.append(o: .space)
+                    for (i, field) in v.fields.enumerated() {
+                        if i > 0 {
+                            clauseParts.append(o: .comma)
+                            clauseParts.append(o: .space)
+                        }
+                        clauseParts.append(contentsOf: field)
+                    }
+                    return render(clauseParts, context: childContext)
+                case let v as SwifQLOrderByPart:
+                    let childContext = v.owner.map {
+                        context.appending($0.renderScope(for: .orderBy))
+                    } ?? context
+                    var clauseParts: [SwifQLPart] = []
+                    clauseParts.append(o: .order)
+                    clauseParts.append(o: .space)
+                    clauseParts.append(o: .by)
+                    clauseParts.append(o: .space)
+                    for (i, item) in v.items.enumerated() {
+                        if i > 0 {
+                            clauseParts.append(o: .comma)
+                            clauseParts.append(o: .space)
+                        }
+                        clauseParts.append(contentsOf: item)
+                    }
+                    return render(clauseParts, context: childContext)
                 case let v as SwifQLPartArray:
                     guard v.elements.count > 0 else {
                         return dialect.emptyArrayStart + dialect.emptyArrayEnd
@@ -111,14 +145,7 @@ extension SwifQLable {
                 case let v as SwifQLPartOperator:
                     return v._value
                 case let v as SwifQLHybridOperator:
-                    switch dialect {
-                    case .psql:
-                        return v._psql._value
-                    case .mysql:
-                        return v._mysql._value
-                    default:
-                        return v._mysql._value
-                    }
+                    return dialect.hybridOperator(v)._value
                 case let v as SwifQLPartDate:
                     return dialect.date(v.date)
                 case let v as SwifQLPartSafeValue:

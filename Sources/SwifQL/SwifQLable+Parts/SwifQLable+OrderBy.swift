@@ -159,14 +159,12 @@ extension SwifQLable {
     ///
     
     public func orderBy(_ field: SwifQLHybridOperator) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .order)
-        parts.append(o: .space)
-        parts.append(o: .by)
-        parts.append(o: .space)
-        parts.append(h: .random)
-        return SwifQLableParts(parts: parts)
+        let clause = SwifQLOrderByPart(
+            owner: structuralOwner(for: .orderBy),
+            items: [field.parts]
+        )
+        let fragment = SwifQLableParts(parts: [SwifQLPartOperator.space, clause])
+        return structurallyAppending(fragment)
     }
     
     public func orderBy(_ fields: OrderByItem...) -> SwifQLable {
@@ -174,19 +172,11 @@ extension SwifQLable {
     }
     
     public func orderBy(_ fields: [OrderByItem]) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .order)
-        parts.append(o: .space)
-        parts.append(o: .by)
-        parts.append(o: .space)
-        for (i, v) in fields.enumerated() {
-            if i > 0 {
-                parts.append(o: .comma)
-                parts.append(o: .space)
-            }
-            parts.append(contentsOf: v.parts)
-        }
-        return SwifQLableParts(parts: parts)
+        let clause = SwifQLOrderByPart(
+            owner: structuralOwner(for: .orderBy),
+            items: fields.map(\.parts)
+        )
+        let fragment = SwifQLableParts(parts: [SwifQLPartOperator.space, clause])
+        return structurallyAppending(fragment)
     }
 }

@@ -11,10 +11,21 @@ import Foundation
 
 extension SwifQLable {
     public var union: SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .union)
-        parts.append(o: .space)
-        return SwifQLableParts(parts: parts)
+        let setResult = _SwifQLStructuralComposition.setResult(from: self)
+        let fragmentParts: [SwifQLPart] = [
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.union,
+            SwifQLPartOperator.space
+        ]
+        let fragment = SwifQLableParts(parts: fragmentParts)
+        return setResult.structurallyAppending(fragment)
+    }
+
+    public func union(_ selection: SwifQLable) -> SwifQLable {
+        Union(self, selection)
+    }
+
+    public func union(all selection: SwifQLable) -> SwifQLable {
+        Union(all: self, selection)
     }
 }
