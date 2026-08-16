@@ -46,6 +46,8 @@ open class SQLDialect {
     open var emptyArrayEnd: String { arrayEnd }
     
     open func schemaName(_ value: String) -> String { value }
+
+    open func catalogName(_ value: String) -> String { schemaName(value) }
     
     open func tableName(_ value: String) -> String { value }
     
