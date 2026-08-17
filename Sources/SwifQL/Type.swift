@@ -53,6 +53,27 @@ public struct Type {
     /// signed eight-byte integer
     public static let bigint: Type = .init("bigint")
     public static let bigintArray: Type = .init("bigint[]")
+
+    /// signed one-byte integer
+    public static let tinyint: Type = .init("tinyint")
+
+    /// signed sixteen-byte integer
+    public static let hugeint: Type = .init("hugeint")
+
+    /// unsigned one-byte integer
+    public static let utinyint: Type = .init("utinyint")
+
+    /// unsigned two-byte integer
+    public static let usmallint: Type = .init("usmallint")
+
+    /// unsigned four-byte integer
+    public static let uinteger: Type = .init("uinteger")
+
+    /// unsigned eight-byte integer
+    public static let ubigint: Type = .init("ubigint")
+
+    /// unsigned sixteen-byte integer
+    public static let uhugeint: Type = .init("uhugeint")
     
     /// exact numeric of selectable precision
     public static let decimal: Type = .init("decimal")
@@ -134,6 +155,9 @@ public struct Type {
     /// binary data (“byte array”)
     public static let bytea: Type = .init("bytea")
     public static let byteaArray: Type = .init("bytea[]")
+
+    /// binary data
+    public static let blob: Type = .init("blob")
     
     // MARK: Date/Time Types
     
@@ -152,6 +176,15 @@ public struct Type {
     /// date and time, including time zone
     public static let timestamptz: Type = .init("timestamptz")
     public static let timestamptzArray: Type = .init("timestamptz[]")
+
+    /// date and time with seconds precision
+    public static let timestampS: Type = .init("timestamp_s")
+
+    /// date and time with milliseconds precision
+    public static let timestampMs: Type = .init("timestamp_ms")
+
+    /// date and time with nanoseconds precision
+    public static let timestampNs: Type = .init("timestamp_ns")
     
     /// date and time
     public static func timestamp(_ p: Int, withTimeZone: Bool = false) -> Type {
@@ -177,6 +210,9 @@ public struct Type {
     /// time of day, including time zone
     public static let timetz: Type = .init("timetz")
     public static let timetzArray: Type = .init("timetz[]")
+
+    /// time of day with nanoseconds precision
+    public static let timeNs: Type = .init("time_ns")
     
     /// time of day
     public static func time(_ p: Int, withTimeZone: Bool = false) -> Type {
@@ -300,6 +336,9 @@ public struct Type {
     /// binary JSON data, decomposed
     public static let jsonb: Type = .init("jsonb")
     public static let jsonbArray: Type = .init("jsonb[]")
+
+    /// dynamically typed value
+    public static let variant: Type = .init("variant")
     
     // MARK: Postgres Built-in Range Types
     
