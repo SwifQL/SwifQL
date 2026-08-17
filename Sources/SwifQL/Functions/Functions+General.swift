@@ -15,6 +15,7 @@ extension Fn.Name {
     public static var ifnull: Self = .init("ifnull")
     public static var isnull: Self = .init("isnull")
     public static var nvl: Self = .init("nvl")
+    public static var groupingId: Self = .init("grouping_id")
     public static var expression: Self = .init("expression")
 }
 
@@ -42,6 +43,30 @@ extension Fn {
             parts.append(contentsOf: q.parts)
         }
         return build(.coalesce, body: parts)
+    }
+
+    /// Returns the count of all rows in the current aggregate input.
+    public static func count() -> SwifQLable {
+        build(.count, body: [])
+    }
+
+    /// Returns DuckDB's grouping bitfield for one or more grouping expressions.
+    public static func groupingId(
+        _ expression: SwifQLable,
+        _ expressions: SwifQLable...
+    ) -> SwifQLable {
+        groupingId([expression] + expressions)
+    }
+
+    public static func groupingId(_ expressions: [SwifQLable]) -> SwifQLable {
+        var parts: [SwifQLPart] = []
+        for (index, expression) in expressions.enumerated() {
+            if index > 0 {
+                parts.append(o: .comma, .space)
+            }
+            parts.append(contentsOf: expression.parts)
+        }
+        return build(.groupingId, body: parts)
     }
     
     public static func octetLength(_ string: SwifQLable) -> SwifQLable {
