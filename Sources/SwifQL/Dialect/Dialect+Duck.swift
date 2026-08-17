@@ -64,6 +64,9 @@ class DuckDialect: SQLDialect {
                 result.append(jsonField(value))
             }
         }
+        if keyPath.paths.count > 1 {
+            return "(\(result))"
+        }
         return result
     }
 

@@ -24,6 +24,15 @@ struct JsonTests: SwifQLTests {
             .mysql(#"SELECT json_extract_path_text('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4', 'f6')"#)
         )
     }
+
+    @Test("Existing JSON path SQL remains exact for PostgreSQL and MySQL")
+    func legacyKeyPathDialectOutput() {
+        check(
+            Path.Table("events").column("payload", "field"),
+            .psql(#""events"."payload"->'field'"#),
+            .mysql("events.field")
+        )
+    }
     
     @Test("Test Jsonb Extract Path")
     func jsonbExtractPath() {
