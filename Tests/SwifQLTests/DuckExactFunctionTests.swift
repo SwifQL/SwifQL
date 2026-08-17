@@ -70,6 +70,138 @@ struct DuckExactFunctionTests: SwifQLTests {
         expectDuck(SwifQL.select(Fn.boolOr(SwifQLPartBool(false))), "SELECT bool_or(FALSE)")
     }
 
+    @Test("Task 12 numeric overloads preserve historical names and add exact identities")
+    func numericSignatureMismatchFunctions() {
+        let query = SwifQL.select(
+            Fn.exp(1),
+            Fn.exp(2, 3),
+            Fn.div(7, 3),
+            Fn.divide(7, 3)
+        )
+
+        check(
+            query,
+            .psql(
+                "SELECT exp(1), exp(2, 3), div(7, 3), divide(7, 3)",
+                "SELECT exp($1), exp($2, $3), div($4, $5), divide($6, $7)"
+            ),
+            .mysql(
+                "SELECT exp(1), exp(2, 3), div(7, 3), divide(7, 3)",
+                "SELECT exp(?), exp(?, ?), div(?, ?), divide(?, ?)"
+            ),
+            .duck(
+                "SELECT exp(1), exp(2, 3), div(7, 3), divide(7, 3)",
+                "SELECT exp($1), exp($2, $3), div($4, $5), divide($6, $7)"
+            )
+        )
+    }
+
+    @Test("Task 11 arrayLength and substring reconciliation remains exact reuse")
+    func reconciledArrayLengthAndSubstring() {
+        let list = Fn.listValue(10, 20, 30)
+
+        expectDuck(
+            SwifQL.select(Fn.arrayLength(list)),
+            "SELECT array_length(list_value(10, 20, 30), 1)"
+        )
+        expectDuck(
+            SwifQL.select(Fn.arrayLength(list, 1)),
+            "SELECT array_length(list_value(10, 20, 30), 1)"
+        )
+        expectDuck(
+            SwifQL.select(Fn.substring("abcdef", from: 2)),
+            "SELECT substring('abcdef' FROM 2)"
+        )
+        expectDuck(
+            SwifQL.select(Fn.substring("abcdef", for: 3)),
+            "SELECT substring('abcdef' FOR 3)"
+        )
+        expectDuck(
+            SwifQL.select(Fn.substring("abcdef", from: 2, for: 3)),
+            "SELECT substring('abcdef' FROM 2 FOR 3)"
+        )
+    }
+
+    @Test("Current-time keyword properties coexist with historical functions")
+    func currentTimeKeywordProperties() {
+        let query = SwifQL.select(
+            Fn.currentTime,
+            Fn.currentTimestamp,
+            Fn.currentTime(0),
+            Fn.currentTimestamp(0)
+        )
+
+        check(
+            query,
+            .psql(
+                "SELECT current_time, current_timestamp, current_time, current_timestamp",
+                "SELECT current_time, current_timestamp, current_time, current_timestamp"
+            ),
+            .mysql(
+                "SELECT current_time, current_timestamp, current_time, current_timestamp",
+                "SELECT current_time, current_timestamp, current_time, current_timestamp"
+            ),
+            .duck(
+                "SELECT current_time, current_timestamp, current_time, current_timestamp",
+                "SELECT current_time, current_timestamp, current_time, current_timestamp"
+            )
+        )
+    }
+
+    @Test("JSON exact overloads preserve historical forms and ordinary binds")
+    func jsonSignatureMismatchFunctions() {
+        let concreteArray: [String] = ["a", "1"]
+        let json = #"{"a":1}"#
+        let query = SwifQL.select(
+            Fn.jsonObject(Fn.listValue("a", "1")),
+            Fn.jsonObject(concreteArray),
+            Fn.jsonObject(keys: Fn.listValue("a"), values: Fn.listValue("1")),
+            Fn.jsonObject(),
+            Fn.jsonObject("a", 1),
+            Fn.jsonObject("a", 1, "b", 2),
+            Fn.jsonExtractPath(json, pathElems: "a"),
+            Fn.jsonExtractPathText(json, pathElems: "a"),
+            Fn.jsonExtractPath(json, path: "a"),
+            Fn.jsonExtractPathText(json, path: "a")
+        )
+        let expected = #"SELECT json_object(list_value('a', '1')), json_object('a', '1'), json_object(list_value('a'), list_value('1')), json_object(), json_object('a', 1), json_object('a', 1, 'b', 2), json_extract_path('{"a":1}', 'a'), json_extract_path_text('{"a":1}', 'a'), json_extract_path('{"a":1}', 'a'), json_extract_path_text('{"a":1}', 'a')"#
+
+        check(
+            query,
+            .psql(expected, "SELECT json_object(list_value($1, $2)), json_object($3, $4), json_object(list_value($5), list_value($6)), json_object(), json_object($7, $8), json_object($9, $10, $11, $12), json_extract_path($13, $14), json_extract_path_text($15, $16), json_extract_path($17, $18), json_extract_path_text($19, $20)"),
+            .mysql(expected, "SELECT json_object(list_value(?, ?)), json_object(?, ?), json_object(list_value(?), list_value(?)), json_object(), json_object(?, ?), json_object(?, ?, ?, ?), json_extract_path(?, ?), json_extract_path_text(?, ?), json_extract_path(?, ?), json_extract_path_text(?, ?)"),
+            .duck(expected, "SELECT json_object(list_value($1, $2)), json_object($3, $4), json_object(list_value($5), list_value($6)), json_object(), json_object($7, $8), json_object($9, $10, $11, $12), json_extract_path($13, $14), json_extract_path_text($15, $16), json_extract_path($17, $18), json_extract_path_text($19, $20)")
+        )
+
+        let bound = SwifQL.select(
+            Fn.jsonObject("O'Reilly", "Привет 🦆"),
+            Fn.jsonExtractPath(json, path: "a")
+        ).prepare(.duck)
+        #expect(bound.plain == "SELECT json_object('O''Reilly', 'Привет 🦆'), json_extract_path('{\"a\":1}', 'a')")
+        #expect(bound.splitted.query == "SELECT json_object($1, $2), json_extract_path($3, $4)")
+        #expect(bound.splitted.values.map { $0 as? String } == ["O'Reilly", "Привет 🦆", json, "a"])
+    }
+
+    @Test("Existing one-argument JSON reuse stays exact while pretty forms remain unclaimed")
+    func existingJSONOneArgumentReuse() {
+        expectDuck(
+            SwifQL.select(Fn.arrayToJson(Fn.listValue(1, 2))),
+            "SELECT array_to_json(list_value(1, 2))"
+        )
+        expectDuck(
+            SwifQL.select(Fn.rowToJson(Fn.listValue(1, 2))),
+            "SELECT row_to_json(list_value(1, 2))"
+        )
+        expectDuck(
+            SwifQL.select(Fn.arrayToJson(Fn.listValue(1, 2), pretty: true)),
+            "SELECT array_to_json(list_value(1, 2), TRUE)"
+        )
+        expectDuck(
+            SwifQL.select(Fn.rowToJson(Fn.listValue(1, 2), pretty: true)),
+            "SELECT row_to_json(list_value(1, 2), TRUE)"
+        )
+    }
+
     @Test("Aggregate helpers compose in a real aggregate query")
     func aggregateComposition() {
         let table = Path.Table("aggregate_values")

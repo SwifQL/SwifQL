@@ -12,6 +12,7 @@ extension Fn.Name {
     public static var ceiling: Self = .init("ceiling")
     public static var count: Self = .init("count")
     public static var div: Self = .init("div")
+    public static var divide: Self = .init("divide")
     public static var exp: Self = .init("exp")
     public static var floor: Self = .init("floor")
     public static var max: Self = .init("max")
@@ -66,6 +67,15 @@ extension Fn {
         parts.append(contentsOf: m.parts)
         return build(.div, body: parts)
     }
+
+    /// Performs exact SQL `divide(lhs, rhs)` integer division.
+    public static func divide(_ lhs: SwifQLable, _ rhs: SwifQLable) -> SwifQLable {
+        var parts: [SwifQLPart] = lhs.parts
+        parts.append(o: .comma)
+        parts.append(o: .space)
+        parts.append(contentsOf: rhs.parts)
+        return build(.divide, body: parts)
+    }
     
     /// Used for integer division where n is divided by m and an integer value is returned
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/exp.php)
@@ -75,6 +85,11 @@ extension Fn {
         parts.append(o: .space)
         parts.append(contentsOf: m.parts)
         return build(.exp, body: parts)
+    }
+
+    /// Performs exact SQL `exp(value)` exponentiation.
+    public static func exp(_ value: SwifQLable) -> SwifQLable {
+        build(.exp, body: value.parts)
     }
     
     /// Returns the largest integer value that is equal to or less than a number

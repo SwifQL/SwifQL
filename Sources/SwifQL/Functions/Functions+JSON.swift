@@ -50,6 +50,11 @@ extension Fn {
         build(.jsonMergePatch, body: commaSeparated([json, patch]))
     }
 
+    /// Builds a DuckDB JSON object from alternating string keys and values.
+    public static func jsonObject(_ items: SwifQLable...) -> SwifQLable {
+        build(.jsonObject, body: commaSeparated(items))
+    }
+
     /// Aggregates values into a JSON array.
     public static func jsonGroupArray(_ value: SwifQLable) -> SwifQLable {
         build(.jsonGroupArray, body: value.parts)
@@ -115,5 +120,15 @@ extension Fn {
 
     public static func jsonTree(_ json: SwifQLable, path: SwifQLable) -> SwifQLable {
         build(.jsonTree, body: commaSeparated([json, path]))
+    }
+
+    /// Extracts one DuckDB JSON path expression from a JSON value.
+    public static func jsonExtractPath(_ json: SwifQLable, path: SwifQLable) -> SwifQLable {
+        build(.jsonExtractPath, body: commaSeparated([json, path]))
+    }
+
+    /// Extracts one DuckDB JSON path expression as text.
+    public static func jsonExtractPathText(_ json: SwifQLable, path: SwifQLable) -> SwifQLable {
+        build(.jsonExtractPathText, body: commaSeparated([json, path]))
     }
 }
