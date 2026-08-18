@@ -11,6 +11,8 @@ public struct SwifQLClauseKind: Hashable, Sendable {
         self.name = name
     }
 
+    public static let on = Self(namespace: "swifql", name: "on")
+    public static let using = Self(namespace: "swifql", name: "using")
     public static let groupBy = Self(namespace: "swifql", name: "groupBy")
     public static let orderBy = Self(namespace: "swifql", name: "orderBy")
 }
@@ -25,7 +27,7 @@ public struct SwifQLClauseOwner: Hashable, Sendable {
         self.name = name
     }
 
-    internal func renderScope(for kind: SwifQLClauseKind) -> SwifQLRenderScope {
+    public func renderScope(for kind: SwifQLClauseKind) -> SwifQLRenderScope {
         SwifQLRenderScope(
             namespace: "swifql.clause-owner",
             name: "\(namespace).\(name).\(kind.namespace).\(kind.name)"
@@ -60,8 +62,17 @@ public struct SwifQLStructuralFramePart: SwifQLPart {
         owners[kind]
     }
 
-    internal func appending(_ parts: [SwifQLPart]) -> Self {
-        Self(region: region, owners: owners, children: children + parts)
+    internal func appending(
+        _ parts: [SwifQLPart],
+        owners newOwners: [SwifQLClauseKind: SwifQLClauseOwner] = [:]
+    ) -> Self {
+        guard !newOwners.isEmpty else {
+            return Self(region: region, owners: owners, children: children + parts)
+        }
+
+        var mergedOwners = owners
+        mergedOwners.merge(newOwners) { _, new in new }
+        return Self(region: region, owners: mergedOwners, children: children + parts)
     }
 }
 
@@ -100,7 +111,8 @@ enum _SwifQLStructuralComposition {
 
     static func append(
         _ base: SwifQLable,
-        parts newParts: [SwifQLPart]
+        parts newParts: [SwifQLPart],
+        owners newOwners: [SwifQLClauseKind: SwifQLClauseOwner] = [:]
     ) -> SwifQLable {
         func continuationParts(
             _ parts: [SwifQLPart],
@@ -125,11 +137,22 @@ enum _SwifQLStructuralComposition {
         }
 
         guard let root = rootFrame(in: base.parts) else {
-            return SwifQLableParts(rawParts: base.parts + continuationParts(newParts, after: base.parts))
+            let appendedParts = continuationParts(newParts, after: base.parts)
+            guard !newOwners.isEmpty else {
+                return SwifQLableParts(rawParts: base.parts + appendedParts)
+            }
+
+            return SwifQLableParts(rawParts: [
+                SwifQLStructuralFramePart(
+                    region: .statement,
+                    owners: newOwners,
+                    children: base.parts + appendedParts
+                )
+            ])
         }
 
         let appendedParts = continuationParts(newParts, after: root.children)
-        return SwifQLableParts(rawParts: [root.appending(appendedParts)])
+        return SwifQLableParts(rawParts: [root.appending(appendedParts, owners: newOwners)])
     }
 
     static func appendStatementContents(

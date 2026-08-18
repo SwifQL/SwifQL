@@ -235,4 +235,53 @@ struct StructuralClauseOwnershipTests {
 
         #expect(query.prepare(.psql).plain == #"SELECT "users"."id" + 1 FROM "users" GROUP BY "users"."id" + 1"#)
     }
+
+    @Test("Generic owner merge replaces selected keys and preserves unrelated mappings")
+    func genericOwnerMerge() {
+        let replacement = SwifQLClauseOwner(namespace: "example", name: "replacement")
+        let unrelatedKind = SwifQLClauseKind(namespace: "example", name: "unrelated")
+        let unrelatedOwner = SwifQLClauseOwner(namespace: "example", name: "unrelated-owner")
+        let nestedOwner = SwifQLClauseOwner(namespace: "nested", name: "opaque")
+        let nested = SwifQLStructuralFramePart(
+            region: .statement,
+            owners: [.groupBy: nestedOwner]
+        )
+        let frame = SwifQLStructuralFramePart(
+            region: .statement,
+            owners: [
+                .groupBy: owner,
+                .orderBy: owner,
+                unrelatedKind: unrelatedOwner
+            ],
+            children: [nested]
+        )
+        let base = SwifQLableParts(parts: frame)
+        let merged = _SwifQLStructuralComposition.append(
+            base,
+            parts: [SwifQLPartOperator.space, SwifQLPartOperator.custom("TAIL")],
+            owners: [.groupBy: replacement]
+        )
+
+        let mergedRoot = root(of: merged)
+        #expect(mergedRoot.owner(for: .groupBy) == replacement)
+        #expect(mergedRoot.owner(for: .orderBy) == owner)
+        #expect(mergedRoot.owner(for: unrelatedKind) == unrelatedOwner)
+        #expect((mergedRoot.children.first as? SwifQLStructuralFramePart)?.owner(for: .groupBy) == nestedOwner)
+
+        let unframed = SwifQLableParts(parts: SwifQLPartOperator.custom("BASE"))
+        let ownerSet = _SwifQLStructuralComposition.append(
+            unframed,
+            parts: [SwifQLPartOperator.space, SwifQLPartOperator.custom("TAIL")],
+            owners: [.groupBy: replacement]
+        )
+        #expect(ownerSet.structuralOwner(for: .groupBy) == replacement)
+        #expect(ownerSet.prepare(.psql).plain == "BASE TAIL")
+
+        let ordinaryContinuation = _SwifQLStructuralComposition.append(
+            unframed,
+            parts: [SwifQLPartOperator.space, SwifQLPartOperator.custom("TAIL")]
+        )
+        #expect(ordinaryContinuation.parts.first is SwifQLStructuralFramePart == false)
+        #expect(ordinaryContinuation.prepare(.psql).plain == "BASE TAIL")
+    }
 }

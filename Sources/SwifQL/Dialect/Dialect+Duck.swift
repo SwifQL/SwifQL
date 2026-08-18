@@ -5,6 +5,13 @@
 import Foundation
 
 class DuckDialect: SQLDialect {
+    private static let unqualifiedKeyPathScopes: Set<SwifQLRenderScope> = [
+        .simplifiedPivotOn,
+        .simplifiedPivotUsing,
+        .simplifiedPivotGroupBy,
+        .simplifiedPivotOrderBy
+    ]
+
     override var id: String? { "duckdb" }
 
     override func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
@@ -38,16 +45,25 @@ class DuckDialect: SQLDialect {
 
     override func jsonField(_ value: String) -> String { stringValue(value) }
 
-    override func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
+    private func shouldUnqualifyKeyPath(_ context: SwifQLRenderContext) -> Bool {
+        context.scopes.contains { Self.unqualifiedKeyPathScopes.contains($0) }
+    }
+
+    private func renderKeyPath(
+        _ keyPath: SwifQLPartKeyPath,
+        qualified: Bool
+    ) -> String {
         var result = ""
-        if let schema = keyPath.schema {
-            result.append(schemaName(schema))
-        }
-        if let table = keyPath.table {
-            if result.count > 0 {
-                result.append(".")
+        if qualified {
+            if let schema = keyPath.schema {
+                result.append(schemaName(schema))
             }
-            result.append(tableName(table))
+            if let table = keyPath.table {
+                if result.count > 0 {
+                    result.append(".")
+                }
+                result.append(tableName(table))
+            }
         }
         for (i, value) in keyPath.paths.enumerated() {
             if i == 0 {
@@ -68,6 +84,20 @@ class DuckDialect: SQLDialect {
             return "(\(result))"
         }
         return result
+    }
+
+    override func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
+        renderKeyPath(keyPath, qualified: true)
+    }
+
+    override func keyPath(
+        _ keyPath: SwifQLPartKeyPath,
+        context: SwifQLRenderContext
+    ) -> String {
+        renderKeyPath(
+            keyPath,
+            qualified: !shouldUnqualifyKeyPath(context)
+        )
     }
 
     override func date(_ value: Date) -> String {
