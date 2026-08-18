@@ -22,11 +22,6 @@ extension SwifQLable {
     /// - Parameter part: `SwifQLable` element
     ///
     public func notLike(_ part: SwifQLable) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .notLike)
-        parts.append(o: .space)
-        parts.append(contentsOf: part.parts)
-        return SwifQLableParts(parts: parts)
+        applyingPatternOperator(.notLike, to: part)
     }
 }

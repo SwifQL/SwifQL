@@ -87,14 +87,14 @@ postfix operator *
 postfix public func *<T: Decodable>(table: GenericTableAlias<T>) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartTable(table.alias))
-    parts.append(o: .custom(".*"))
+    parts.append(SwifQLPartOperator(".*", semanticRole: .starProjection))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)
 }
 postfix public func *(table: AnyTable.Type) -> SwifQLable {
     var parts: [SwifQLPart] = []
     parts.append(SwifQLPartTable(table.tableName))
-    parts.append(o: .custom(".*"))
+    parts.append(SwifQLPartOperator(".*", semanticRole: .starProjection))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)
 }

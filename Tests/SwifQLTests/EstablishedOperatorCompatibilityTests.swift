@@ -22,4 +22,29 @@ struct EstablishedOperatorCompatibilityTests {
         let hybrid = SwifQLHybridOperator(SwifQLPartOperator("pg()"), SwifQLPartOperator("mysql()"))
         #expect(hybrid.prepare(CustomDialect()).plain == "custom()")
     }
+
+    @Test("Legacy custom dialects retain default contextual value binding")
+    func legacyContextualValueBinding() {
+        let star = SwifQL.asterisk.glob("metric*").prepare(CustomDialect()).splitted
+        #expect(star.query == "* GLOB ?")
+        #expect(star.values[0] as? String == "metric*")
+
+        let ordinary = SwifQLableParts(parts: SwifQLPartColumn("metric"))
+            .similarTo("metric.*")
+            .prepare(CustomDialect())
+            .splitted
+        #expect(ordinary.query == "metric SIMILAR TO ?")
+        #expect(ordinary.values[0] as? String == "metric.*")
+    }
+
+    @Test("Legacy custom dialects inherit structural star modifier lowering")
+    func legacyStarModifierLowering() {
+        let query = SwifQL.asterisk.replace(
+            StarReplacement("fallback", as: "value")
+        )
+        let prepared = query.prepare(CustomDialect()).splitted
+
+        #expect(prepared.query == "* REPLACE (? as value)")
+        #expect(prepared.values[0] as? String == "fallback")
+    }
 }

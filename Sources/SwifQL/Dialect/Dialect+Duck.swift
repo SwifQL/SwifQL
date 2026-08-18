@@ -111,6 +111,14 @@ class DuckDialect: SQLDialect {
 
     override func bindKey(_ i: Int) -> String { "$\(i)" }
 
+    override func inlineUnsafeValue(
+        _ value: Encodable,
+        context: SwifQLRenderContext
+    ) -> String? {
+        guard context.contains(.starPattern) else { return nil }
+        return safeValue(value)
+    }
+
     override var arrayStart: String { "[" }
 
     override var arrayEnd: String { "]" }

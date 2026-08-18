@@ -76,7 +76,7 @@ If the coordinator prompt starts duplicating task details, fix the decomposition
 
 Non-trivial production work requires reviewed planning when it crosses multiple files/owners or changes public API, SQL semantics, dialect behavior, preparation/binding, builders, concurrency, package/toolchain behavior, or compatibility boundaries.
 
-The plan must be grounded in current source/Git/dependency facts and must first prove that the proposed architecture satisfies SQL-first DESIGN-001, composition-invariant DESIGN-015, established-user compatibility, and the repository's no-workaround policy. It must then close:
+The plan must be grounded in current source/Git/dependency facts and must first prove that the proposed architecture satisfies SQL-first DESIGN-001, composition-invariant DESIGN-015, established-user compatibility, the repository's no-workaround policy, and DESIGN-019 whenever shared under-the-hood dialect/rendering/preparation/composition infrastructure changes. For DESIGN-019 work, the coordinator must explicitly compare the semantic requirement across affected supported dialects, likely adjacent unimplemented constructs, and representative major external dialect families before freezing the shared primitive's name, type shape, policy domain, or extension hook. It must then close:
 
 - scope/non-goals;
 - ownership and SQL/API semantics;
@@ -95,6 +95,7 @@ After executor work, independently inspect:
 - complete Git status and changed paths;
 - actual changed/created source and direct callers;
 - relevant architecture/ownership boundaries;
+- for any new shared dialect/rendering/preparation primitive, DESIGN-019 evidence that the abstraction remains reusable across affected supported dialects and representative external dialect families rather than encoding the triggering dialect too narrowly;
 - public API and legacy source compatibility;
 - generated SQL fidelity and binding order where applicable;
 - package/dependency changes;

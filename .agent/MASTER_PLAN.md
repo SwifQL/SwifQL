@@ -13,6 +13,8 @@ The first two design gates for every relevant change are:
 
 If a proposal violates either gate, redesign it before implementation.
 
+For any new **shared under-the-hood dialect/rendering/preparation/binding/scope/ownership/composition primitive**, `DESIGN-019` is an additional mandatory architecture gate: research the semantic requirement across affected supported dialects, likely adjacent not-yet-implemented constructs, and representative major external SQL dialect families before freezing the shared primitive. The triggering database must not become the ontology of shared internals.
+
 ## Mandatory development order
 
 ```text

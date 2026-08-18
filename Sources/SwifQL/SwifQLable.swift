@@ -144,6 +144,12 @@ extension SwifQLable {
                     return dialect.keyPath(v, context: context)
                 case let v as SwifQLPartColumn:
                     return dialect.column(v.name)
+                case let v as SwifQLStarExcludePart:
+                    return render(dialect.starExcludeParts(v), context: context)
+                case let v as SwifQLStarReplacePart:
+                    return render(dialect.starReplaceParts(v), context: context)
+                case let v as SwifQLStarRenamePart:
+                    return render(dialect.starRenameParts(v), context: context)
                 case let v as SwifQLPartOperator:
                     return v._value
                 case let v as SwifQLHybridOperator:
@@ -153,6 +159,9 @@ extension SwifQLable {
                 case let v as SwifQLPartSafeValue:
                     return dialect.safeValue(v.safeValue)
                 case let v as SwifQLPartUnsafeValue:
+                    if let inlineValue = dialect.inlineUnsafeValue(v.unsafeValue, context: context) {
+                        return inlineValue
+                    }
                     values.append(v.unsafeValue)
                     formattedValues.append(dialect.safeValue(v.unsafeValue))
                     return dialect.bindSymbol

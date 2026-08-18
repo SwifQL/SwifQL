@@ -15,6 +15,13 @@ public struct SwifQLRenderScope: Hashable, Sendable {
     }
 }
 
+extension SwifQLRenderScope {
+    public static let starPattern = SwifQLRenderScope(
+        namespace: "swifql",
+        name: "starPattern"
+    )
+}
+
 public struct SwifQLRenderContext: Sendable {
     public let scopes: [SwifQLRenderScope]
 

@@ -192,6 +192,35 @@ The evidence-proven architecture selects ownership through the current root stru
 
 A frame is an opaque nested value-semantic structural part, not a free-floating forward directive or begin/end marker. Nested statement/set-result frames prevent clause ownership and statement-local semantic render scopes from leaking across real SQL-region boundaries. Ordinary parentheses remain ordinary syntax and do not themselves create a frame.
 
+### DIALECT-014 - Shared rendering primitives are cross-dialect semantic contracts
+
+A dialect-specific bug or grammar restriction may justify a new shared rendering/preparation primitive only after the design identifies the reusable semantic dimension independently of that dialect.
+
+Before introducing a shared hook, scope, owner, part metadata field, binding policy, or renderer branch boundary:
+
+- compare the requirement against every currently supported dialect affected by that path;
+- inspect likely adjacent constructs in those dialects even if SwifQL has not implemented them yet;
+- sample several major external SQL dialect families when their grammar can expose whether the proposed abstraction is too narrow;
+- separate grammar-role metadata from per-dialect policy;
+- keep product identity out of shared semantic names unless the value actually represents database identity;
+- prefer open value-semantic scope/owner identities when future dialects/downstream extensions may legitimately add meanings;
+- keep existing hook behavior as the default forwarding path for custom `SQLDialect` subclasses;
+- do not choose a Boolean or closed enum merely because the first dialect has two observed outcomes if other dialects may require a third rendering mode.
+
+For contextual values in particular, distinguish at design time between at least:
+
+- normal bindable runtime value;
+- parser/binder constant that still uses the dialect's safe literal rendering;
+- structural identifier/name;
+- structural SQL token/option;
+- context-sensitive expression whose rendering changes but whose value remains bindable.
+
+Do not collapse those categories into one convenience wrapper or one product-specific flag. The shared primitive should carry enough semantic context for each dialect to choose its exact representation without changing ordinary user source.
+
+A single local scope check inside one dialect override is acceptable when that dialect currently has one contextual policy. Do not grow that method into a linear product-specific guard/`if` forest as additional independent policies appear. Once a dialect owns multiple contextual policies, factor their dispatch behind a private value-semantic resolver/table or an equivalently clean local mechanism while keeping the shared public hook context-based and unchanged. Do not pre-install such a registry before multiple real policies justify it.
+
+This rule does not authorize speculative feature implementation. It requires cross-dialect research to validate the **shape of the internal extension point**, while the current task still implements only approved behavior.
+
 Only if verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement decisions that cannot be expressed truthfully by ordinary/scoped parts plus the evidence-proven structural-region model may a focused semantic statement representation be proposed. That proposal requires its own research, compatibility analysis, plan audit, and maintainer approval before implementation.
 
 For the current Duck PIVOT/UNPIVOT/MERGE wave, bounded render scopes remain approved. The independent root clause-ownership audit and focused disposable diagnostic validate the generic structural-frame + dedicated-clause architecture; the PIVOT ownership blocker is closed. Focused semantic-statement representation remains unapproved. The next gate is reconciliation and independent audit of the production implementation/migration plan, not another architecture redesign.

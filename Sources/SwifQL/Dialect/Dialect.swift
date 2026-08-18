@@ -115,6 +115,65 @@ open class SQLDialect {
         default: return stringValue(String(describing: "<unsafe value>")) // TODO:
         }
     }
+
+    open func inlineUnsafeValue(
+        _ value: Encodable,
+        context: SwifQLRenderContext
+    ) -> String? {
+        nil
+    }
+
+    open func starExcludeParts(_ part: SwifQLStarExcludePart) -> [SwifQLPart] {
+        var parts: [SwifQLPart] = [
+            SwifQLPartOperator("EXCLUDE"),
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.openBracket
+        ]
+        for (index, columnName) in part.columnNames.enumerated() {
+            if index > 0 {
+                parts.append(o: .comma, .space)
+            }
+            parts.append(SwifQLPartColumn(columnName))
+        }
+        parts.append(o: .closeBracket)
+        return parts
+    }
+
+    open func starReplaceParts(_ part: SwifQLStarReplacePart) -> [SwifQLPart] {
+        var parts: [SwifQLPart] = [
+            SwifQLPartOperator("REPLACE"),
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.openBracket
+        ]
+        for (index, entry) in part.entries.enumerated() {
+            if index > 0 {
+                parts.append(o: .comma, .space)
+            }
+            parts.append(contentsOf: entry.expressionParts)
+            parts.append(o: .space, .as, .space)
+            parts.append(SwifQLPartColumn(entry.columnName))
+        }
+        parts.append(o: .closeBracket)
+        return parts
+    }
+
+    open func starRenameParts(_ part: SwifQLStarRenamePart) -> [SwifQLPart] {
+        var parts: [SwifQLPart] = [
+            SwifQLPartOperator("RENAME"),
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.openBracket
+        ]
+        for (index, entry) in part.entries.enumerated() {
+            if index > 0 {
+                parts.append(o: .comma, .space)
+            }
+            parts.append(SwifQLPartColumn(entry.oldColumnName))
+            parts.append(o: .space, .as, .space)
+            parts.append(SwifQLPartColumn(entry.newColumnName))
+        }
+        parts.append(o: .closeBracket)
+        return parts
+    }
     
     // MARK: - Binding (for formatter)
     

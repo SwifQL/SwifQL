@@ -386,3 +386,28 @@ For optional semantic ownership, prefer absence (`nil`) for the ordinary/no-owne
 The same extensibility rule applies to visibility. When a type, initializer, protocol hook, value wrapper, or structural helper is a plausible safe downstream extension point, prefer making that boundary public from the start instead of keeping it internal solely to minimize API surface. Public extensibility must remain value-semantic and must not expose mutable renderer/preparation internals or weaken safety invariants.
 
 Review downstream extensibility proactively. Existing users may maintain private `SwifQLable` helpers, custom parts/operators, path abstractions, protocol conformances, and `SQLDialect` subclasses that will never appear in this repository. Preserving their ability to extend SwifQL is part of the product design, not an accidental implementation detail.
+
+## DESIGN-019 - Cross-dialect architecture before dialect-triggered internals
+
+A new dialect may be the first place that exposes a missing internal capability, but that dialect must not silently become the ontology of the shared architecture.
+
+Before adding or changing a shared rendering, preparation, binding, semantic-scope, ownership, value/identifier, operator, clause, or structural-composition primitive, research the **semantic class of the problem across dialects**, not only the dialect that triggered the work.
+
+The minimum design check is:
+
+1. inspect every currently supported dialect whose existing behavior could pass through the primitive;
+2. inspect known adjacent/unimplemented constructs in those dialects that are likely to need the same semantic category later;
+3. sample several major external SQL dialect families when that can reveal materially different grammar requirements, such as PostgreSQL-family, MySQL-family, SQLite, SQL Server/T-SQL, Oracle, BigQuery/GoogleSQL, and Snowflake;
+4. classify which dimension actually varies: identifier vs value, bindable value vs parser constant, literal token vs expression, qualification, casing, placeholder form, clause ownership, statement ownership, or another grammar role;
+5. design the shared primitive around that semantic dimension with open/value-semantic extension points where the domain is open, while keeping each dialect's concrete policy in the dialect layer;
+6. prove that a future dialect can consume the primitive without changing established public query source, existing `parts` meaning, or previously released dialect hooks.
+
+This is architecture foresight, not permission to implement speculative SQL features. Do not add public APIs, dialect branches, enums, scopes, or hooks merely because another database might use them someday. Research enough cross-dialect evidence to avoid naming or shaping a shared primitive around one product-specific accident, then implement only the capability required by the current approved task.
+
+Examples of the required distinction:
+
+- if one dialect requires a value to be a parser constant in a particular grammar position, model the grammar role/context generically rather than creating a `Duck...` value wrapper;
+- if different dialects may choose bind, safe literal, or another exact representation for the same contextual value, do not freeze the shared hook to the first dialect's binary decision unless cross-dialect evidence proves that Boolean policy is the durable semantic boundary;
+- if a semantic owner is needed, name/model the owner by the SQL grammar role it owns, not by the database product that first required it.
+
+A proposal fails this gate if supporting a foreseeable equivalent PostgreSQL/MySQL/other-dialect grammar later would require a breaking public-source rewrite, changing the meaning of an established generic hook, replacing a closed product-shaped enum/type, or introducing a parallel renderer because the original primitive encoded one dialect too narrowly.

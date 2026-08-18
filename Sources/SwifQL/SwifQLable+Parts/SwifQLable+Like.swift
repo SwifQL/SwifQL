@@ -10,6 +10,42 @@ import Foundation
 //MARK: LIKE
 
 extension SwifQLable {
+    var ownsStarProjectionSemanticRole: Bool {
+        let receiverParts: [SwifQLPart]
+        if let frame = parts.first as? SwifQLStructuralFramePart {
+            receiverParts = frame.children
+        } else {
+            receiverParts = parts
+        }
+
+        for part in receiverParts.reversed() {
+            if let operation = part as? SwifQLPartOperator,
+               operation._value == " " {
+                continue
+            }
+
+            return (part as? SwifQLSemanticRoleCarryingPart)?.semanticRole == .starProjection
+        }
+
+        return false
+    }
+
+    func applyingPatternOperator(
+        _ operation: SwifQLPartOperator,
+        to pattern: SwifQLable
+    ) -> SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(operation)
+        parts.append(o: .space)
+        if ownsStarProjectionSemanticRole {
+            parts.append(contentsOf: pattern.scoped(.starPattern).parts)
+        } else {
+            parts.append(contentsOf: pattern.parts)
+        }
+        return SwifQLableParts(parts: parts)
+    }
+
     /// Builds query with `LIKE` parameter
     ///
     /// Example usage:
@@ -22,11 +58,6 @@ extension SwifQLable {
     /// - Parameter part: `SwifQLable` element
     ///
     public func like(_ part: SwifQLable) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        parts.append(o: .like)
-        parts.append(o: .space)
-        parts.append(contentsOf: part.parts)
-        return SwifQLableParts(parts: parts)
+        applyingPatternOperator(.like, to: part)
     }
 }

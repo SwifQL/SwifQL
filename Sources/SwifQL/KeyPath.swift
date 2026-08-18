@@ -283,14 +283,14 @@ postfix operator *
 postfix public func *(lhs: SwifQLable) -> SwifQLable {
     var parts = lhs.parts
     parts.appendSpaceIfNeeded()
-    parts.append(o: .custom("*"))
+    parts.append(SwifQLPartOperator("*", semanticRole: .starProjection))
     return SwifQLableParts(parts: parts)
 }
 
 postfix operator .*
 postfix public func .*(lhs: SwifQLable) -> SwifQLable {
     var parts = lhs.parts
-    parts.append(o: .custom(".*"))
+    parts.append(SwifQLPartOperator(".*", semanticRole: .starProjection))
     parts.append(o: .space)
     return SwifQLableParts(parts: parts)
 }

@@ -104,3 +104,18 @@ Cover, as applicable:
 - unaffected PostgreSQL/MySQL output remaining byte-for-byte stable.
 
 If render scopes expose a public downstream extension surface, add a temporary external consumer compile fixture that imports SwifQL normally and proves the intended extension pattern without `@testable import`. If custom `SQLDialect` subclassing is part of that claimed extension contract, the fixture must prove construction/subclassing from another module rather than relying only on in-module tests.
+
+## Cross-dialect shared-primitive validation
+
+When DESIGN-019 applies because a change adds or reshapes shared rendering/preparation/binding/scope/ownership/composition infrastructure, validation must prove more than the triggering dialect's positive case.
+
+At minimum:
+
+- existing supported dialects crossing the changed pipeline retain exact SQL/bind behavior;
+- a downstream custom `SQLDialect` that does not opt into the new semantic context retains default historical behavior;
+- where the primitive exposes an open context/policy hook, an external custom dialect exercises that hook with a non-product-specific scope/role to prove the extension shape is genuinely reusable;
+- focused tests distinguish structural identifiers/tokens from dynamic values and distinguish ordinary bindable values from grammar positions that require a parser constant or another contextual representation;
+- composition tests prove the semantic role does not leak from nested expressions or unrelated raw/custom tokens;
+- if cross-dialect research identified a foreseeable third rendering mode beyond the triggering dialect's two observed outcomes, tests/fixtures must demonstrate that the shared type/hook does not encode a closed binary assumption that would require a later breaking change.
+
+External database research used to satisfy DESIGN-019 is architecture evidence, not a new support claim and not a requirement to add speculative product APIs or integration-test every sampled database. Executable tests remain scoped to supported/currently implemented behavior plus representative downstream extension fixtures.
