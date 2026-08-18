@@ -9,7 +9,8 @@ class DuckDialect: SQLDialect {
         .simplifiedPivotOn,
         .simplifiedPivotUsing,
         .simplifiedPivotGroupBy,
-        .simplifiedPivotOrderBy
+        .simplifiedPivotOrderBy,
+        .simplifiedUnpivotOrderBy
     ]
 
     override var id: String? { "duckdb" }
