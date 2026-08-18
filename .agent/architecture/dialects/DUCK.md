@@ -369,6 +369,26 @@ Do not hide unsupported Duck semantics behind PostgreSQL-looking helpers. Exampl
 
 The detailed feature matrix should be expanded here as each advanced area completes native validation rather than duplicated in the common dialect owner.
 
+### DUCK-020A - Ordinary DML support and unclaimed boundaries
+
+The verified DuckDB v1.5.5 ordinary-DML contract is:
+
+- `INSERT ... VALUES` and `INSERT ... SELECT` are supported with normal SQL-shaped composition and prepared values. A String supplied as a table target is a structural identifier and does not become a value bind.
+- `INSERT ... BY NAME` is supported when the source is a `SELECT`; matching is by source and target column name, including omitted target columns that have defaults. `BY NAME VALUES` is rejected by DuckDB and remains mechanically renderable but unclaimed by SwifQL.
+- `INSERT OR IGNORE` and `INSERT OR REPLACE` are supported as their exact SQL identities. SwifQL does not remap either form by dialect or expose them as a portable conflict policy.
+- `ON CONFLICT DO NOTHING` without a target and `ON CONFLICT (<column>) DO NOTHING` with a column target are supported. Column-target `DO UPDATE SET` using the `EXCLUDED` source, with an optional `WHERE`, is supported when expressed through the ordinary SQL-shaped `set(_:)` composition.
+- Historical `ON CONFLICT ON CONSTRAINT ...` remains mechanically renderable for compatibility, but DuckDB v1.5.5 rejects it as unimplemented; it is unclaimed for Duck.
+- `INSERT ... RETURNING` and `DELETE ... RETURNING` support structural columns, `*`, and literal expressions. DuckDB v1.5.5 rejects prepared parameters inside these RETURNING expressions during preparation. SwifQL preserves ordinary binding and does not add runtime validation or rejection for that database limitation.
+- Ordinary `UPDATE` `SET`, `FROM`, and scalar-subquery `SET`/`WHERE` forms are supported and remain direct SQL composition. Multi-target `UPDATE` is rejected by DuckDB v1.5.5 and remains mechanically renderable but unclaimed. `UPDATE ... RETURNING` executes in the verified runtime but remains mechanically expressible and unclaimed because the current official Duck UPDATE contract does not document it.
+- `DELETE ... USING` supports table sources, an aliased parenthesized subquery source, and multiple comma-separated sources. In the verified qualified RETURNING boundary, target-qualified columns are accepted while source-qualified columns are rejected because the USING source is not visible to RETURNING; the latter remains unclaimed without SwifQL-side runtime rejection. Columns, `*`, literal expressions, and USING composition otherwise remain direct SQL forms.
+- Basic `TRUNCATE <table>` is supported, including schema-qualified structural table targets.
+
+These are feature-specific support and unclaimed claims for the verified runtime,
+not a general portability promise. The final Duck closure gate must revalidate
+these ordinary-DML boundaries, together with the rest of the approved Duck
+surface and downstream compatibility, before `.duck` is added to
+`SQLDialect.all`.
+
 ## Catalog paths
 
 ### DUCK-021 - Catalog is a SQL namespace concept, not a Duck-branded user concept
