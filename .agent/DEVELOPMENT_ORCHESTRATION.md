@@ -100,9 +100,10 @@ After executor work, independently inspect:
 - generated SQL fidelity and binding order where applicable;
 - package/dependency changes;
 - forbidden/deferred scope;
-- actual validation evidence.
+- actual validation evidence;
+- every independently confirmed dangerous case/blocker is protected by a durable regression test or the correct higher-fidelity fixture (external consumer, native database fixture, compile-time overload probe) before the finding is closed, including meaningful positive/negative sibling cases rather than only the first reproduction.
 
-If defects remain, create a new focused numbered correction wave instead of one large correction prompt.
+If defects remain, create a new focused numbered correction wave instead of one large correction prompt. A correction that changes production behavior but leaves its confirmed failure mode unprotected by regression evidence is not audit-complete and must not open the commit gate.
 
 ## Prompt Rules
 
