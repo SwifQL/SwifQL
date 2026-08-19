@@ -13,6 +13,14 @@ extension SwifQLable {
         appendingAtomicKeyword(.custom("VIEW"))
     }
 
+    public var sequence: SwifQLable {
+        appendingAtomicKeyword(.custom("SEQUENCE"))
+    }
+
+    public var macro: SwifQLable {
+        appendingAtomicKeyword(.custom("MACRO"))
+    }
+
     public var index: SwifQLable {
         appendingAtomicKeyword(.custom("INDEX"))
     }
@@ -47,6 +55,18 @@ extension SwifQLable {
 
     public var target: SwifQLable {
         appendingAtomicKeyword(.custom("TARGET"))
+    }
+
+    public var cycle: SwifQLable {
+        appendingAtomicKeyword(.custom("CYCLE"))
+    }
+
+    public var minValue: SwifQLable {
+        appendingAtomicKeyword(.custom("MINVALUE"))
+    }
+
+    public var maxValue: SwifQLable {
+        appendingAtomicKeyword(.custom("MAXVALUE"))
     }
 
     public var data: SwifQLable {

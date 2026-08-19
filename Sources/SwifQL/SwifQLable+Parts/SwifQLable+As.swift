@@ -25,4 +25,12 @@ extension SwifQLable {
         parts.append(o: .custom(type.name))
         return SwifQLableParts(parts: parts)
     }
+
+    public func `as`(_ expression: SwifQLable) -> SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .as, .space)
+        parts.append(contentsOf: expression.parts)
+        return SwifQLableParts(parts: parts)
+    }
 }

@@ -532,6 +532,107 @@ All rows are feature/action claims, not a promise that every spelling exposed
 by the general SQL composer executes on DuckDB. Unlisted forms remain
 mechanically renderable and unclaimed.
 
+### DUCK-027 - Sequence and macro support is claimed per exact source/action
+
+Fail-closed native validation passed against DuckDB v1.5.5, source
+d8cdaa33fd, codename Variegata. The validation covered query success,
+prepare/bind/execute status, result values, catalog post-state, two-connection
+visibility, transaction behavior, dependency behavior, and the required
+negative parser/binder boundaries. The following claims are limited to the
+direct source shapes below; they do not make historical DDL builders broadly
+Duck-compatible.
+
+#### Sequences
+
+| Source/action | DuckDB v1.5.5 classification |
+| --- | --- |
+| CREATE SEQUENCE, OR REPLACE, IF NOT EXISTS, and schema-qualified persistent names | Supported for the tested exact forms. OR REPLACE resets options/current value; IF NOT EXISTS preserves the existing sequence. OR REPLACE combined with IF NOT EXISTS is a native parser error. |
+| TEMP / TEMPORARY sequence creation and drop | Supported for the tested exact forms. The temporary object is visible in its creating connection and absent from the second connection. Explicitly schema-qualifying a temporary sequence is native-invalid. |
+| START, START WITH, signed nonzero INCREMENT BY, MINVALUE, MAXVALUE, CYCLE, and their NO siblings | Supported as direct value-bearing composition. Sequence metadata is BIGINT-shaped. INCREMENT BY 0 is a native parser error. Positive and negative increments, explicit bounds, no-cycle boundaries, and ascending/descending cycle wrap were verified. |
+| Quoted reserved, Unicode, and embedded-double-quote sequence names | Supported for the tested create/catalog/drop forms through Path.Identifier; the embedded-name nextval string spelling remains DuckDB utility-parser territory. |
+| DROP SEQUENCE default, IF EXISTS, RESTRICT, CASCADE, and create/drop rollback | Supported for the tested exact actions. Dependency-sensitive default expressions are classified separately below. |
+| Prepared placeholders in sequence option positions | Native-invalid at prepare/parse time for START, START WITH, INCREMENT BY, MINVALUE, and MAXVALUE. SwifQL keeps the numeric option methods safe-inline and does not add a dialect-specific runtime rejection. |
+| Int64 upper-bound literals | The tested literal 9223372036854775806 with MAXVALUE 9223372036854775807 is accepted and returns the exact start value. No broader overflow guarantee is claimed. |
+
+Fn.nextval and Fn.currval intentionally accept ordinary SwifQLable children. A
+String therefore renders as a normal Duck string literal in .plain and remains
+a normal prepared value in .splitted; prepared invocation with a name,
+including a schema-qualified name string, was native-positive. currval before
+any nextval reports DuckDB's “sequence is not yet defined in this session”
+sequence error. In the pinned v1.5.5 two-connection matrix, after one
+connection advances a sequence, currval in the other connection succeeds and
+observes the latest sequence value; the first connection also observes that
+latest value. Sequence consumption is not rewound by transaction rollback.
+
+The explicit expression source SwifQL.default(Fn.nextval("order_id_seq")) is
+supported in the tested CREATE TABLE and insert flow. A literal sequence name
+in a default is native-positive. A prepared parameter inside DEFAULT
+nextval(?) is rejected by DuckDB's binder, and the tested ALTER TABLE ...
+DEFAULT nextval(?) prepare path returns DuckDB's multiple-statement
+preparation diagnostic. Dropping a sequence with a live table default is
+dependency-blocked by RESTRICT; CASCADE removes the tested dependent table.
+Removing the default first through SET DEFAULT NULL or DROP DEFAULT permits
+the sequence drop. The historical NewColumn.default(sequence:) spelling
+remains mechanically preserved and unclaimed, and Type.auto(...,
+isPrimary: true) continues to emit PostgreSQL serial/bigserial; neither
+shortcut is a Duck sequence claim.
+
+#### Macros and function calls
+
+| Source/action | DuckDB v1.5.5 classification |
+| --- | --- |
+| Scalar zero-parameter, untyped positional, typed, and mixed-typed macros | Supported for the tested direct forms. Duplicate parameter names are rejected natively. |
+| Scalar OR REPLACE, IF NOT EXISTS, TEMP / TEMPORARY, persistent schema-qualified names, quoted names, and transaction create/drop rollback | Supported for the tested exact forms. OR REPLACE combined with IF NOT EXISTS is a native parser error. Temporary macros are isolated from the second connection; schema-qualified temporary macros are native-invalid. |
+| CREATE FUNCTION as a macro alias and DROP FUNCTION | Native-positive for the tested scalar alias form. SwifQL reuses existing .function atoms; no separate function builder is claimed. |
+| DROP MACRO, optional TABLE, IF EXISTS, RESTRICT, and CASCADE | Supported for the tested exact forms, including both table-macro drop spellings where native-positive. |
+| Prepared scalar macro invocation arguments | Native-positive with ordinary prepared values. A prepared value embedded in a macro body is native-invalid; a prepared constant macro body is native-positive. |
+| Macro dependency and transaction behavior | Dropping a base macro can leave a derived macro stored but invalid when invoked; the tested create/drop rollback boundaries restore catalog state. |
+| Zero-parameter, untyped, and typed AS TABLE macros; invocation in FROM | Supported for the tested exact forms. Prepared table-macro invocation arguments are native-positive. |
+| Table-macro temporary isolation and drop forms | Temporary table macros are isolated from the second connection. DROP MACRO TABLE and the tested optional-table spelling are native-positive. |
+| Fn.call(Path.Identifier, ...) | Generic unqualified, schema-qualified, and catalog-plus-schema-qualified identifier paths with zero, one, or multiple ordinary arguments are supported as direct function-call composition. The terminal name uses SQLDialect.identifier(_); catalog/schema/table/column/alias hooks remain distinct. |
+| Native macro defaults/named calls using := | Native-positive in the pinned runtime, including default and named calls; invalid default ordering is rejected natively. This public abstraction remains intentionally deferred under DUCK-025. |
+| Native macro overload definitions | Native-positive for the tested multi-signature form. Overload infrastructure remains unclaimed/deferred because it would require a structured multi-signature statement representation. |
+
+The canonical public source remains direct composition:
+
+~~~swift
+let sequence = Path.Identifier(schema: "analytics", name: "order_id_seq")
+
+SwifQL.create.sequence.if.not.exists[any: sequence]
+    .start(with: 1)
+    .increment(by: 2)
+    .minValue(1)
+    .maxValue(99)
+    .cycle
+
+SwifQL.default(Fn.nextval("order_id_seq"))
+
+let x = MacroParameter("x")
+let typed = MacroParameter("value", .integer)
+
+SwifQL.create.macro[any: Path.Identifier("twice")]
+    .macroParameters(x)
+    .as(x * 2)
+
+SwifQL.create.macro[any: Path.Identifier("rows")]
+    .macroParameters(typed)
+    .as.table
+    .select(typed)
+
+Fn.call(Path.Identifier("twice"), 21)
+~~~
+
+MacroParameter is value-semantic and bind-free. Its ordinary SwifQLable parts
+contain only the immutable structural parameter reference name. The
+macroParameters(...) constructor owns declaration syntax and appends the
+optional exact type spelling. Both roles route the name through the generic
+identifier hook; no macro-specific state or dialect hook exists. It has no
+uniqueness/type validation, default-value field, or product-specific prefix.
+macroParameters is the sole focused parenthesized list constructor; the
+scalar/table source uses the existing generic .as expression overload and
+.as.table atoms. No asTable, macro builder, overload builder, or raw macro-body
+escape hatch is part of the claimed surface.
+
 ## Catalog paths
 
 ### DUCK-021 - Catalog is a SQL namespace concept, not a Duck-branded user concept

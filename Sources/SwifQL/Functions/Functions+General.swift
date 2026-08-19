@@ -12,6 +12,8 @@ extension Fn.Name {
     @available(*, deprecated, renamed: "octetLength")
     public static var octet_length: Self { .octetLength }
     public static var cast: Self = .init("cast")
+    public static var nextval: Self = .init("nextval")
+    public static var currval: Self = .init("currval")
     public static var ifnull: Self = .init("ifnull")
     public static var isnull: Self = .init("isnull")
     public static var nvl: Self = .init("nvl")
@@ -94,6 +96,14 @@ extension Fn {
         parts.append(o: .space)
         parts.append(o: .custom(to.name))
         return build(.cast, body: parts)
+    }
+
+    public static func nextval(_ sequence: SwifQLable) -> SwifQLable {
+        build(.nextval, body: sequence.parts)
+    }
+
+    public static func currval(_ sequence: SwifQLable) -> SwifQLable {
+        build(.currval, body: sequence.parts)
     }
     
     public static func ifNull(_ value1: SwifQLable, _ value2: SwifQLable) -> SwifQLable {

@@ -16,4 +16,12 @@ extension SwifQLable {
         parts.append(o: .default)
         return SwifQLableParts(parts: parts)
     }
+
+    public func `default`(_ expression: SwifQLable) -> SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: .default, .space)
+        parts.append(contentsOf: expression.parts)
+        return SwifQLableParts(parts: parts)
+    }
 }
