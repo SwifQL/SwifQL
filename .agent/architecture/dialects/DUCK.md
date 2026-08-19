@@ -633,6 +633,123 @@ scalar/table source uses the existing generic .as expression overload and
 .as.table atoms. No asTable, macro builder, overload builder, or raw macro-body
 escape hatch is part of the claimed surface.
 
+### DUCK-028 - ATTACH, DETACH, and USE catalog integration is claimed per exact source/action
+
+The direct catalog-management source is generic SQL composition over the
+existing `Path.Catalog` namespace type. Native validation covers the exact
+source shapes and actions below against DuckDB v1.5.5 (`d8cdaa33fd`, codename
+`Variegata`). It does not make a broad Duck-specific builder or execution API
+claim.
+
+#### ATTACH
+
+The canonical public source is:
+
+~~~swift
+let analytics = Path.Catalog("analytics")
+
+SwifQL.attach("warehouse.duckdb", as: analytics)
+SwifQL.attach(
+    "warehouse.duckdb",
+    mode: .ifNotExists,
+    as: analytics,
+    options: [.readOnly, .blockSize(16_384)]
+)
+~~~
+
+The emitted order is exactly:
+
+~~~text
+ATTACH [OR REPLACE | IF NOT EXISTS] <source> [AS <catalog>] [(options)]
+~~~
+
+`AttachMode.none`, `.ifNotExists`, and `.orReplace` are the only mode values.
+The ATTACH source is a parser String literal in pinned DuckDB v1.5.5. The
+canonical `attach(String, ...)` overload safely appends that source inline in
+both `.plain` and `.splitted` preparation through the normal dialect string
+literal renderer, so dynamic String content is escaped and the source
+contributes zero binds. DuckDB v1.5.5 accepts a literal string source but
+rejects `?`, an arbitrary source expression, `NULL`, and a non-string source at
+its parser boundary. Value-bearing ATTACH options remain ordinary bindable
+expressions.
+
+An omitted `as:` lets DuckDB infer the catalog name from the source. An
+explicit `as:` accepts only `Path.Catalog`; the alias is a structural catalog
+name rendered through `SQLDialect.catalogName(_:)` and never becomes a bind.
+Reserved, Unicode, and embedded-double-quote catalog names use the existing
+catalog renderer and path semantics.
+
+`AttachOption` is a value-semantic structured option. Its open
+`AttachOption.Name` initializer permits downstream option names; the option
+list owns parentheses and comma ordering, and an option renders as `NAME` or
+`NAME <value>`. The verified core conveniences are:
+
+| Option | Native boundary in the validated source shapes |
+| --- | --- |
+| `READ_ONLY` | Name-only option; read-only attachment succeeds and write attempts fail natively. |
+| `COMPRESS` | Unquoted and quoted values, arbitrary expression values, and prepared values succeed for an in-memory database. |
+| `TYPE` | Unquoted and quoted `duckdb` values, arbitrary expression values, and prepared values succeed. Extension-specific type values are not claimed. |
+| `DEFAULT_TABLE` | Quoted and prepared values succeed; direct catalog references use the configured table. |
+| `BLOCK_SIZE` | Valid literal and prepared values succeed for a new local database file; invalid non-power-of-two values remain native errors. |
+| `ROW_GROUP_SIZE` | Valid literal and prepared values succeed for a new local database file; invalid values remain native errors. |
+| `STORAGE_VERSION` | Valid quoted values (`v1.0.0` and `latest`) and prepared values succeed; unknown versions remain native errors. |
+| `ENCRYPTION_KEY` | Quoted and prepared values succeed in the validated local attachment form. Secrets and external key-management behavior are outside this claim. |
+| `ENCRYPTION_CIPHER` | Valid quoted and prepared values succeed when paired with an encryption key; invalid cipher names remain native errors. |
+| `RECOVERY_MODE` | Valid unquoted and prepared values succeed; invalid enum values remain native errors. |
+
+DuckDB also accepts the compatibility token `READ_WRITE` in the validated
+runtime, but SwifQL intentionally exposes no convenience for it. The current
+runtime rejects `ACCESS_MODE`; it is not part of the public option domain.
+Remote HTTP/S3 sources and extension-specific database actions remain
+unclaimed. `IF NOT EXISTS` preserves an existing attachment, `OR REPLACE`
+replaces an alias when given a distinct local source, their combination is a
+native parser error, and attachment changes participate in transaction
+rollback.
+
+#### DETACH
+
+The public source is structural and bind-free:
+
+~~~swift
+SwifQL.detach(Path.Catalog("analytics"))
+~~~
+
+DuckDB rejects detaching the current default database. Use another catalog
+first, then detach the former default. Missing catalogs and qualified access
+after detachment retain DuckDB's native binder errors.
+
+#### USE
+
+The exact overloads are:
+
+~~~swift
+SwifQL.use(Path.Catalog("analytics"))
+SwifQL.use(Path.Schema("reporting"))
+SwifQL.use(Path.Catalog("analytics").schema("reporting"))
+~~~
+
+All three targets are structural and bind-free. The catalog overload changes
+the current catalog and uses its `main` schema; the schema overload resolves
+the schema in the current catalog; the catalog-and-schema overload selects
+both explicitly. The validated one-component conflict resolves as a schema in
+the current catalog. `current_catalog()` and `current_schema()` expose the
+resulting state. Attachments and the selected default catalog are connection
+state: a second connection does not see an attachment created by the first.
+
+Catalog-qualified object paths continue to use the established generic path
+chain:
+
+~~~swift
+Path.Catalog("analytics")
+    .schema("reporting")
+    .table("events")
+    .column("id")
+~~~
+
+The catalog, schema, table, column, and alias renderers remain distinct. No
+second database/catalog identifier type is introduced, and `.duck` remains
+outside `SQLDialect.all` until the broader closure boundary is complete.
+
 ## Catalog paths
 
 ### DUCK-021 - Catalog is a SQL namespace concept, not a Duck-branded user concept
