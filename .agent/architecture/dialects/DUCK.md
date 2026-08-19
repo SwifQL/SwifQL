@@ -350,7 +350,7 @@ Native DuckDB v1.5.5 validation has already established:
 - COLUMNS explicit-name prepared form;
 - COLUMNS lambda prepared form;
 - corrected nested STRUCT/UNION identifier cases;
-- representative MERGE;
+- the complete MERGE B1-B11 matrix described in DUCK-020B;
 - the complete PIVOT qualification/binding matrix described in DUCK-017.
 
 The broader mandatory native matrix is not yet complete.
@@ -388,6 +388,52 @@ not a general portability promise. The final Duck closure gate must revalidate
 these ordinary-DML boundaries, together with the rest of the approved Duck
 surface and downstream compatibility, before `.duck` is added to
 `SQLDialect.all`.
+
+### DUCK-020B - MERGE direct-composition contract and native boundaries
+
+DuckDB v1.5.5 native validation establishes the following MERGE contract:
+
+- `SwifQL.merge(into:using:on:)` and the incremental
+  `SwifQL.merge(into:).using(...).on(...)` form are composition-equivalent
+  generic SQL builders. Neither form introduces a Duck-only builder, AST, or
+  renderer hook.
+- Structural table targets, source tables, aliases, parenthesized source
+  queries, prepared predicates, and normal left-to-right binding all work.
+- Duck's one- and multi-column `USING (<columns>)` shorthand is supported and
+  renders structural last-path identifiers. The public `using(columns:)`
+  overload is a structural column-name API: a qualified key path is reduced by
+  SwifQL to its last path. Separately, raw qualified source/target expressions
+  in Duck's `USING (<columns>)` grammar are native-invalid.
+- `WHEN MATCHED`, `WHEN NOT MATCHED`, `WHEN NOT MATCHED BY SOURCE`, and
+  `WHEN NOT MATCHED BY TARGET` branches preserve append order and reuse the
+  established `.then.update.set(...)`, `.then.delete`, `.then.insert`,
+  `.then.insert.byName`, and
+  `.then.insert.fields(...).values.values(...)` action vocabulary.
+- Conditional branches, multi-column updates, whole-row updates, conditional
+  deletes, INSERT BY NAME, explicit-column INSERT values, a BY SOURCE explicit
+  column/value INSERT whose values do not depend on a source row, and the
+  verified transaction rollback boundary execute with normal prepared
+  parameters.
+- MERGE `RETURNING` exposes the bare Duck `merge_action` identifier, `*`,
+  target columns, and expressions. `merge_action()` is a different unsupported
+  function-shaped form and is not synthesized by SwifQL.
+- A complete fail-closed B1-B11 matrix verified runtime identity
+  `v1.5.5`, prepare/bind/execute status, parameter counts, every bind,
+  results/post-state, branch order, transaction behavior, RETURNING visibility,
+  BY SOURCE/BY TARGET, INSERT BY NAME, USING shorthand, and the required
+  dangerous siblings.
+
+The following remain mechanically renderable but unclaimed or rejected by
+DuckDB v1.5.5: raw qualified `USING` shorthand (the public overload emits
+unqualified last paths), `MATCHED BY TARGET`, UPDATE/DELETE actions on
+`NOT MATCHED BY TARGET`, DELETE on `NOT MATCHED`, bare or source-dependent
+INSERT actions on `NOT MATCHED BY SOURCE` because that branch has no source-row
+visibility, source-qualified MERGE RETURNING expressions, prepared parameters
+inside MERGE RETURNING, and function-shaped `merge_action()`. Explicit
+column/value INSERT under `NOT MATCHED BY SOURCE` is supported when its values
+are target-independent. These boundaries are native engine behavior; SwifQL
+keeps MERGE as direct SQL composition and does not translate it to an upsert
+form.
 
 ## Catalog paths
 
