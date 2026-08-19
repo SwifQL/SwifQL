@@ -750,6 +750,108 @@ The catalog, schema, table, column, and alias renderers remain distinct. No
 second database/catalog identifier type is introduced, and `.duck` remains
 outside `SQLDialect.all` until the broader closure boundary is complete.
 
+### DUCK-029 - COPY and table-file functions are claimed per exact source/action
+
+The direct COPY and table-file surface is generic SQL composition over the
+existing structural path types and function system. Native validation covers
+the exact source shapes and actions below against DuckDB v1.5.5
+(`d8cdaa33fd`, codename `Variegata`). It does not make a broad Duck-specific
+execution, file-management, or extension-management claim.
+
+#### COPY
+
+The canonical public sources are:
+
+~~~swift
+let events = Path.Table("events")
+let source = Path.Catalog("source")
+let destination = Path.Catalog("destination")
+
+SwifQL.copy(events, to: "events.parquet", options: .format("parquet"))
+SwifQL.copy(events, from: "events.csv", options: .format("csv"), .header)
+SwifQL.copy(
+    query: SwifQL.select(events.column("id")).from(events),
+    to: "events.json",
+    options: .format("json")
+)
+SwifQL.copy(fromDatabase: source, to: destination, options: .schema)
+~~~
+
+The claimed statement forms are exactly:
+
+~~~text
+COPY <structural table> TO <ordinary destination> [(options)]
+COPY <structural table> FROM (<ordinary source>) [(options)]
+COPY (<query>) TO <ordinary destination> [(options)]
+COPY FROM DATABASE <structural catalog> TO <structural catalog> [(SCHEMA)]
+~~~
+
+Table targets and both database catalogs are structural and bind-free. File
+paths, query children, COPY destinations, and option values remain ordinary
+SwifQLable values and retain normal preparation behavior. Query children are
+rendered inside the single parenthesized query source before the destination
+and option values in the normal child order.
+
+The pinned runtime accepts both direct prepared `COPY table FROM $1` and
+parenthesized prepared `COPY table FROM ($1)`. Parenthesized source syntax is
+the stable public representation because it also covers arbitrary expressions
+and one exact source shape works for literal, prepared, and expression
+inputs. The renderer does not branch on preparation mode and the public
+builder never emits a direct unparenthesized source.
+
+`CopyOption` is a value-semantic structured option with an open
+`CopyOption.Name` initializer. An option renders as `NAME` or `NAME <value>`;
+the statement owns parentheses, comma ordering, and the option list. The
+verified first-release conveniences are:
+
+| Option | Public form |
+| --- | --- |
+| `FORMAT` | `CopyOption.format(_:)` |
+| `HEADER` | `CopyOption.header` and `CopyOption.header(_:)` |
+| `DELIMITER` | `CopyOption.delimiter(_:)` |
+| `COMPRESSION` | `CopyOption.compression(_:)` |
+| `NULL` | `CopyOption.null(_:)` |
+| `ARRAY` | `CopyOption.array` and `CopyOption.array(_:)` |
+| `ROW_GROUP_SIZE` | `CopyOption.rowGroupSize(_:)` |
+| `COMPRESSION_LEVEL` | `CopyOption.compressionLevel(_:)` |
+| `SCHEMA` | `CopyOption.schema` for `COPY FROM DATABASE` |
+
+The option name domain remains open so downstream native options do not require
+a library change. Direction/format combinations are left to DuckDB. Native
+partitioned-write and return-file behavior was characterized but is not part
+of this first public convenience set; neither are overwrite/append helpers.
+
+#### Table functions and glob
+
+The exact helper identities are:
+
+~~~swift
+Fn.readCSV("events.csv", options: .header(true), .delimiter("|"), .sampleSize(2))
+Fn.readParquet("events.parquet", options: .unionByName(true))
+Fn.readJSON("events.json", options: .format("array"))
+Fn.glob("*.parquet")
+~~~
+
+They emit `read_csv`, `read_parquet`, `read_json`, and `glob`, respectively,
+and compose through the ordinary existing `.from(...)` API. The pinned runtime
+autoloads the tested JSON support; no explicit extension-management behavior
+is part of the claim. `read_csv` covers the verified `header`, `delim`, and
+`sample_size` options. `read_parquet` covers the verified `union_by_name`,
+`filename`, and `hive_partitioning` options. `read_json` covers the verified
+`format` option.
+
+`TableFunctionOption` is a value-semantic structured option with an open
+`TableFunctionOption.Name` initializer. Its exact grammar is `name = value`,
+with the name structural and the value an ordinary bindable SwifQLable child.
+The option list preserves positional-before-named and named-option ordering.
+This exact table-function grammar is distinct from the deferred generic
+`name := expression` abstraction; no `:=` primitive is introduced here.
+
+Single paths and glob patterns are claimed. Duck LIST multiple-file input was
+native-characterized but is not claimed by the public API because no new
+multiple-file list representation was required or frozen. `.duck` remains
+outside `SQLDialect.all` until the broader closure boundary is complete.
+
 ## Catalog paths
 
 ### DUCK-021 - Catalog is a SQL namespace concept, not a Duck-branded user concept
