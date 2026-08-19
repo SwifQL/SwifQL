@@ -32,6 +32,8 @@ class DuckDialect: SQLDialect {
 
     override func schemaName(_ value: String) -> String { quotedIdentifier(value) }
 
+    override func identifier(_ value: String) -> String { quotedIdentifier(value) }
+
     override func catalogName(_ value: String) -> String { quotedIdentifier(value) }
 
     override func tableName(_ value: String) -> String { quotedIdentifier(value) }

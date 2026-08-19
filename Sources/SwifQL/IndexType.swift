@@ -43,4 +43,8 @@ public class IndexType: SwifQLable {
     public static var brin: IndexType {
         .init(name: "BRIN")
     }
+
+    public static var art: IndexType {
+        .init(name: "ART")
+    }
 }

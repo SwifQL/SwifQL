@@ -9,6 +9,10 @@ import Foundation
 
 class MySQLDialect: SQLDialect {
     override var id: String? { "mysql" }
+
+    override func identifier(_ value: String) -> String {
+        "`\(value.replacingOccurrences(of: "`", with: "``"))`"
+    }
     
     override func keyPath(_ keyPath: SwifQLPartKeyPath) -> String {
         var result = ""

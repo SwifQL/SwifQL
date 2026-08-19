@@ -11,6 +11,10 @@ class PostgreSQLDialect: SQLDialect {
     override var id: String? { "psql" }
     
     override func schemaName(_ value: String) -> String { value.doubleQuotted }
+
+    override func identifier(_ value: String) -> String {
+        "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+    }
     
     override func tableName(_ value: String) -> String { value.doubleQuotted }
     

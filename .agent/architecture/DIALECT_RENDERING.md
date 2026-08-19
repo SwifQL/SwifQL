@@ -228,3 +228,11 @@ For the current Duck PIVOT/UNPIVOT/MERGE wave, bounded render scopes remain appr
 Any future semantic statement representation must re-enter the same recursive preparation/binding pipeline and must not become a generalized full-query AST or parallel renderer unless a separate architecture decision explicitly proves that such a redesign is required.
 
 This is a documented extension boundary, not current technical debt and not permission to build the layer preemptively.
+
+### DIALECT-015 - Generic terminal structural identifiers
+
+Generic terminal names for structural SQL objects use the value-semantic `Path.Identifier` shape and the `SwifQLPartIdentifier` part. The path supports unqualified, schema-qualified, and catalog-plus-schema-qualified forms. Qualifiers continue to render through the established catalog and schema hooks; only the terminal object name uses the additive `SQLDialect.identifier(_:)` hook.
+
+The base `SQLDialect.identifier(_:)` implementation returns the supplied name unchanged so legacy downstream subclasses that do not override the new hook remain source-compatible. PostgreSQL and Duck double-quote and double embedded double quotes for this category. MySQL backtick-quotes and doubles embedded backticks. Existing catalog, schema, table, column, alias hooks, and their old output are separate compatibility contracts and must not be reinterpreted through this hook.
+
+This shared dimension is for generic structural names such as VIEW, TYPE, and INDEX names. It does not authorize fixed-phrase builders, reuse of table/column/alias semantics, or a second renderer. Direct SQL atoms remain the composition mechanism for the surrounding grammar.

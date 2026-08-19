@@ -125,6 +125,8 @@ extension SwifQLable {
                     return dialect.null
                 case let v as SwifQLPartCatalog:
                     return dialect.catalogName(v.name)
+                case let v as SwifQLPartIdentifier:
+                    return dialect.identifier(v.name)
                 case let v as SwifQLPartSchema:
                     guard let schema = v.schema else { return "" }
                     return dialect.schemaName(schema)

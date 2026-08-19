@@ -48,6 +48,10 @@ open class SQLDialect {
     open func schemaName(_ value: String) -> String { value }
 
     open func catalogName(_ value: String) -> String { schemaName(value) }
+
+    /// Renders a terminal database-object identifier. The raw default keeps
+    /// legacy SQLDialect subclasses source-compatible.
+    open func identifier(_ value: String) -> String { value }
     
     open func tableName(_ value: String) -> String { value }
     

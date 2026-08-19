@@ -9,6 +9,22 @@ extension SwifQLable {
         appendingAtomicKeyword(.replace)
     }
 
+    public var view: SwifQLable {
+        appendingAtomicKeyword(.custom("VIEW"))
+    }
+
+    public var index: SwifQLable {
+        appendingAtomicKeyword(.custom("INDEX"))
+    }
+
+    public var temp: SwifQLable {
+        appendingAtomicKeyword(.custom("TEMP"))
+    }
+
+    public var temporary: SwifQLable {
+        appendingAtomicKeyword(.custom("TEMPORARY"))
+    }
+
     public var ignore: SwifQLable {
         appendingAtomicKeyword(.custom("IGNORE"))
     }

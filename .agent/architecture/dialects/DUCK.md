@@ -505,6 +505,33 @@ wrapper or broad builder conformance is implied. Transaction rollback of table
 DDL was separately verified. `.duck` remains outside `SQLDialect.all` until
 the complete Duck closure gate passes.
 
+### DUCK-026 - Schema-level DDL is claimed per exact source/action
+
+The following claims are limited to the direct SQL-shaped source and exact
+actions exercised against DuckDB v1.5.5 (`d8cdaa33fd`, codename `Variegata`).
+They do not make a historical builder broadly Duck-compatible, and they do not
+claim that an emitted statement is portable to another dialect.
+
+| Source/action | DuckDB v1.5.5 classification |
+| --- | --- |
+| Direct `CREATE SCHEMA`, `IF NOT EXISTS`, and empty `OR REPLACE` | Supported; quoted edge-case names and transactional create/drop rollback were verified. |
+| Non-empty `OR REPLACE SCHEMA` with a child object | Native dependency error; the existing schema and child remain. |
+| `DROP SCHEMA` default/`RESTRICT`, `CASCADE`, and `IF EXISTS` | Default and `RESTRICT` reject dependent objects; `CASCADE` removes the tested dependency; missing `IF EXISTS` succeeds. |
+| Existing `CreateSchemaBuilder` and `DropSchemaBuilder` | Historical source and exact output are preserved; no broad Duck builder claim is made. |
+| Direct regular, `OR REPLACE`, replacement-column, schema/catalog-qualified, quoted-name, `TEMP`, and `TEMPORARY` view source | Supported for the tested actions. Schema-qualified temporary views are native-invalid. |
+| Direct `ALTER VIEW ... RENAME`, `DROP VIEW` default/`RESTRICT`/`CASCADE`/`IF EXISTS`, and transactional rename rollback | Supported for the tested actions. Dependent view names are not rewritten, and a dependent view can remain stored but broken after its source view is dropped. |
+| Prepared values in `CREATE VIEW` structural/name positions | Native-invalid; child query value parameters remain ordinary prepared bindings where the query grammar accepts them. |
+| Direct ENUM label literals, ENUM-from-`SELECT`, schema-qualified types, `STRUCT`, `UNION`, and scalar aliases used by actual tables/queries | Supported for the tested actions. Literal labels are parser string literals (including apostrophe/Unicode/quoted-label cases), not ordinary value binds; SELECT input deduplicates and ignores `NULL`. |
+| Type `OR REPLACE`, `IF NOT EXISTS`, `DROP TYPE`, and transaction rollback | The tested replace/if-not-exists/rollback actions are supported. Dropping a used type leaves the tested table metadata in place; no stronger dependency claim is made. |
+| Direct basic, unique, `IF NOT EXISTS`, compound, expression, schema-target, quoted-name, `USING ART`, and transactional index source | Supported for the tested actions; unique enforcement was verified. `OR REPLACE` is native-invalid. |
+| Direct index methods `BTREE`, `HASH`, `GIST`, `GIN`, `SPGIST`, and `BRIN`; partial-index `WHERE` source | Native-invalid in the tested v1.5.5 boundary. `ART` is the verified positive method. |
+| Direct `DROP INDEX` default/qualified/`IF EXISTS`/`RESTRICT`/`CASCADE` | Supported for the tested actions, including rollback. |
+| Historical `UpdateTableBuilder.createIndex`/`dropIndex` and `IndexItem` | Byte-for-byte source/output compatibility is preserved and independently probed; no Duck support is claimed for historical forms that fall outside the direct positive matrix. |
+
+All rows are feature/action claims, not a promise that every spelling exposed
+by the general SQL composer executes on DuckDB. Unlisted forms remain
+mechanically renderable and unclaimed.
+
 ## Catalog paths
 
 ### DUCK-021 - Catalog is a SQL namespace concept, not a Duck-branded user concept
