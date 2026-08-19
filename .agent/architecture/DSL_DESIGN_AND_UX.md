@@ -27,6 +27,46 @@ A database programmer should be able to read a SwifQL query and predict the gene
 
 A public API named after a concrete SQL keyword, type, function, operator, clause, or statement represents that concrete SQL construct.
 
+### Atomic keyword composition versus semantic clause APIs
+
+When SQL grammar is only a sequence of independently meaningful keywords or modifiers, the public DSL should preserve those atoms as independently composable steps instead of inventing a camelCase convenience for every fixed phrase.
+
+Preferred direction for pure keyword composition:
+
+```swift
+SwifQL.create.or.replace.table
+SwifQL.insert.or.ignore.into
+```
+
+Do not add phrase-collapsing APIs such as `orReplace` or `insertOrIgnoreInto` merely to concatenate a fixed sequence of SQL keywords. Otherwise the DSL becomes a fluent wrapper whose API surface grows as the Cartesian product of keyword combinations instead of remaining direct SQL composition.
+
+This rule does **not** mean that every multi-word SQL phrase must be split into one Swift property per keyword. A combined API is correct when it performs one concrete SQL/DSL operation with its own operands, arguments, structural ownership, or typed semantic role.
+
+Examples:
+
+```swift
+query.groupBy(a, b)
+query.orderBy(OrderByItem(a, .desc))
+query.where(predicate)
+query.returning(a, b)
+```
+
+`groupBy(...)` and `orderBy(...)` are clause constructors: they accept clause content, own clause structure, and perform a concrete operation. Writing `.group.by(...)` or `.order.by(...)` would make the DSL less clear without exposing any additional useful composition.
+
+A combined public symbol is therefore justified when it represents something more than fixed keyword concatenation, for example:
+
+- a clause/statement constructor with arguments or owned child structure, such as `groupBy(...)`, `orderBy(...)`, or `returning(...)`;
+- one concrete SQL identifier/function/type name whose spelling maps to one SQL identity, such as Swift camelCase for a snake_case SQL function or identifier;
+- a real multi-keyword SQL operator or grammar construct with its own operand/argument semantics, where the phrase acts as one semantic operation rather than arbitrary modifier chaining;
+- a typed value or builder mode that intentionally represents one semantic choice, such as a join-mode value;
+- a released historical compatibility surface that cannot be removed without an independently approved breaking change.
+
+The review question is: **if the combined Swift symbol disappeared, would anything be lost besides spelling several independent SQL keywords separately?** If the answer is no, prefer atomic composition. If the symbol owns arguments, structure, validation, typing, or a real semantic operation, a combined API may be the cleaner SQL DSL.
+
+Also check whether an existing semantic constructor already owns the real operation. If it does, do not create a Cartesian family of sibling methods by baking modifiers into the method name when those modifiers can remain atomic or typed inputs. For example, if `join(mode, target)` already owns JOIN construction, prefer adding an exact typed join mode over adding `naturalJoin`, `naturalLeftJoin`, `naturalFullOuterJoin`, and similar siblings. Likewise, if direct INSERT composition already has `.insert`, `.into`, target, and field-list primitives, do not add `insertOrIgnoreInto` / `insertOrReplaceInto` merely to pre-compose fixed modifiers.
+
+Even for justified combined APIs, do not collapse additional optional modifiers into the name when they can compose independently. New unreleased APIs that merely collapse keyword sequences should be corrected directly before release rather than preserved with compatibility aliases.
+
 Swift naming and SQL spelling are separate concerns:
 
 - public Swift identifiers follow normal Swift lowerCamelCase / UpperCamelCase conventions;

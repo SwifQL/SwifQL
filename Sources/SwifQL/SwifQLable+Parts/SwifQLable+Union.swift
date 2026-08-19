@@ -29,11 +29,11 @@ extension SwifQLable {
         Union(all: self, selection)
     }
 
-    public func unionByName(_ selection: SwifQLable) -> SwifQLable {
+    public func union(byName selection: SwifQLable) -> SwifQLable {
         _SwifQLSetOperationBuilder(self, selection, kind: .unionByName)
     }
 
-    public func unionAllByName(_ selection: SwifQLable) -> SwifQLable {
+    public func union(allByName selection: SwifQLable) -> SwifQLable {
         _SwifQLSetOperationBuilder(self, selection, kind: .unionAllByName)
     }
 

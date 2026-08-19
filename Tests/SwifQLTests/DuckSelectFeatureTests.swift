@@ -119,23 +119,23 @@ struct DuckSelectFeatureTests {
     }
 
     @Test("ORDER BY ALL uses the existing owner-bearing order part")
-    func orderByAll() {
+    func allOrderItemReuse() {
         let table = Path.Table("events")
         let category = table.column("category")
         let region = table.column("region")
         let base = SwifQL.select(category, region).from(table)
 
         expectDuck(
-            base.orderByAll,
+            base.orderBy(SwifQL.all),
             #"SELECT "events"."category", "events"."region" FROM "events" ORDER BY ALL"#
         )
         expectDuck(
-            base.orderByAll(.desc, nulls: .last),
+            base.orderBy(.desc(SwifQL.all, nulls: .last)),
             #"SELECT "events"."category", "events"."region" FROM "events" ORDER BY ALL DESC NULLS LAST"#
         )
         expectDuck(
-            base.orderByAll(nulls: .first),
-            #"SELECT "events"."category", "events"."region" FROM "events" ORDER BY ALL NULLS FIRST"#
+            base.orderBy(.asc(SwifQL.all, nulls: .first)),
+            #"SELECT "events"."category", "events"."region" FROM "events" ORDER BY ALL ASC NULLS FIRST"#
         )
 
         let owner = SwifQLClauseOwner(namespace: "task13", name: "select")
@@ -143,7 +143,7 @@ struct DuckSelectFeatureTests {
             region: .statement,
             owners: [.orderBy: owner]
         ))
-        let owned = framed.orderByAll
+        let owned = framed.orderBy(SwifQL.all)
         let root = owned.parts.first as? SwifQLStructuralFramePart
         let order = root?.children.compactMap { $0 as? SwifQLOrderByPart }.first
         #expect(order?.owner == owner)

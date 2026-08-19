@@ -78,61 +78,6 @@ extension SwifQLable {
         makeUsingJoin(mode, expression, columns: columns)
     }
 
-    /// Positional joins pair rows by position and do not accept ON/USING.
-    public func positionalJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(.custom("POSITIONAL"), .space, .join),
-            expression
-        )
-    }
-
-    /// Natural join forms derive their condition from shared column names and
-    /// therefore do not accept ON/USING.
-    public func naturalJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(.custom("NATURAL"), .space, .join),
-            expression
-        )
-    }
-
-    public func naturalInnerJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(.custom("NATURAL"), .space, .inner, .space, .join),
-            expression
-        )
-    }
-
-    public func naturalLeftJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(.custom("NATURAL"), .space, .left, .space, .join),
-            expression
-        )
-    }
-
-    public func naturalRightJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(.custom("NATURAL"), .space, .right, .space, .join),
-            expression
-        )
-    }
-
-    public func naturalFullJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(.custom("NATURAL"), .space, .custom("FULL"), .space, .join),
-            expression
-        )
-    }
-
-    public func naturalFullOuterJoin(_ expression: SwifQLable) -> SwifQLable {
-        makeConditionlessJoin(
-            JoinMode(
-                .custom("NATURAL"), .space, .custom("FULL"), .space,
-                .outer, .space, .join
-            ),
-            expression
-        )
-    }
-
     private func makeUsingJoin(
         _ mode: JoinMode,
         _ expression: SwifQLable,
@@ -147,14 +92,4 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
 
-    private func makeConditionlessJoin(
-        _ mode: JoinMode,
-        _ expression: SwifQLable
-    ) -> SwifQLable {
-        var parts = self.parts
-        parts.appendSpaceIfNeeded()
-        let join = SwifQLJoinBuilder(mode, expression)
-        parts.append(contentsOf: join.parts)
-        return SwifQLableParts(parts: parts)
-    }
 }

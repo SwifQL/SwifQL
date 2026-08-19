@@ -161,38 +161,38 @@ struct DuckJoinSetOperationTests: SwifQLTests {
         )
     }
 
-    @Test("POSITIONAL and NATURAL methods cannot accept ON or USING")
+    @Test("POSITIONAL and NATURAL modes preserve conditionless JOIN output")
     func conditionlessJoinForms() {
         let left = table("left_table")
         let right = table("right_table")
         let base = SwifQL.select(left.column("id")).from(left)
 
         check(
-            base.positionalJoin(right),
+            base.join(.positional, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" POSITIONAL JOIN "right_table""#)
         )
         check(
-            base.naturalJoin(right),
+            base.join(.natural, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" NATURAL JOIN "right_table""#)
         )
         check(
-            base.naturalInnerJoin(right),
+            base.join(.naturalInner, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" NATURAL INNER JOIN "right_table""#)
         )
         check(
-            base.naturalLeftJoin(right),
+            base.join(.naturalLeft, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" NATURAL LEFT JOIN "right_table""#)
         )
         check(
-            base.naturalRightJoin(right),
+            base.join(.naturalRight, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" NATURAL RIGHT JOIN "right_table""#)
         )
         check(
-            base.naturalFullJoin(right),
+            base.join(.naturalFull, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" NATURAL FULL JOIN "right_table""#)
         )
         check(
-            base.naturalFullOuterJoin(right),
+            base.join(.naturalFullOuter, right),
             .duck(#"SELECT "left_table"."id" FROM "left_table" NATURAL FULL OUTER JOIN "right_table""#)
         )
     }
@@ -281,11 +281,11 @@ struct DuckJoinSetOperationTests: SwifQLTests {
         let rhs = selection(from: "right_table")
 
         check(
-            lhs.unionByName(rhs),
+            lhs.union(byName: rhs),
             .duck(#"(SELECT "left_table"."id" FROM "left_table") UNION BY NAME (SELECT "right_table"."id" FROM "right_table")"#)
         )
         check(
-            lhs.unionAllByName(rhs),
+            lhs.union(allByName: rhs),
             .duck(#"(SELECT "left_table"."id" FROM "left_table") UNION ALL BY NAME (SELECT "right_table"."id" FROM "right_table")"#)
         )
         check(
@@ -307,7 +307,7 @@ struct DuckJoinSetOperationTests: SwifQLTests {
     }
 
     @Test("UNION BY NAME proves name alignment and NULL filling")
-    func unionByNameSemantics() {
+    func namedUnionAlignment() {
         let lhsParts: [SwifQLPart] = [
             SwifQLPartOperator.custom("SELECT 1 AS id, 'left' AS shared, 'only_left' AS left_only")
         ]
@@ -316,7 +316,7 @@ struct DuckJoinSetOperationTests: SwifQLTests {
         ]
         let lhs = SwifQLableParts(parts: lhsParts)
         let rhs = SwifQLableParts(parts: rhsParts)
-        let query = lhs.unionByName(rhs)
+        let query = lhs.union(byName: rhs)
 
         #expect(
             query.prepare(.duck).plain ==
@@ -346,8 +346,8 @@ struct DuckJoinSetOperationTests: SwifQLTests {
         let rhs = selection(from: "right_table")
         let order = OrderByItem.asc(table("left_table").column("id"))
         let operations: [SwifQLable] = [
-            lhs.unionByName(rhs),
-            lhs.unionAllByName(rhs),
+            lhs.union(byName: rhs),
+            lhs.union(allByName: rhs),
             lhs.intersect(rhs),
             lhs.intersect(all: rhs),
             lhs.except(rhs),
@@ -377,7 +377,7 @@ struct DuckJoinSetOperationTests: SwifQLTests {
             .from(rightTable)
             .orderBy(.desc(rightTable.column("id")))
             .limit(1)
-        let query = lhs.unionByName(rhs)
+        let query = lhs.union(byName: rhs)
         let frame = root(of: query)
         let operands = frame.children.compactMap { $0 as? SwifQLStructuralFramePart }
 
@@ -396,7 +396,7 @@ struct DuckJoinSetOperationTests: SwifQLTests {
         let lhs = selection(from: "left_table")
         let rhs = selection(from: "right_table")
         let third = selection(from: "third_table")
-        let query = lhs.unionByName(rhs).intersect(all: third)
+        let query = lhs.union(byName: rhs).intersect(all: third)
         let frame = root(of: query)
         let operands = frame.children.compactMap { $0 as? SwifQLStructuralFramePart }
 

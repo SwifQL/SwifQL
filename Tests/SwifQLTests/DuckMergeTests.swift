@@ -151,41 +151,41 @@ struct DuckMergeTests: SwifQLTests {
     @Test("Branch vocabulary reuses established DML actions and preserves order")
     func branchesAndActions() {
         let update = base()
-            .whenMatched
+            .when.matched
             .then
             .update
             .set(Path.Column("value") == source.column("value"))
         let conditionalUpdate = base()
-            .whenMatched(and: target.column("kind") == "apply")
+            .when.matched.and(target.column("kind") == "apply")
             .then
             .update
             .set(Path.Column("value") == "updated")
         let delete = base()
-            .whenMatched(and: target.column("kind") == "expired")
+            .when.matched.and(target.column("kind") == "expired")
             .then
             .delete
         let insert = base()
-            .whenNotMatched
+            .when.not.matched
             .then
             .insert
-        let insertByName = base()
-            .whenNotMatchedByTarget
+        let nameAlignedInsert = base()
+            .when.not.matched.by.target
             .then
             .insert
-            .byName
+            .by.name
         let insertFields = base()
-            .whenNotMatched(and: target.column("kind") == "new")
+            .when.not.matched.and(target.column("kind") == "new")
             .then
             .insert
             .fields("id", "value", "kind")
             .values
             .values(source.column("id"), source.column("value"), source.column("kind"))
         let sourceDelete = base()
-            .whenNotMatchedBySource
+            .when.not.matched.by.source
             .then
             .delete
         let sourceUpdate = base()
-            .whenNotMatchedBySource(and: target.column("kind") == "expired")
+            .when.not.matched.by.source.and(target.column("kind") == "expired")
             .then
             .update
             .set(Path.Column("value") == "expired")
@@ -208,7 +208,7 @@ struct DuckMergeTests: SwifQLTests {
                 #"MERGE INTO "merge_target" USING "merge_source" ON "merge_target"."id" = "merge_source"."id" WHEN NOT MATCHED THEN INSERT"#
         )
         #expect(
-            insertByName.prepare(.duck).plain ==
+            nameAlignedInsert.prepare(.duck).plain ==
                 #"MERGE INTO "merge_target" USING "merge_source" ON "merge_target"."id" = "merge_source"."id" WHEN NOT MATCHED BY TARGET THEN INSERT BY NAME"#
         )
         #expect(
@@ -225,11 +225,11 @@ struct DuckMergeTests: SwifQLTests {
         )
 
         let ordered = base()
-            .whenMatched
+            .when.matched
             .then
             .update
             .set(Path.Column("value") == "first")
-            .whenNotMatched
+            .when.not.matched
             .then
             .insert
         let orderedSQL = ordered.prepare(.duck).plain
@@ -239,7 +239,7 @@ struct DuckMergeTests: SwifQLTests {
     @Test("Bare merge_action and RETURNING compose without a function remap")
     func returning() {
         let query = base()
-            .whenMatched
+            .when.matched
             .then
             .update
             .set(Path.Column("value") == "updated")
@@ -260,11 +260,11 @@ struct DuckMergeTests: SwifQLTests {
     @Test("MERGE preserves the normal left-to-right bind stream")
     func bindOrder() {
         let query = base()
-            .whenMatched(and: target.column("kind") == "apply")
+            .when.matched.and(target.column("kind") == "apply")
             .then
             .update
             .set(Path.Column("value") == "updated")
-            .whenNotMatched(and: target.column("kind") == "new")
+            .when.not.matched.and(target.column("kind") == "new")
             .then
             .insert
             .fields("id", "value")
@@ -284,24 +284,24 @@ struct DuckMergeTests: SwifQLTests {
     @Test("Native-invalid branch and RETURNING siblings stay mechanically expressible")
     func nativeNegativeSiblingsStayMechanical() {
         let bySourceInsert = base()
-            .whenNotMatchedBySource
+            .when.not.matched.by.source
             .then
             .insert
         let byTargetUpdate = base()
-            .whenNotMatchedByTarget
+            .when.not.matched.by.target
             .then
             .update
             .set(Path.Column("value") == "mechanical")
         let byTargetDelete = base()
-            .whenNotMatchedByTarget
+            .when.not.matched.by.target
             .then
             .delete
         let notMatchedDelete = base()
-            .whenNotMatched
+            .when.not.matched
             .then
             .delete
         let returningBase = base()
-            .whenMatched
+            .when.matched
             .then
             .update
             .set(Path.Column("value") == source.column("value"))

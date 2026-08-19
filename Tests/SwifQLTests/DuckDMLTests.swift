@@ -19,11 +19,11 @@ struct DuckDMLTests: SwifQLTests {
         #expect(noFields.prepare(.duck).plain == #"INSERT INTO "events""#)
         #expect(noFields.prepare(.duck).splitted.values.isEmpty)
 
-        let byName = SwifQL
+        let nameAligned = SwifQL
             .insertInto(events)
-            .byName
+            .by.name
             .select(2 => "name", 1 => "id")
-        let prepared = byName.prepare(.duck)
+        let prepared = nameAligned.prepare(.duck)
 
         #expect(
             prepared.plain ==
@@ -36,7 +36,7 @@ struct DuckDMLTests: SwifQLTests {
         #expect(prepared.splitted.values.map { String(describing: $0) } == ["2", "1"])
 
         var erased: SwifQLable = SwifQL.insertInto(events)
-        erased = erased.byName
+        erased = erased.by.name
         erased = erased.select(2 => "name", 1 => "id")
         let copied = SwifQLableParts(parts: erased.parts)
         #expect(copied.prepare(.duck).plain == prepared.plain)
@@ -80,10 +80,10 @@ struct DuckDMLTests: SwifQLTests {
     }
 
     @Test("BY NAME remains an exact phrase beside the native VALUES negative")
-    func byNameValuesNeighborRemainsMechanical() {
+    func nameAlignedValuesNeighborRemainsMechanical() {
         let query = SwifQL
             .insertInto(events)
-            .byName
+            .by.name
             .values
             .values(1, 2)
 
@@ -96,19 +96,21 @@ struct DuckDMLTests: SwifQLTests {
     @Test("OR IGNORE and OR REPLACE keep their exact SQL identities")
     func exactInsertConflictForms() {
         let ignore = SwifQL
-            .insertOrIgnoreInto(events)
+            .insert.or.ignore.into[table: events]
             .values
             .values(1, "one")
         let ignoreWithFields = SwifQL
-            .insertOrIgnoreInto(events, fields: "id", "name")
+            .insert.or.ignore.into[table: events]
+            .fields("id", "name")
             .values
             .values(1, "one")
         let replace = SwifQL
-            .insertOrReplaceInto(events)
+            .insert.or.replace.into[table: events]
             .values
             .values(1, "one")
         let replaceWithFields = SwifQL
-            .insertOrReplaceInto(events, fields: "id", "name")
+            .insert.or.replace.into[table: events]
+            .fields("id", "name")
             .values
             .values(1, "one")
 
@@ -141,14 +143,16 @@ struct DuckDMLTests: SwifQLTests {
     @Test("String table targets stay structural across the complete DML family")
     func stringTableTargetsStayStructural() {
         let noFields = SwifQL.insertInto("events")
-        let ignore = SwifQL.insertOrIgnoreInto("events").values.values(1, "one")
+        let ignore = SwifQL.insert.or.ignore.into[table: "events"].values.values(1, "one")
         let ignoreWithFields = SwifQL
-            .insertOrIgnoreInto("events", fields: ["id", "name"])
+            .insert.or.ignore.into[table: "events"]
+            .fields(["id", "name"])
             .values
             .values(2, "two")
-        let replace = SwifQL.insertOrReplaceInto("events").values.values(3, "three")
+        let replace = SwifQL.insert.or.replace.into[table: "events"].values.values(3, "three")
         let replaceWithFields = SwifQL
-            .insertOrReplaceInto("events", fields: ["id", "name"])
+            .insert.or.replace.into[table: "events"]
+            .fields(["id", "name"])
             .values
             .values(4, "four")
         let truncated = SwifQL.truncate("events")

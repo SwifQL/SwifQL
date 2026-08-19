@@ -166,6 +166,15 @@ extension SwifQLable {
         let fragment = SwifQLableParts(parts: [SwifQLPartOperator.space, clause])
         return structurallyAppending(fragment)
     }
+
+    public func orderBy(_ field: SwifQLable) -> SwifQLable {
+        let clause = SwifQLOrderByPart(
+            owner: structuralOwner(for: .orderBy),
+            items: [field.parts]
+        )
+        let fragment = SwifQLableParts(parts: [SwifQLPartOperator.space, clause])
+        return structurallyAppending(fragment)
+    }
     
     public func orderBy(_ fields: OrderByItem...) -> SwifQLable {
         orderBy(fields)
@@ -180,37 +189,4 @@ extension SwifQLable {
         return structurallyAppending(fragment)
     }
 
-    /// Orders by every selected expression using DuckDB's exact ORDER BY ALL
-    /// grammar. ALL remains the sole order item; only the native direction
-    /// and null-order modifiers may follow it.
-    public var orderByAll: SwifQLable {
-        makeOrderByAll(direction: nil, nulls: nil)
-    }
-
-    public func orderByAll(
-        _ direction: OrderByItem.Direction? = nil,
-        nulls: OrderByItem.Nulls? = nil
-    ) -> SwifQLable {
-        makeOrderByAll(direction: direction, nulls: nulls)
-    }
-
-    private func makeOrderByAll(
-        direction: OrderByItem.Direction?,
-        nulls: OrderByItem.Nulls?
-    ) -> SwifQLable {
-        var item: [SwifQLPart] = [SwifQLPartOperator.all]
-        if let direction = direction {
-            item.append(o: .space, direction.operator)
-        }
-        if let nulls = nulls {
-            item.append(o: .space, .nulls, .space, nulls.operator)
-        }
-
-        let clause = SwifQLOrderByPart(
-            owner: structuralOwner(for: .orderBy),
-            items: [item]
-        )
-        let fragment = SwifQLableParts(parts: [SwifQLPartOperator.space, clause])
-        return structurallyAppending(fragment)
-    }
 }

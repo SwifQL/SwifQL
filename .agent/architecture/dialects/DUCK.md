@@ -279,6 +279,17 @@ Duck-specific/native features already researched as candidate SwifQL coverage in
 
 A feature being Duck-only today does not automatically authorize a `Duck...` public query API. Apply DESIGN-014 and the clean SQL-concept rule first.
 
+The direct generic forms for the modifier-bearing features are:
+
+```swift
+query.orderBy(SwifQL.all)
+query.orderBy(.desc(SwifQL.all, nulls: .last))
+query.join(.positional, source)
+query.join(.naturalFullOuter, source)
+lhs.union(byName: rhs)
+lhs.union(allByName: rhs)
+```
+
 ## PIVOT
 
 ### DUCK-017 - Simplified PIVOT native contract
@@ -376,6 +387,7 @@ The verified DuckDB v1.5.5 ordinary-DML contract is:
 - `INSERT ... VALUES` and `INSERT ... SELECT` are supported with normal SQL-shaped composition and prepared values. A String supplied as a table target is a structural identifier and does not become a value bind.
 - `INSERT ... BY NAME` is supported when the source is a `SELECT`; matching is by source and target column name, including omitted target columns that have defaults. `BY NAME VALUES` is rejected by DuckDB and remains mechanically renderable but unclaimed by SwifQL.
 - `INSERT OR IGNORE` and `INSERT OR REPLACE` are supported as their exact SQL identities. SwifQL does not remap either form by dialect or expose them as a portable conflict policy.
+- The direct INSERT source is `SwifQL.insert.or.ignore.into[table: table]` or `SwifQL.insert.or.replace.into[table: table]`, optionally followed by `.fields(...)`; INSERT BY NAME uses `.by.name`.
 - `ON CONFLICT DO NOTHING` without a target and `ON CONFLICT (<column>) DO NOTHING` with a column target are supported. Column-target `DO UPDATE SET` using the `EXCLUDED` source, with an optional `WHERE`, is supported when expressed through the ordinary SQL-shaped `set(_:)` composition.
 - Historical `ON CONFLICT ON CONSTRAINT ...` remains mechanically renderable for compatibility, but DuckDB v1.5.5 rejects it as unimplemented; it is unclaimed for Duck.
 - `INSERT ... RETURNING` and `DELETE ... RETURNING` support structural columns, `*`, and literal expressions. DuckDB v1.5.5 rejects prepared parameters inside these RETURNING expressions during preparation. SwifQL preserves ordinary binding and does not add runtime validation or rejection for that database limitation.
@@ -407,8 +419,9 @@ DuckDB v1.5.5 native validation establishes the following MERGE contract:
 - `WHEN MATCHED`, `WHEN NOT MATCHED`, `WHEN NOT MATCHED BY SOURCE`, and
   `WHEN NOT MATCHED BY TARGET` branches preserve append order and reuse the
   established `.then.update.set(...)`, `.then.delete`, `.then.insert`,
-  `.then.insert.byName`, and
+  `.then.insert.by.name`, and
   `.then.insert.fields(...).values.values(...)` action vocabulary.
+- MERGE branch predicates are direct atomic composition: `merge.when.matched.then...`, `merge.when.not.matched.then...`, `merge.when.not.matched.by.source.and(condition).then...`, and `merge.when.not.matched.by.target.then...`.
 - Conditional branches, multi-column updates, whole-row updates, conditional
   deletes, INSERT BY NAME, explicit-column INSERT values, a BY SOURCE explicit
   column/value INSERT whose values do not depend on a source row, and the
@@ -434,6 +447,63 @@ column/value INSERT under `NOT MATCHED BY SOURCE` is supported when its values
 are target-independent. These boundaries are native engine behavior; SwifQL
 keeps MERGE as direct SQL composition and does not translate it to an upsert
 form.
+
+## Table DDL support and per-action classification
+
+### DUCK-020C - CREATE and ALTER TABLE are claimed per SQL action
+
+DuckDB v1.5.5 validation establishes the following feature-specific table-DDL
+claims. These claims do not make `CreateTableBuilder`, `NewColumn`,
+`UpdateTableBuilder`, or any other historical builder broadly Duck-compatible.
+Mechanically rendered forms remain available for compatibility even when they
+are explicitly unclaimed for Duck.
+
+CREATE TABLE:
+
+| Source shape or method | Duck classification |
+| --- | --- |
+| `CreateTableBuilder` basic typed columns | Supported for the exact emitted SQL, including schema-qualified and safely quoted identifiers. This is not a builder-wide claim. |
+| `CreateTableBuilder.checkIfNotExists()` | Supported; repeated creation preserves the existing table and data under `IF NOT EXISTS`. |
+| `ColumnDefault.default(_:)` | Supported for safe literal values, `NULL`, date, and exact expression source shapes. Use the value overload when a literal must be inline and bind-free. |
+| `NewColumn.default(constant:)` | Mechanically preserved but unclaimed: the established source emits a value without the `DEFAULT` keyword, which is not valid Duck CREATE TABLE syntax. |
+| `NewColumn.default(expression:)` and `default(sequence:)` | Mechanically preserved; only exact SQL-shaped expressions that include the required grammar are claimable. No sequence-specific Duck claim is made here. |
+| Primary key, unique, not-null, check, and named check constraints in CREATE | Supported when the emitted constraint syntax is exact; native enforcement was verified for primary key, unique, not-null, unnamed check, and named check. |
+| `Constraint.references` at CREATE time | Supported for the established omitted-referenced-column source shape when the parent table supplies a suitable key. The source shape has no referenced-column-list argument. `ReferentialAction.noAction` and `.restrict` are supported; `.cascade`, `.setNull`, and `.setDefault` remain unclaimed because DuckDB rejects those foreign-key actions. |
+| Direct CTAS composition | Supported for `CREATE TABLE ... AS SELECT ...` using existing structural parts. |
+| Direct OR REPLACE CTAS composition | Supported through `SwifQL.create.or.replace.table[any: table]` and ordinary CTAS composition; no phrase convenience builder is needed. |
+| CTAS with a column constraint list | Unclaimed/negative: DuckDB rejects constraints combined with the tested CTAS form. |
+| Inferred generated column | Supported through `GeneratedColumn(name, as: expression)` inside `tableDefinitions(...)`. |
+| Explicit `GENERATED ALWAYS AS ... VIRTUAL` and omitted `VIRTUAL` | Supported through `GeneratedColumn(name, type, generatedAlwaysAs: expression, storage: .virtual)` or omitted storage; omitted `VIRTUAL` follows DuckDB's virtual default. |
+| `GENERATED ALWAYS AS ... STORED` | Mechanically renderable through `GeneratedColumn(..., storage: .stored)` but unclaimed/negative: DuckDB rejects stored generated columns. Direct insert into a generated column is also rejected by the engine. |
+| Generated expressions containing prepared parameters | Unclaimed/negative at native prepare time; the renderer preserves ordinary value binding and does not add runtime rejection. |
+
+ALTER TABLE:
+
+| `UpdateTableBuilder` method or source action | Duck classification |
+| --- | --- |
+| `renameTable(to:)` | Supported as the emitted standalone `ALTER TABLE ... RENAME TO ...` statement. |
+| `addColumn` basic overloads | Supported for a basic column; the string overload's `checkIfNotExists` form is also supported. Correct `ColumnDefault` source is supported. |
+| `addColumn` with `NewColumn` constant defaults or column constraints | Mechanically preserved but unclaimed where the established source emits malformed default grammar or DuckDB rejects add-column constraints. |
+| `dropColumn` | Supported for simple, `IF EXISTS`, and `CASCADE` forms, subject to DuckDB dependency/data preconditions. Missing-column and dependent-key failures remain native errors. |
+| `setDefault` constant/expression overloads | Supported for exact literal/expression source shapes. The sequence overload remains mechanically rendered and unclaimed in this wave. |
+| `dropDefault` | Supported. |
+| `setNotNull` | Supported when existing rows satisfy the constraint; native failure for existing `NULL` values is preserved. |
+| `dropNotNull` | Supported. |
+| `renameColumn` | Supported as the emitted standalone rename statement. |
+| `addPrimaryKey` | Supported for single- and multi-column keys, with native duplicate enforcement. |
+| `addUnique` | Mechanically preserved but unclaimed: DuckDB v1.5.5 rejects the emitted ALTER action. |
+| `addCheck` named and unnamed | Mechanically preserved but unclaimed: DuckDB v1.5.5 rejects both emitted ALTER actions. |
+| `addForeignKey` named and unnamed | Mechanically preserved but unclaimed: DuckDB v1.5.5 rejects both emitted ALTER actions. |
+| `dropConstraint` | Unclaimed: the established method emits a standalone `DROP CONSTRAINT ...` without `ALTER TABLE`; DuckDB rejects that historical form, and the tested `ALTER TABLE ... DROP CONSTRAINT` form is not implemented by DuckDB v1.5.5. |
+| Historical comma-combined actions | Duck-unclaimed as one statement. DuckDB accepts the individually supported actions but rejects a combined `ALTER TABLE` statement with multiple actions. The historical batching and builder output remain unchanged; SwifQL does not split statements by dialect. |
+| Direct `ALTER COLUMN ... TYPE`, `SET TYPE`, `SET DATA TYPE`, and `USING` composition | Supported through atomic `.alter.column[any: column].type(...)`, `.set.type(...)`, and `.set.data.type(...).using(...)` composition; all tested type spellings and the conversion `USING` boundary passed native validation. |
+| `dropIndex` and `createIndex` actions | Outside this table-DDL claim; no Duck support is asserted by this matrix. |
+
+All unsupported or unclaimed forms above remain mechanically renderable. The
+Duck renderer does not add runtime rejection, and no Duck-specific table DDL
+wrapper or broad builder conformance is implied. Transaction rollback of table
+DDL was separately verified. `.duck` remains outside `SQLDialect.all` until
+the complete Duck closure gate passes.
 
 ## Catalog paths
 

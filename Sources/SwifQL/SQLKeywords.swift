@@ -1,0 +1,46 @@
+import Foundation
+
+extension SwifQLable {
+    public var or: SwifQLable {
+        appendingAtomicKeyword(.or)
+    }
+
+    public var replace: SwifQLable {
+        appendingAtomicKeyword(.replace)
+    }
+
+    public var ignore: SwifQLable {
+        appendingAtomicKeyword(.custom("IGNORE"))
+    }
+
+    public var name: SwifQLable {
+        appendingAtomicKeyword(.custom("NAME"))
+    }
+
+    public var when: SwifQLable {
+        appendingAtomicKeyword(.when)
+    }
+
+    public var matched: SwifQLable {
+        appendingAtomicKeyword(.custom("MATCHED"))
+    }
+
+    public var source: SwifQLable {
+        appendingAtomicKeyword(.custom("SOURCE"))
+    }
+
+    public var target: SwifQLable {
+        appendingAtomicKeyword(.custom("TARGET"))
+    }
+
+    public var data: SwifQLable {
+        appendingAtomicKeyword(.data)
+    }
+
+    private func appendingAtomicKeyword(_ keyword: SwifQLPartOperator) -> SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        parts.append(o: keyword)
+        return SwifQLableParts(parts: parts)
+    }
+}

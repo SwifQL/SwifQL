@@ -46,6 +46,16 @@ public struct JoinMode {
 
     public static var asOf: JoinMode { .init(.custom("ASOF"), .space, .join) }
     public static var asOfLeft: JoinMode { .init(.custom("ASOF"), .space, .left, .space, .join) }
+
+    public static var positional: JoinMode { .init(.custom("POSITIONAL"), .space, .join) }
+    public static var natural: JoinMode { .init(.custom("NATURAL"), .space, .join) }
+    public static var naturalInner: JoinMode { .init(.custom("NATURAL"), .space, .inner, .space, .join) }
+    public static var naturalLeft: JoinMode { .init(.custom("NATURAL"), .space, .left, .space, .join) }
+    public static var naturalRight: JoinMode { .init(.custom("NATURAL"), .space, .right, .space, .join) }
+    public static var naturalFull: JoinMode { .init(.custom("NATURAL"), .space, .custom("FULL"), .space, .join) }
+    public static var naturalFullOuter: JoinMode {
+        .init(.custom("NATURAL"), .space, .custom("FULL"), .space, .outer, .space, .join)
+    }
 }
 
 public struct SwifQLJoinBuilder: SwifQLable {

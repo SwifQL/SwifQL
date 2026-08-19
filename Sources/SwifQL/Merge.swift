@@ -57,72 +57,6 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
 
-    /// Appends an unconditional `WHEN MATCHED` branch predicate.
-    public var whenMatched: SwifQLable {
-        appendingMergeClause([.when, .space, .custom("MATCHED")])
-    }
-
-    /// Appends a conditional `WHEN MATCHED` branch predicate.
-    public func whenMatched(and condition: SwifQLable) -> SwifQLable {
-        appendingMergeClause(
-            [.when, .space, .custom("MATCHED")],
-            condition: condition
-        )
-    }
-
-    /// Appends an unconditional `WHEN NOT MATCHED` branch predicate.
-    public var whenNotMatched: SwifQLable {
-        appendingMergeClause([
-            .when, .space, .not, .space, .custom("MATCHED")
-        ])
-    }
-
-    /// Appends a conditional `WHEN NOT MATCHED` branch predicate.
-    public func whenNotMatched(and condition: SwifQLable) -> SwifQLable {
-        appendingMergeClause(
-            [.when, .space, .not, .space, .custom("MATCHED")],
-            condition: condition
-        )
-    }
-
-    /// Appends an unconditional `WHEN NOT MATCHED BY SOURCE` branch predicate.
-    public var whenNotMatchedBySource: SwifQLable {
-        appendingMergeClause([
-            .when, .space, .not, .space, .custom("MATCHED"), .space,
-            .by, .space, .custom("SOURCE")
-        ])
-    }
-
-    /// Appends a conditional `WHEN NOT MATCHED BY SOURCE` branch predicate.
-    public func whenNotMatchedBySource(and condition: SwifQLable) -> SwifQLable {
-        appendingMergeClause(
-            [
-                .when, .space, .not, .space, .custom("MATCHED"), .space,
-                .by, .space, .custom("SOURCE")
-            ],
-            condition: condition
-        )
-    }
-
-    /// Appends an unconditional `WHEN NOT MATCHED BY TARGET` branch predicate.
-    public var whenNotMatchedByTarget: SwifQLable {
-        appendingMergeClause([
-            .when, .space, .not, .space, .custom("MATCHED"), .space,
-            .by, .space, .custom("TARGET")
-        ])
-    }
-
-    /// Appends a conditional `WHEN NOT MATCHED BY TARGET` branch predicate.
-    public func whenNotMatchedByTarget(and condition: SwifQLable) -> SwifQLable {
-        appendingMergeClause(
-            [
-                .when, .space, .not, .space, .custom("MATCHED"), .space,
-                .by, .space, .custom("TARGET")
-            ],
-            condition: condition
-        )
-    }
-
     /// Appends the exact SQL branch action separator `THEN`.
     public var then: SwifQLable {
         appendingMergeClause([.then])
@@ -136,16 +70,11 @@ extension SwifQLable {
     }
 
     private func appendingMergeClause(
-        _ clause: [SwifQLPartOperator],
-        condition: SwifQLable? = nil
+        _ clause: [SwifQLPartOperator]
     ) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
         clause.forEach { parts.append($0) }
-        if let condition {
-            parts.append(o: .space, .and, .space)
-            parts.append(contentsOf: condition.parts)
-        }
         return SwifQLableParts(parts: parts)
     }
 }
