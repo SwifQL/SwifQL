@@ -20,7 +20,6 @@ public struct SwifQLHybridRepresentationKey: Hashable, Sendable {
     public static let postgresql = psql
     public static let mysql = Self(namespace: "swifql", name: "mysql")
     public static let duck = Self(namespace: "swifql", name: "duck")
-    public static let duckdb = duck
 }
 
 public struct SwifQLHybridOperator: SwifQLPart, Equatable {
