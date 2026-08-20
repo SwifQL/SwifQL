@@ -61,12 +61,14 @@ public struct JoinMode {
 public struct SwifQLJoinBuilder: SwifQLable {
     let mode: JoinMode
     let table: SwifQLable
+    let matchCondition: SwifQLable?
     let predicates: SwifQLable?
     private let usingColumns: [String]?
     
     public init (_ mode: JoinMode? = nil, _ table: SwifQLable, on predicates: SwifQLable? = nil) {
         self.mode = mode ?? .none
         self.table = table
+        self.matchCondition = nil
         self.predicates = predicates
         self.usingColumns = nil
     }
@@ -74,6 +76,34 @@ public struct SwifQLJoinBuilder: SwifQLable {
     init (_ mode: JoinMode, _ table: SwifQLable, using columns: [KeyPathLastPath]) {
         self.mode = mode
         self.table = table
+        self.matchCondition = nil
+        self.predicates = nil
+        self.usingColumns = columns.map(\.lastPath)
+    }
+
+    public init(
+        _ mode: JoinMode? = nil,
+        _ table: SwifQLable,
+        matchCondition: SwifQLable,
+        on predicates: SwifQLable? = nil
+    ) {
+        self.mode = mode ?? .none
+        self.table = table
+        self.matchCondition = matchCondition
+        self.predicates = predicates
+        self.usingColumns = nil
+    }
+
+    public init(
+        _ mode: JoinMode,
+        _ table: SwifQLable,
+        matchCondition: SwifQLable,
+        using columns: [KeyPathLastPath]
+    ) {
+        precondition(!columns.isEmpty, "JOIN MATCH_CONDITION USING requires at least one column")
+        self.mode = mode
+        self.table = table
+        self.matchCondition = matchCondition
         self.predicates = nil
         self.usingColumns = columns.map(\.lastPath)
     }
@@ -84,6 +114,11 @@ public struct SwifQLJoinBuilder: SwifQLable {
         parts.append(contentsOf: mode.parts)
         parts.append(o: .space)
         parts.append(contentsOf: table.parts)
+        if let matchCondition {
+            parts.append(o: .space, .custom("MATCH_CONDITION"), .space, .openBracket)
+            parts.append(contentsOf: matchCondition.parts)
+            parts.append(o: .closeBracket)
+        }
         if let predicates = predicates {
             parts.append(o: .space)
             parts.append(o: .on)

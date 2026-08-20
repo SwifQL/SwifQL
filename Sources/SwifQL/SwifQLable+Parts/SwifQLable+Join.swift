@@ -40,6 +40,88 @@ extension SwifQLable {
         return SwifQLableParts(parts: parts)
     }
 
+    /// Join with an explicit SQL MATCH_CONDITION role followed by an
+    /// optional ordinary ON equality condition. Existing on: joins remain
+    /// ordinary ON clauses and are never remapped by dialect.
+    public func join(
+        _ mode: JoinMode? = nil,
+        _ expression: SwifQLable,
+        matchCondition: SwifQLable,
+        on predicates: SwifQLable? = nil
+    ) -> SwifQLable {
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        let join = SwifQLJoinBuilder(
+            mode,
+            expression,
+            matchCondition: matchCondition,
+            on: predicates
+        )
+        parts.append(contentsOf: join.parts)
+        return SwifQLableParts(parts: parts)
+    }
+
+    /// Join with an explicit SQL MATCH_CONDITION role followed by structural
+    /// USING equality/grouping names.
+    public func join(
+        _ mode: JoinMode,
+        _ expression: SwifQLable,
+        matchCondition: SwifQLable,
+        using first: KeyPathLastPath,
+        _ rest: KeyPathLastPath...
+    ) -> SwifQLable {
+        makeMatchConditionUsingJoin(
+            mode,
+            expression,
+            matchCondition: matchCondition,
+            columns: [first] + rest
+        )
+    }
+
+    /// Default-mode overload for explicit MATCH_CONDITION plus USING.
+    public func join(
+        _ expression: SwifQLable,
+        matchCondition: SwifQLable,
+        using first: KeyPathLastPath,
+        _ rest: KeyPathLastPath...
+    ) -> SwifQLable {
+        makeMatchConditionUsingJoin(
+            .none,
+            expression,
+            matchCondition: matchCondition,
+            columns: [first] + rest
+        )
+    }
+
+    /// Array form for helper-driven explicit MATCH_CONDITION composition.
+    public func join(
+        _ mode: JoinMode,
+        _ expression: SwifQLable,
+        matchCondition: SwifQLable,
+        using columns: [KeyPathLastPath]
+    ) -> SwifQLable {
+        makeMatchConditionUsingJoin(
+            mode,
+            expression,
+            matchCondition: matchCondition,
+            columns: columns
+        )
+    }
+
+    /// Default-mode array form for explicit MATCH_CONDITION composition.
+    public func join(
+        _ expression: SwifQLable,
+        matchCondition: SwifQLable,
+        using columns: [KeyPathLastPath]
+    ) -> SwifQLable {
+        makeMatchConditionUsingJoin(
+            .none,
+            expression,
+            matchCondition: matchCondition,
+            columns: columns
+        )
+    }
+
     /// Join tables using structural column names from the last path segment.
     public func join(
         _ expression: SwifQLable,
@@ -88,6 +170,26 @@ extension SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
         let join = SwifQLJoinBuilder(mode, expression, using: columns)
+        parts.append(contentsOf: join.parts)
+        return SwifQLableParts(parts: parts)
+    }
+
+    private func makeMatchConditionUsingJoin(
+        _ mode: JoinMode,
+        _ expression: SwifQLable,
+        matchCondition: SwifQLable,
+        columns: [KeyPathLastPath]
+    ) -> SwifQLable {
+        precondition(!columns.isEmpty, "JOIN MATCH_CONDITION USING requires at least one column")
+
+        var parts = self.parts
+        parts.appendSpaceIfNeeded()
+        let join = SwifQLJoinBuilder(
+            mode,
+            expression,
+            matchCondition: matchCondition,
+            using: columns
+        )
         parts.append(contentsOf: join.parts)
         return SwifQLableParts(parts: parts)
     }

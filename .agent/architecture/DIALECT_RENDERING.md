@@ -135,6 +135,12 @@ recursive renderer, with the default preserving the historical
 dialect may choose another exact lambda grammar from the same semantic value
 without token scanning or body stringification.
 
+ASOF joins keep materially different SQL condition roles explicit. The
+ordinary join APIs continue to preserve caller-supplied ON and USING exactly;
+an explicit matchCondition API emits MATCH_CONDITION before an optional ON or
+USING clause. SwifQL does not infer temporal predicates or remap Duck ON/USING
+to another dialect's MATCH_CONDITION grammar.
+
 ### DIALECT-007 - Rendering follows the public design contract
 
 Dialect hooks may adapt syntax, qualification, placeholder spelling, or harmless SQL keyword/function casing required to express the same exact modeled SQL construct, but must not silently substitute a differently named SQL function/type/operator/statement or degrade semantics. For example, the same exact `from_base64` function may render with dialect-preferred casing such as `FROM_BASE64` versus `from_base64`, but a `decode` API must never be translated into `from_base64` merely because both can participate in base64 workflows.

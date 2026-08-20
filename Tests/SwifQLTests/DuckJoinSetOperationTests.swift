@@ -161,6 +161,80 @@ struct DuckJoinSetOperationTests: SwifQLTests {
         )
     }
 
+    @Test("Explicit MATCH_CONDITION remains distinct from ON and USING")
+    func asOfMatchConditionRoles() {
+        let trades = table("trades")
+        let prices = table("prices")
+        let base = SwifQL.select(trades.column("id")).from(trades)
+        let temporal = trades.column("event_time") >= prices.column("event_time")
+        let equality = trades.column("symbol") == prices.column("symbol")
+
+        let matchOn = base.join(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            on: equality
+        )
+        let matchUsing = base.join(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            using: trades.column("symbol"),
+            trades.column("event_time")
+        )
+        let oldOn = base.join(.asOf, prices, on: equality)
+
+        #expect(
+            matchOn.prepare(.duck).plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= "prices"."event_time") ON "trades"."symbol" = "prices"."symbol""#
+        )
+        #expect(
+            matchUsing.prepare(.duck).plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= "prices"."event_time") USING ("symbol", "event_time")"#
+        )
+        #expect(
+            matchOn.prepare(.psql).plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= "prices"."event_time") ON "trades"."symbol" = "prices"."symbol""#
+        )
+        #expect(
+            matchOn.prepare(.mysql).plain ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= prices.event_time) ON trades.symbol = prices.symbol"
+        )
+        #expect(oldOn.prepare(.duck).plain.contains(" MATCH_CONDITION ") == false)
+
+        let boundTemporal = trades.column("event_time") >= 100
+        let boundEquality = trades.column("symbol") == "A"
+        let prepared = base
+            .join(.asOf, prices, matchCondition: boundTemporal, on: boundEquality)
+            .prepare(.duck)
+        #expect(
+            prepared.splitted.query ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= $1) ON "trades"."symbol" = $2"#
+        )
+        #expect(prepared.splitted.values.map { String(describing: $0) } == ["100", "A"])
+        #expect(matchUsing.prepare(.duck).splitted.values.isEmpty)
+
+        func addJoin(_ query: SwifQLable) -> SwifQLable {
+            query.join(
+                .asOf,
+                prices,
+                matchCondition: temporal,
+                on: equality
+            )
+        }
+        let direct = addJoin(base)
+        let erased: SwifQLable = direct
+        let copied = SwifQLableParts(parts: erased.parts)
+        var conditional: SwifQLable = base
+        if true {
+            conditional = addJoin(conditional)
+        }
+        for query in [direct, erased, copied, conditional] {
+            #expect(query.prepare(.duck).plain == direct.prepare(.duck).plain)
+            #expect(query.prepare(.duck).splitted.query == direct.prepare(.duck).splitted.query)
+        }
+    }
+
     @Test("POSITIONAL and NATURAL modes preserve conditionless JOIN output")
     func conditionlessJoinForms() {
         let left = table("left_table")
