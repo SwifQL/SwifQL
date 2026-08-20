@@ -113,8 +113,11 @@ length, and raw member names in a value-semantic representation carried by
 `SwifQLPartType`. The additive `SQLDialect.type(_:)` hook owns the final grammar
 and identifier policy; its default is the historical textual `Type` spelling,
 so raw `Type(String)` values and existing dialect subclasses remain compatible.
-Generic type constructors do not parse or pre-quote that textual compatibility
-spelling.
+The historical textual compatibility projection may contain legacy
+preformatted/prequoted spelling, but semantic nested-type rendering must not
+reparse or depend on that projection: constructor identity, child types,
+length, and raw member names remain available independently through
+`TypeStructure` and `SwifQLPartType`.
 
 Sampling uses the same semantic boundary. `SampleMethod`, `SampleArgumentRole`,
 and `SampleConstruct` are open value identities; `SwifQLPartSampling` retains
