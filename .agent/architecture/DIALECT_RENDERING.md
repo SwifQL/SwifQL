@@ -103,7 +103,7 @@ Traversal order, marker replacement, value collection, and prepared-output mecha
 
 Every supported dialect needs an explicit representation for `SwifQLHybridOperator` or any future dialect-polymorphic operator mechanism.
 
-Preserve the established public two-argument PostgreSQL/MySQL initializer for downstream source compatibility. A future additive three-argument initializer may provide an explicit Duck representation. Before Duck reaches final closure, separately decide/document what preparing an old two-argument custom hybrid with `.duck` means.
+Preserve the established public two-argument PostgreSQL/MySQL initializer for downstream source compatibility. The additive three-argument initializer provides an explicit Duck representation. Before Duck reaches final closure, separately decide/document what preparing an old two-argument custom hybrid with `.duck` means. The shared value may carry an open value-semantic mapping from a public representation key to an operator, and a dialect may select its key through an additive hook; legacy whole-`hybridOperator(_:)` overrides remain authoritative.
 
 A new dialect support claim must not rely on another dialect's syntax as semantic evidence.
 

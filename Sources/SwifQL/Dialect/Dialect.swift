@@ -80,14 +80,29 @@ open class SQLDialect {
         self.keyPath(keyPath)
     }
 
+    /// Selects an open dialect representation when a hybrid value provides
+    /// one. Leaving this unset preserves the historical PostgreSQL/MySQL
+    /// switch and custom-dialect fallback behavior.
+    open var hybridRepresentationKey: SwifQLHybridRepresentationKey? { nil }
+
     open func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
+        if let key = hybridRepresentationKey {
+            return hybrid.representation(for: key)
+                ?? SwifQLPartOperator(
+                    "<hybrid_operator_requires_explicit_\(key.name)_branch>"
+                )
+        }
+
         switch self {
         case .psql:
-            return hybrid._psql
+            return hybrid.representation(for: .psql)
+                ?? SwifQLPartOperator("<hybrid_operator_requires_psql_branch>")
         case .mysql:
-            return hybrid._mysql
+            return hybrid.representation(for: .mysql)
+                ?? SwifQLPartOperator("<hybrid_operator_requires_mysql_branch>")
         default:
-            return hybrid._mysql
+            return hybrid.representation(for: .mysql)
+                ?? SwifQLPartOperator("<hybrid_operator_requires_mysql_branch>")
         }
     }
     

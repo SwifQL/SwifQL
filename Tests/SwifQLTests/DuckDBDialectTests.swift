@@ -61,7 +61,39 @@ struct DuckDBDialectTests: SwifQLTests {
         #expect(legacy.prepare(.psql).plain == "pg()")
         #expect(legacy.prepare(.mysql).plain == "mysql()")
         #expect(legacy.prepare(.duck).plain == "<duck_hybrid_operator_requires_explicit_duck_branch>")
+        #expect(explicit.prepare(.psql).plain == "pg()")
+        #expect(explicit.prepare(.mysql).plain == "mysql()")
         #expect(explicit.prepare(.duck).plain == "duck()")
+    }
+
+    @Test("Hybrid representations are open, keyed, and value-semantic")
+    func openHybridRepresentations() {
+        let key = SwifQLHybridRepresentationKey(
+            namespace: "vendor/sql 🦆",
+            name: "fourth:dialect"
+        )
+        let equivalentKey = SwifQLHybridRepresentationKey(
+            namespace: "vendor/sql 🦆",
+            name: "fourth:dialect"
+        )
+        let differentKey = SwifQLHybridRepresentationKey(
+            namespace: "vendor/sql 🦆",
+            name: "fourth/other"
+        )
+        let hybrid = SwifQLHybridOperator(
+            representations: [key: SwifQLPartOperator("fourth()")]
+        )
+        let copied = SwifQLHybridOperator(
+            representations: [equivalentKey: SwifQLPartOperator("fourth()")]
+        )
+        let different = SwifQLHybridOperator(
+            representations: [differentKey: SwifQLPartOperator("fourth()")]
+        )
+
+        #expect(hybrid.representation(for: key) == SwifQLPartOperator("fourth()"))
+        #expect(hybrid == copied)
+        #expect(hybrid != different)
+        #expect(hybrid.representations.count == 1)
     }
 
     @Test("Duck fromBase64 uses exact SQL identity and normal binds")
@@ -72,5 +104,15 @@ struct DuckDBDialectTests: SwifQLTests {
         #expect(prepared.plain == "SELECT from_base64('O''Reilly'), from_base64('данные 🦆')")
         #expect(prepared.splitted.query == "SELECT from_base64($1), from_base64($2)")
         #expect(prepared.splitted.values.map { $0 as? String } == ["O'Reilly", "данные 🦆"])
+
+        let psql = query.prepare(.psql)
+        #expect(psql.plain == "SELECT from_base64('O'Reilly'), from_base64('данные 🦆')")
+        #expect(psql.splitted.query == "SELECT from_base64($1), from_base64($2)")
+        #expect(psql.splitted.values.map { $0 as? String } == ["O'Reilly", "данные 🦆"])
+
+        let mysql = query.prepare(.mysql)
+        #expect(mysql.plain == "SELECT FROM_BASE64('O'Reilly'), FROM_BASE64('данные 🦆')")
+        #expect(mysql.splitted.query == "SELECT FROM_BASE64(?), FROM_BASE64(?)")
+        #expect(mysql.splitted.values.map { $0 as? String } == ["O'Reilly", "данные 🦆"])
     }
 }

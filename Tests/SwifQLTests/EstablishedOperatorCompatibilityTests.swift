@@ -3,9 +3,24 @@ import Testing
 
 @Suite("Established operator compatibility")
 struct EstablishedOperatorCompatibilityTests {
+    private final class LegacyDefaultDialect: SQLDialect {}
+
     private final class CustomDialect: SQLDialect {
         override func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
             SwifQLPartOperator("custom()")
+        }
+    }
+
+    private final class RepresentationKeyDialect: SQLDialect {
+        private let key: SwifQLHybridRepresentationKey
+
+        init(key: SwifQLHybridRepresentationKey) {
+            self.key = key
+            super.init()
+        }
+
+        override var hybridRepresentationKey: SwifQLHybridRepresentationKey? {
+            key
         }
     }
 
@@ -21,6 +36,32 @@ struct EstablishedOperatorCompatibilityTests {
     func hybridDialectHook() {
         let hybrid = SwifQLHybridOperator(SwifQLPartOperator("pg()"), SwifQLPartOperator("mysql()"))
         #expect(hybrid.prepare(CustomDialect()).plain == "custom()")
+    }
+
+    @Test("Downstream dialects select open hybrid representations without whole-hook overrides")
+    func openHybridDialectRepresentation() {
+        let key = SwifQLHybridRepresentationKey(
+            namespace: "example.vendor",
+            name: "fourth dialect"
+        )
+        let hybrid = SwifQLHybridOperator(
+            representations: [key: SwifQLPartOperator("fourth()")]
+        )
+
+        #expect(
+            hybrid.prepare(RepresentationKeyDialect(key: key)).plain
+                == "fourth()"
+        )
+    }
+
+    @Test("Legacy dialects without a representation override keep MySQL fallback")
+    func legacyHybridFallback() {
+        let hybrid = SwifQLHybridOperator(
+            SwifQLPartOperator("pg()"),
+            SwifQLPartOperator("mysql()")
+        )
+
+        #expect(hybrid.prepare(LegacyDefaultDialect()).plain == "mysql()")
     }
 
     @Test("Legacy custom dialects retain default contextual value binding")

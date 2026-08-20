@@ -15,8 +15,11 @@ class DuckDialect: SQLDialect {
 
     override var id: String? { "duckdb" }
 
+    override var hybridRepresentationKey: SwifQLHybridRepresentationKey? { .duck }
+
     override func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
-        hybrid._duck ?? SwifQLPartOperator("<duck_hybrid_operator_requires_explicit_duck_branch>")
+        hybrid.representation(for: .duck)
+            ?? SwifQLPartOperator("<duck_hybrid_operator_requires_explicit_duck_branch>")
     }
 
     private var utcCalendar: Calendar {

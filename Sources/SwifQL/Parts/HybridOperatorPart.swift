@@ -7,26 +7,72 @@
 
 import Foundation
 
-public struct SwifQLHybridOperator: SwifQLPart, Equatable {
-    
-    var _psql: SwifQLPartOperator
-    
-    var _mysql: SwifQLPartOperator
+public struct SwifQLHybridRepresentationKey: Hashable, Sendable {
+    public let namespace: String
+    public let name: String
 
-    var _duck: SwifQLPartOperator?
-    
-    public init (_ psql: SwifQLPartOperator, _ mysql: SwifQLPartOperator) {
-        self.init(psql, mysql, nil)
+    public init(namespace: String, name: String) {
+        self.namespace = namespace
+        self.name = name
     }
 
-    public init (
+    public static let psql = Self(namespace: "swifql", name: "psql")
+    public static let postgresql = psql
+    public static let mysql = Self(namespace: "swifql", name: "mysql")
+    public static let duck = Self(namespace: "swifql", name: "duck")
+    public static let duckdb = duck
+}
+
+public struct SwifQLHybridOperator: SwifQLPart, Equatable {
+    public let representations: [SwifQLHybridRepresentationKey: SwifQLPartOperator]
+
+    public init(
+        representations: [SwifQLHybridRepresentationKey: SwifQLPartOperator]
+    ) {
+        self.representations = representations
+    }
+
+    public init(_ psql: SwifQLPartOperator, _ mysql: SwifQLPartOperator) {
+        self.init(
+            representations: [
+                .psql: psql,
+                .mysql: mysql
+            ]
+        )
+    }
+
+    public init(
         _ psql: SwifQLPartOperator,
         _ mysql: SwifQLPartOperator,
         _ duck: SwifQLPartOperator?
     ) {
-        self._psql = psql
-        self._mysql = mysql
-        self._duck = duck
+        var representations: [SwifQLHybridRepresentationKey: SwifQLPartOperator] = [
+            .psql: psql,
+            .mysql: mysql
+        ]
+        if let duck {
+            representations[.duck] = duck
+        }
+        self.init(representations: representations)
+    }
+
+    public func representation(
+        for key: SwifQLHybridRepresentationKey
+    ) -> SwifQLPartOperator? {
+        representations[key]
+    }
+
+    public static func == (
+        lhs: SwifQLHybridOperator,
+        rhs: SwifQLHybridOperator
+    ) -> Bool {
+        guard lhs.representations.count == rhs.representations.count else {
+            return false
+        }
+
+        return lhs.representations.allSatisfy { key, representation in
+            rhs.representations[key] == representation
+        }
     }
 }
 
