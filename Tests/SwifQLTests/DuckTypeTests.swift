@@ -39,6 +39,37 @@ struct DuckTypeTests: SwifQLTests {
         #expect(SwifQL.select("value" => array).prepare(.duck).plain == "SELECT 'value'::integer[3]")
     }
 
+    @Test("Nested Type values retain semantic constructor structure")
+    func structuredRepresentation() {
+        let list = Type.list(.integer)
+        let array = Type.array(list, length: 3)
+        let map = Type.map(key: .varchar, value: array)
+        let structure = Type.`struct`(("select", .integer), ("items", list))
+        let union = Type.union(("payload", map))
+
+        #expect(Type("custom").structuredRepresentation == nil)
+        #expect(list.structuredRepresentation == .collection(.list, element: .integer, length: nil))
+        #expect(array.structuredRepresentation == .collection(.array, element: list, length: 3))
+        #expect(
+            map.structuredRepresentation ==
+                .map(.map, key: .varchar, value: array)
+        )
+        #expect(
+            structure.structuredRepresentation ==
+                .members(
+                    .struct,
+                    [
+                        TypeMember("select", .integer),
+                        TypeMember("items", list)
+                    ]
+                )
+        )
+        #expect(
+            union.structuredRepresentation ==
+                .members(.union, [TypeMember("payload", map)])
+        )
+    }
+
     @Test("MAP STRUCT UNION and VARIANT compose recursively")
     func nestedTypes() {
         let map = Type.map(key: .varchar, value: .integer)

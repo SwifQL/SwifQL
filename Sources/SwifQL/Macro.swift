@@ -19,7 +19,8 @@ public struct MacroParameter: SwifQLable {
     fileprivate var declarationParts: [SwifQLPart] {
         var parts: [SwifQLPart] = [SwifQLPartIdentifier(name)]
         if let type {
-            parts.append(o: .space, .custom(type.name))
+            parts.append(o: .space)
+            parts.append(SwifQLPartType(type))
         }
         return parts
     }

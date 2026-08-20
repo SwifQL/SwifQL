@@ -86,15 +86,15 @@ extension Fn {
     
     public static func cast(_ from: Type?, _ queryPart: SwifQLable, _ to: Type) -> SwifQLable {
         var parts: [SwifQLPart] = []
-        if let from = from?.name {
-            parts.append(o: .custom(from))
+        if let from {
+            parts.append(SwifQLPartType(from))
             parts.append(o: .space)
         }
         parts.append(contentsOf: queryPart.parts)
         parts.append(o: .space)
         parts.append(o: .as)
         parts.append(o: .space)
-        parts.append(o: .custom(to.name))
+        parts.append(SwifQLPartType(to))
         return build(.cast, body: parts)
     }
 

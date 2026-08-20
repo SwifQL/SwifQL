@@ -82,7 +82,7 @@ public class NewColumn: SwifQLable {
         var parts: [SwifQLPart] = []
         parts.append(SwifQLPartColumn(name))
         parts.append(o: .space)
-        parts.append(o: .custom(type.name))
+        parts.append(SwifQLPartType(type))
         if let expression = `default` {
             parts.append(o: .space)
             parts.append(contentsOf: expression.parts)
@@ -94,4 +94,3 @@ public class NewColumn: SwifQLable {
         return parts
     }
 }
-

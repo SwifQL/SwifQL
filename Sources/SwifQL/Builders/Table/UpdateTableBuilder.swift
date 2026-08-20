@@ -139,7 +139,7 @@ public class UpdateTableBuilder<T: Table>: SwifQLable {
         parts.append(o: .space)
         parts.append(SwifQLPartColumn(name))
         parts.append(o: .space)
-        parts.append(o: .custom(type.name))
+        parts.append(SwifQLPartType(type))
         if let expression = `default` {
             parts.append(o: .space)
             parts.append(contentsOf: expression.query.parts)

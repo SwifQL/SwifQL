@@ -85,6 +85,10 @@ open class SQLDialect {
     /// switch and custom-dialect fallback behavior.
     open var hybridRepresentationKey: SwifQLHybridRepresentationKey? { nil }
 
+    /// Renders a semantic SQL type. The default preserves the historical
+    /// textual spelling, including raw and nested `Type` compatibility.
+    open func type(_ type: Type) -> String { type.name }
+
     open func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
         if let key = hybridRepresentationKey {
             return hybrid.representation(for: key)

@@ -22,7 +22,7 @@ extension SwifQLable {
         parts.appendSpaceIfNeeded()
         parts.append(o: .as)
         parts.append(o: .space)
-        parts.append(o: .custom(type.name))
+        parts.append(SwifQLPartType(type))
         return SwifQLableParts(parts: parts)
     }
 

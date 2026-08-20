@@ -37,7 +37,7 @@ infix operator => : AdditionPrecedence
 public func => (lhs: SwifQLable, rhs: Type) -> SwifQLable {
     var parts: [SwifQLPart] = lhs.parts
     parts.append(o: .custom("::"))
-    parts.append(o: .custom(rhs.name))
+    parts.append(SwifQLPartType(rhs))
     return SwifQLableParts(parts: parts)
 }
 /// e.g. `"hello" as "title"`

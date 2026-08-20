@@ -107,6 +107,15 @@ Preserve the established public two-argument PostgreSQL/MySQL initializer for do
 
 A new dialect support claim must not rely on another dialect's syntax as semantic evidence.
 
+Semantic nested SQL types follow the same boundary: `Type.list`, `Type.array`,
+`Type.map`, `Type.struct`, and `Type.union` retain their constructor, children,
+length, and raw member names in a value-semantic representation carried by
+`SwifQLPartType`. The additive `SQLDialect.type(_:)` hook owns the final grammar
+and identifier policy; its default is the historical textual `Type` spelling,
+so raw `Type(String)` values and existing dialect subclasses remain compatible.
+Generic type constructors do not parse or pre-quote that textual compatibility
+spelling.
+
 ### DIALECT-007 - Rendering follows the public design contract
 
 Dialect hooks may adapt syntax, qualification, placeholder spelling, or harmless SQL keyword/function casing required to express the same exact modeled SQL construct, but must not silently substitute a differently named SQL function/type/operator/statement or degrade semantics. For example, the same exact `from_base64` function may render with dialect-preferred casing such as `FROM_BASE64` versus `from_base64`, but a `decode` API must never be translated into `from_base64` merely because both can participate in base64 workflows.

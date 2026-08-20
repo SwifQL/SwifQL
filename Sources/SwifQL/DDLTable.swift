@@ -5,7 +5,8 @@ extension SwifQLable {
     public func type(_ type: SwifQL.`Type`) -> SwifQLable {
         var parts = self.parts
         parts.appendSpaceIfNeeded()
-        parts.append(o: .type, .space, SwifQLPartOperator(type.name))
+        parts.append(o: .type, .space)
+        parts.append(SwifQLPartType(type))
         return SwifQLableParts(parts: parts)
     }
 
@@ -67,7 +68,8 @@ public struct GeneratedColumn: SwifQLable {
     public var parts: [SwifQLPart] {
         var parts: [SwifQLPart] = [SwifQLPartColumn(name)]
         if let type {
-            parts.append(o: .space, SwifQLPartOperator(type.name))
+            parts.append(o: .space)
+            parts.append(SwifQLPartType(type))
             parts.append(o: .space, .custom("GENERATED"), .space, .custom("ALWAYS"))
         }
         parts.append(o: .space, .as, .space, .openBracket)

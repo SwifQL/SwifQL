@@ -5,13 +5,58 @@
 //  Created by Mihael Isaev on 12/10/2019.
 //
 
+public struct TypeConstructor: Hashable, Sendable {
+    public let namespace: String
+    public let name: String
+
+    public init(namespace: String, name: String) {
+        self.namespace = namespace
+        self.name = name
+    }
+
+    public static let list = Self(namespace: "swifql", name: "list")
+    public static let array = Self(namespace: "swifql", name: "array")
+    public static let map = Self(namespace: "swifql", name: "map")
+    public static let `struct` = Self(namespace: "swifql", name: "struct")
+    public static let union = Self(namespace: "swifql", name: "union")
+}
+
+public struct TypeMember: Equatable, Sendable {
+    public let name: String
+    public let type: Type
+
+    public init(_ name: String, _ type: Type) {
+        self.name = name
+        self.type = type
+    }
+}
+
+public indirect enum TypeStructure: Equatable, Sendable {
+    case collection(TypeConstructor, element: Type, length: Int?)
+    case map(TypeConstructor, key: Type, value: Type)
+    case members(TypeConstructor, [TypeMember])
+}
+
 typealias CastType = Type
 
-public struct Type {
+public struct Type: Equatable, Sendable {
     let name: String
+    public let structure: TypeStructure?
     
     public init (_ name: String) {
         self.name = name
+        self.structure = nil
+    }
+
+    public init(structure: TypeStructure) {
+        self.name = structure.legacyName
+        self.structure = structure
+    }
+
+    /// The structured form, when this value was created by a nested type
+    /// constructor. Raw and scalar `Type(String)` values remain unstructured.
+    public var structuredRepresentation: TypeStructure? {
+        structure
     }
     
     // MARK: -
