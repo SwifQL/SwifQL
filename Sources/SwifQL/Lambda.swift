@@ -5,11 +5,30 @@
 
 import Foundation
 
+/// The structured SQL lambda value passed to the dialect rendering boundary.
+/// Parameter identities and body parts remain separate from concrete lambda
+/// punctuation so downstream dialects can choose their own grammar.
+public struct SwifQLPartLambda: SwifQLPart {
+    public let parameters: [SQLLambda.Parameter]
+    public let body: [SwifQLPart]
+
+    public init(
+        parameters: [SQLLambda.Parameter],
+        body: [SwifQLPart]
+    ) {
+        self.parameters = parameters
+        self.body = body
+    }
+}
+
 public struct SQLLambda: SwifQLable {
     public struct Parameter: SwifQLable {
         private let column: SwifQLPartColumn
 
+        public let name: String
+
         fileprivate init(_ name: String) {
+            self.name = name
             column = SwifQLPartColumn(name)
         }
 
@@ -35,23 +54,6 @@ public struct SQLLambda: SwifQLable {
     }
 
     private init(parameters: [Parameter], body: [SwifQLPart]) {
-        var parts: [SwifQLPart] = [
-            SwifQLPartOperator.custom("lambda"),
-            SwifQLPartOperator.space
-        ]
-
-        for (index, parameter) in parameters.enumerated() {
-            if index > 0 {
-                parts.append(o: .comma)
-                parts.append(o: .space)
-            }
-            parts.append(contentsOf: parameter.parts)
-        }
-
-        parts.append(o: .space)
-        parts.append(SwifQLPartOperator.custom(":"))
-        parts.append(o: .space)
-        parts.append(contentsOf: body)
-        self.parts = parts
+        self.parts = [SwifQLPartLambda(parameters: parameters, body: body)]
     }
 }

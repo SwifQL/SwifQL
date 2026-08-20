@@ -126,6 +126,15 @@ the grammar positions it owns and has evidence for; it must not stringify or
 reparse arbitrary expressions. Fixture-only dialect examples do not make a
 production support claim.
 
+SQL lambdas follow the same rule. `SQLLambda` exposes one
+`SwifQLPartLambda` carrying ordered structural parameter identities and body
+parts; it does not pre-render `lambda`, `:`, arrows, or other dialect
+punctuation. `SQLDialect.lambda(_:)` returns ordinary parts through the
+recursive renderer, with the default preserving the historical
+`lambda <parameters> : <body>` spelling and body bind order. A downstream
+dialect may choose another exact lambda grammar from the same semantic value
+without token scanning or body stringification.
+
 ### DIALECT-007 - Rendering follows the public design contract
 
 Dialect hooks may adapt syntax, qualification, placeholder spelling, or harmless SQL keyword/function casing required to express the same exact modeled SQL construct, but must not silently substitute a differently named SQL function/type/operator/statement or degrade semantics. For example, the same exact `from_base64` function may render with dialect-preferred casing such as `FROM_BASE64` versus `from_base64`, but a `decode` API must never be translated into `from_base64` merely because both can participate in base64 workflows.

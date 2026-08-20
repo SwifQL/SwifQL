@@ -289,6 +289,14 @@ than being interpolated. Custom-dialect sampling fixtures validate extension
 shape only and do not claim BigQuery, Snowflake, or other production dialect
 support.
 
+Duck lambdas retain the generic `SQLLambda` surface and structural parameter
+identifiers/body expressions. The dialect's canonical verified lowering is
+`lambda <parameter> : <body>` (including quoted and escaped identifiers);
+`SQLDialect.lambda(_:)` owns that punctuation while ordinary body values keep
+left-to-right prepared binding. Nested lambdas and outer-column captures
+compose through the same recursive parts pipeline. This records exact Duck
+lowering only and does not claim support for another dialect's lambda syntax.
+
 The direct generic forms for the modifier-bearing features are:
 
 ```swift

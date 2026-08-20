@@ -100,6 +100,25 @@ open class SQLDialect {
         )
     }
 
+    /// Renders a structured SQL lambda through the normal recursive parts
+    /// pipeline. The default preserves the historical `lambda ... : ...`
+    /// spelling and ordinary body-value binding.
+    open func lambda(_ lambda: SwifQLPartLambda) -> [SwifQLPart] {
+        var parts: [SwifQLPart] = [
+            SwifQLPartOperator.custom("lambda"),
+            SwifQLPartOperator.space
+        ]
+        for (index, parameter) in lambda.parameters.enumerated() {
+            if index > 0 {
+                parts.append(o: .comma, .space)
+            }
+            parts.append(contentsOf: parameter.parts)
+        }
+        parts.append(o: .space, .custom(":"), .space)
+        parts.append(contentsOf: lambda.body)
+        return parts
+    }
+
     open func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
         if let key = hybridRepresentationKey {
             return hybrid.representation(for: key)
