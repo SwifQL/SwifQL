@@ -257,4 +257,208 @@ struct StructuralBuilderCompatibilityTests: SwifQLTests {
             "insideNested", "nestedWhere", "after"
         ])
     }
+
+    @Test("Stored MATCH_CONDITION and ON roles survive select-builder materialization")
+    func storedMatchConditionOnBuilderComposition() {
+        let trades = Path.Table("trades")
+        let prices = Path.Table("prices")
+        let base = SwifQL.select(trades.column("id")).from(trades)
+        let temporal = trades.column("event_time") >= 100
+        let equality = trades.column("symbol") == "A"
+        let storedJoin = SwifQLJoinBuilder(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            on: equality
+        )
+
+        let built = SwifQLSelectBuilder()
+            .select(trades.column("id"))
+            .from(trades)
+            .join(storedJoin)
+            .build()
+        let direct = base.join(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            on: equality
+        )
+
+        let psql = built.prepare(.psql)
+        let directPsql = direct.prepare(.psql)
+        #expect(psql.plain == directPsql.plain)
+        #expect(
+            psql.plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= 100) ON "trades"."symbol" = 'A'"#
+        )
+        #expect(psql.splitted.query == directPsql.splitted.query)
+        #expect(
+            psql.splitted.query ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= $1) ON "trades"."symbol" = $2"#
+        )
+        #expect(psql.splitted.values.map { String(describing: $0) } == ["100", "A"])
+        #expect(directPsql.splitted.values.map { String(describing: $0) } == ["100", "A"])
+
+        let mysql = built.prepare(.mysql)
+        let directMySQL = direct.prepare(.mysql)
+        #expect(mysql.plain == directMySQL.plain)
+        #expect(
+            mysql.plain ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= 100) ON trades.symbol = 'A'"
+        )
+        #expect(mysql.splitted.query == directMySQL.splitted.query)
+        #expect(
+            mysql.splitted.query ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= ?) ON trades.symbol = ?"
+        )
+        #expect(mysql.splitted.values.map { String(describing: $0) } == ["100", "A"])
+        #expect(directMySQL.splitted.values.map { String(describing: $0) } == ["100", "A"])
+    }
+
+    @Test("Stored MATCH_CONDITION and USING roles preserve structural columns")
+    func storedMatchConditionUsingBuilderComposition() {
+        let trades = Path.Table("trades")
+        let prices = Path.Table("prices")
+        let base = SwifQL.select(trades.column("id")).from(trades)
+        let temporal = trades.column("event_time") >= 100
+        let columns: [KeyPathLastPath] = [
+            trades.column("symbol"),
+            trades.column("event_time")
+        ]
+        let storedJoin = SwifQLJoinBuilder(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            using: columns
+        )
+
+        let built = SwifQLSelectBuilder()
+            .select(trades.column("id"))
+            .from(trades)
+            .join(storedJoin)
+            .build()
+        let direct = base.join(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            using: trades.column("symbol"),
+            trades.column("event_time")
+        )
+
+        let psql = built.prepare(.psql)
+        let directPsql = direct.prepare(.psql)
+        #expect(psql.plain == directPsql.plain)
+        #expect(
+            psql.plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= 100) USING ("symbol", "event_time")"#
+        )
+        #expect(psql.splitted.query == directPsql.splitted.query)
+        #expect(
+            psql.splitted.query ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= $1) USING ("symbol", "event_time")"#
+        )
+        #expect(psql.splitted.values.map { String(describing: $0) } == ["100"])
+        #expect(directPsql.splitted.values.map { String(describing: $0) } == ["100"])
+
+        let mysql = built.prepare(.mysql)
+        let directMySQL = direct.prepare(.mysql)
+        #expect(mysql.plain == directMySQL.plain)
+        #expect(
+            mysql.plain ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= 100) USING (symbol, event_time)"
+        )
+        #expect(mysql.splitted.query == directMySQL.splitted.query)
+        #expect(
+            mysql.splitted.query ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= ?) USING (symbol, event_time)"
+        )
+        #expect(mysql.splitted.values.map { String(describing: $0) } == ["100"])
+        #expect(directMySQL.splitted.values.map { String(describing: $0) } == ["100"])
+    }
+
+    @Test("Legacy ON-only stored join builders retain established output")
+    func legacyOnOnlyBuilderComposition() {
+        let trades = Path.Table("trades")
+        let prices = Path.Table("prices")
+        let equality = trades.column("symbol") == "A"
+        let storedJoin = SwifQLJoinBuilder(.asOf, prices, on: equality)
+        let built = SwifQLSelectBuilder()
+            .select(trades.column("id"))
+            .from(trades)
+            .join(storedJoin)
+            .build()
+
+        let psql = built.prepare(.psql)
+        #expect(
+            psql.plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" ON "trades"."symbol" = 'A'"#
+        )
+        #expect(
+            psql.splitted.query ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" ON "trades"."symbol" = $1"#
+        )
+        #expect(psql.splitted.values.map { String(describing: $0) } == ["A"])
+
+        let mysql = built.prepare(.mysql)
+        #expect(
+            mysql.plain ==
+                "SELECT trades.id FROM trades ASOF JOIN prices ON trades.symbol = 'A'"
+        )
+        #expect(
+            mysql.splitted.query ==
+                "SELECT trades.id FROM trades ASOF JOIN prices ON trades.symbol = ?"
+        )
+        #expect(mysql.splitted.values.map { String(describing: $0) } == ["A"])
+    }
+
+    @Test("Copied select builders preserve stored MATCH_CONDITION join state")
+    func copiedStoredMatchConditionBuilderComposition() {
+        let trades = Path.Table("trades")
+        let prices = Path.Table("prices")
+        let temporal = trades.column("event_time") >= 100
+        let equality = trades.column("symbol") == "A"
+        let storedJoin = SwifQLJoinBuilder(
+            .asOf,
+            prices,
+            matchCondition: temporal,
+            on: equality
+        )
+        let builder = SwifQLSelectBuilder()
+            .select(trades.column("id"))
+            .from(trades)
+            .join(storedJoin)
+        let copied = builder.copy()
+        let original = builder.build()
+        let copy = copied.build()
+
+        let originalPsql = original.prepare(.psql)
+        let copyPsql = copy.prepare(.psql)
+        #expect(originalPsql.plain == copyPsql.plain)
+        #expect(
+            originalPsql.plain ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= 100) ON "trades"."symbol" = 'A'"#
+        )
+        #expect(originalPsql.splitted.query == copyPsql.splitted.query)
+        #expect(
+            originalPsql.splitted.query ==
+                #"SELECT "trades"."id" FROM "trades" ASOF JOIN "prices" MATCH_CONDITION ("trades"."event_time" >= $1) ON "trades"."symbol" = $2"#
+        )
+        #expect(originalPsql.splitted.values.map { String(describing: $0) } == ["100", "A"])
+        #expect(copyPsql.splitted.values.map { String(describing: $0) } == ["100", "A"])
+
+        let originalMySQL = original.prepare(.mysql)
+        let copyMySQL = copy.prepare(.mysql)
+        #expect(originalMySQL.plain == copyMySQL.plain)
+        #expect(
+            originalMySQL.plain ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= 100) ON trades.symbol = 'A'"
+        )
+        #expect(originalMySQL.splitted.query == copyMySQL.splitted.query)
+        #expect(
+            originalMySQL.splitted.query ==
+                "SELECT trades.id FROM trades ASOF JOIN prices MATCH_CONDITION (trades.event_time >= ?) ON trades.symbol = ?"
+        )
+        #expect(originalMySQL.splitted.values.map { String(describing: $0) } == ["100", "A"])
+        #expect(copyMySQL.splitted.values.map { String(describing: $0) } == ["100", "A"])
+    }
 }

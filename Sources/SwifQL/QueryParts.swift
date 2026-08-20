@@ -35,7 +35,10 @@ public class QueryParts {
     public func buildQuery() -> SwifQLable {
         var query = SwifQL
         joins.forEach {
-            query = query.join($0.mode, $0.table, on: $0.predicates)
+            query = _SwifQLStructuralComposition.appendStatementContents(
+                from: $0,
+                to: query
+            )
         }
         wheres.enumerated().forEach {
             if $0.offset == 0 {
