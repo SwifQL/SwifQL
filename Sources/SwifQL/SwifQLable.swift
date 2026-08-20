@@ -144,6 +144,8 @@ extension SwifQLable {
                     return dialect.alias(v.alias)
                 case let v as SwifQLPartKeyPath:
                     return dialect.keyPath(v, context: context)
+                case let v as SwifQLPartSampling:
+                    return render(dialect.sampling(v), context: context)
                 case let v as SwifQLPartType:
                     return dialect.type(v.type)
                 case let v as SwifQLPartColumn:

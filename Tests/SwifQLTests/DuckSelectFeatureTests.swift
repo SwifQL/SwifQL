@@ -2,6 +2,69 @@ import Foundation
 import Testing
 @testable import SwifQL
 
+private final class BigQuerySamplingDialect: SQLDialect {
+    override func bindKey(_ i: Int) -> String { "$\(i)" }
+
+    override func sampling(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
+        guard sample.construct == .tableSample,
+              let first = sample.arguments.first else {
+            return super.sampling(sample)
+        }
+
+        var parts: [SwifQLPart] = [
+            SwifQLPartOperator("TABLESAMPLE"),
+            SwifQLPartOperator.space,
+            SwifQLPartOperator("SYSTEM"),
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.openBracket
+        ]
+        parts.append(contentsOf: first.value.parts)
+        if first.role == .percentage {
+            parts.append(o: .space, .custom("PERCENT"))
+        }
+        parts.append(o: .closeBracket)
+        return parts
+    }
+}
+
+private final class SnowflakeSamplingDialect: SQLDialect {
+    override func bindKey(_ i: Int) -> String { "$\(i)" }
+
+    override func sampling(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
+        guard sample.construct == .usingSample else {
+            return super.sampling(sample)
+        }
+
+        var parts: [SwifQLPart] = [
+            SwifQLPartOperator.using,
+            SwifQLPartOperator.space,
+            SwifQLPartOperator("SAMPLE"),
+            SwifQLPartOperator.space
+        ]
+        if let method = sample.method {
+            parts.append(contentsOf: method.parts)
+        }
+        parts.append(o: .openBracket)
+        for (index, argument) in sample.arguments.enumerated() {
+            if index > 0 {
+                parts.append(o: .comma, .space)
+            }
+            parts.append(contentsOf: argument.value.parts)
+            if argument.role == .percentage || argument.role == .rows {
+                parts.append(o: .space)
+                parts.append(o: .custom(argument.role == .percentage ? "PERCENT" : "ROWS"))
+            }
+        }
+        parts.append(o: .closeBracket)
+        if let seed = sample.seed {
+            parts.append(o: .space, .custom("SEED"), .space, .openBracket)
+            parts.append(contentsOf: seed.value.parts)
+            parts.append(o: .closeBracket)
+        }
+        return parts
+    }
+}
+
 @Suite("Duck SELECT feature tests")
 struct DuckSelectFeatureTests {
     private func expectDuck(_ query: SwifQLable, _ expected: String) {
@@ -203,9 +266,128 @@ struct DuckSelectFeatureTests {
             SwifQL.select(value).from(sampledTable),
             #"SELECT "events"."value" FROM "events" TABLESAMPLE reservoir(10 PERCENT) REPEATABLE (42)"#
         )
+        for method in [SampleMethod.system, .bernoulli] {
+            expectDuck(
+                SwifQL.select(value).from(
+                    table.tableSample(TableSample(SampleSize(rows: 10), method: method))
+                ),
+                #"SELECT "events"."value" FROM "events" TABLESAMPLE "#
+                    + method.name
+                    + "(10 ROWS)"
+            )
+        }
         expectDuck(
             SwifQL.select(value).from(table.tableSample(TableSample(SampleSize(percentage: 10)))),
             #"SELECT "events"."value" FROM "events" TABLESAMPLE (10 PERCENT)"#
+        )
+
+        let base = SwifQL.select(value).from(table)
+        let composed = base
+            .usingSample(Sample(SampleSize(percentage: 10), method: .system, seed: 42))
+            .limit(2)
+        func helper(_ query: SwifQLable) -> SwifQLable {
+            query
+                .usingSample(Sample(SampleSize(percentage: 10), method: .system, seed: 42))
+                .limit(2)
+        }
+        let erased: SwifQLable = composed
+        let copied = SwifQLableParts(parts: erased.parts)
+        var conditional: SwifQLable = base
+        if true {
+            conditional = conditional
+                .usingSample(Sample(SampleSize(percentage: 10), method: .system, seed: 42))
+                .limit(2)
+        }
+        for query in [composed, helper(base), copied, conditional] {
+            let prepared = query.prepare(.duck)
+            #expect(prepared.plain == composed.prepare(.duck).plain)
+            #expect(prepared.splitted.query == composed.prepare(.duck).splitted.query)
+            #expect(prepared.splitted.values.map { String(describing: $0) } == ["2"])
+        }
+    }
+
+    @Test("Sampling values stay open, ordered, and construct-specific")
+    func samplingSemanticModel() {
+        let expression: SwifQLable = Path.Table("events").column("weight")
+        let method = SampleMethod(namespace: "vendor", name: "stratified")
+        let arguments = [
+            SampleArgument(percentage: expression),
+            SampleArgument(7, role: .rows)
+        ]
+        let using = Sample(
+            arguments: arguments,
+            method: method,
+            seed: expression
+        )
+        let table = TableSample(
+            arguments: arguments,
+            method: method,
+            repeatable: expression
+        )
+
+        #expect(method.name == "stratified")
+        #expect(SampleArgumentRole.percentage != SampleArgumentRole.rows)
+        #expect(using.arguments.count == 2)
+        #expect(using.arguments[0].role == .percentage)
+        #expect(using.arguments[1].role == .rows)
+        #expect(using.arguments[0].value.prepare(.duck).plain == expression.prepare(.duck).plain)
+        #expect(SampleSize(percentage: 0.5).prepare(.duck).splitted.values.count == 1)
+        #expect(using.seed?.value.prepare(.duck).plain == expression.prepare(.duck).plain)
+        #expect(table.repeatable?.value.prepare(.duck).plain == expression.prepare(.duck).plain)
+        #expect(using.prepare(.duck).plain != table.prepare(.duck).plain)
+    }
+
+    @Test("Custom dialect sampling policies retain binds and reshape grammar")
+    func samplingDialectPolicies() {
+        let table = Path.Table("events")
+        let value = SwifQLableParts(parts: SwifQLPartOperator("value"))
+        let bigQuery = SwifQL
+            .select(value)
+            .from(table.tableSample(
+                TableSample(
+                    arguments: [SampleArgument(percentage: 0.5)],
+                    method: .system
+                )
+            ))
+        let bigPrepared = bigQuery.prepare(BigQuerySamplingDialect())
+
+        #expect(
+            bigPrepared.plain ==
+                #"SELECT value FROM events TABLESAMPLE SYSTEM (0.5 PERCENT)"#
+        )
+        #expect(
+            bigPrepared.splitted.query ==
+                #"SELECT value FROM events TABLESAMPLE SYSTEM ($1 PERCENT)"#
+        )
+        #expect(bigPrepared.splitted.values.map { String(describing: $0) } == ["0.5"])
+
+        let method = SampleMethod(namespace: "vendor", name: "stratified")
+        let snowflakeQuery = SwifQL
+            .select(value)
+            .from(table)
+            .usingSample(
+                Sample(
+                    arguments: [
+                        SampleArgument(percentage: 0.5),
+                        SampleArgument(12, role: .rows)
+                    ],
+                    method: method,
+                    seed: 7
+                )
+            )
+        let snowflakePrepared = snowflakeQuery.prepare(SnowflakeSamplingDialect())
+
+        #expect(
+            snowflakePrepared.plain ==
+                #"SELECT value FROM events USING SAMPLE stratified(0.5 PERCENT, 12 ROWS) SEED (7)"#
+        )
+        #expect(
+            snowflakePrepared.splitted.query ==
+                #"SELECT value FROM events USING SAMPLE stratified($1 PERCENT, $2 ROWS) SEED ($3)"#
+        )
+        #expect(
+            snowflakePrepared.splitted.values.map { String(describing: $0) } ==
+                ["0.5", "12", "7"]
         )
     }
 

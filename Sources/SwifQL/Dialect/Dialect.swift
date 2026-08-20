@@ -89,6 +89,17 @@ open class SQLDialect {
     /// textual spelling, including raw and nested `Type` compatibility.
     open func type(_ type: Type) -> String { type.name }
 
+    /// Renders a structured sampling clause through the normal recursive
+    /// parts pipeline. The default keeps sampling arguments as ordinary
+    /// values, so custom dialects inherit normal bind collection.
+    open func sampling(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
+        sample.renderedParts(
+            argumentParts: sample.arguments.map { $0.parts },
+            seedParts: sample.seed?.parts,
+            repeatabilityParts: sample.repeatability?.parts
+        )
+    }
+
     open func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
         if let key = hybridRepresentationKey {
             return hybrid.representation(for: key)

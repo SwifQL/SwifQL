@@ -279,6 +279,16 @@ Duck-specific/native features already researched as candidate SwifQL coverage in
 
 A feature being Duck-only today does not automatically authorize a `Duck...` public query API. Apply DESIGN-014 and the clean SQL-concept rule first.
 
+Sampling is represented by the generic `Sample`/`TableSample` semantic model:
+method identity, ordered arguments/roles, and seed/repeatability remain
+available to the dialect renderer. Duck's verified `USING SAMPLE` and
+`TABLESAMPLE` parser-constant positions inline only supported typed literal
+values through the existing safe-value pipeline; ordinary later values remain
+bindable, and unsupported arbitrary sampling expressions fail closed rather
+than being interpolated. Custom-dialect sampling fixtures validate extension
+shape only and do not claim BigQuery, Snowflake, or other production dialect
+support.
+
 The direct generic forms for the modifier-bearing features are:
 
 ```swift

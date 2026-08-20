@@ -116,6 +116,16 @@ so raw `Type(String)` values and existing dialect subclasses remain compatible.
 Generic type constructors do not parse or pre-quote that textual compatibility
 spelling.
 
+Sampling uses the same semantic boundary. `SampleMethod`, `SampleArgumentRole`,
+and `SampleConstruct` are open value identities; `SwifQLPartSampling` retains
+the construct (`USING SAMPLE` versus `TABLESAMPLE`), ordered arguments and
+roles, and seed/repeatability until `SQLDialect.sampling(_:)` returns ordinary
+parts to the existing recursive renderer. The default hook keeps argument
+values bindable. A dialect may choose parser-constant representation only for
+the grammar positions it owns and has evidence for; it must not stringify or
+reparse arbitrary expressions. Fixture-only dialect examples do not make a
+production support claim.
+
 ### DIALECT-007 - Rendering follows the public design contract
 
 Dialect hooks may adapt syntax, qualification, placeholder spelling, or harmless SQL keyword/function casing required to express the same exact modeled SQL construct, but must not silently substitute a differently named SQL function/type/operator/statement or degrade semantics. For example, the same exact `from_base64` function may render with dialect-preferred casing such as `FROM_BASE64` versus `from_base64`, but a `decode` API must never be translated into `from_base64` merely because both can participate in base64 workflows.

@@ -4,6 +4,83 @@
 
 import Foundation
 
+private func duckSamplingLiteralParts(_ value: Encodable) -> [SwifQLPart] {
+    switch value {
+    case let value as String:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int8:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int16:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int32:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int64:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt8:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt16:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt32:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt64:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Float:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Double:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Decimal:
+        return [SwifQLPartSafeValue(value)]
+    default:
+        return [SwifQLPartOperator("<duck_sampling_argument_requires_safe_literal>")]
+    }
+}
+
+private func duckSamplingLiteralParts(_ value: SwifQLable) -> [SwifQLPart] {
+    switch value {
+    case let value as String:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int8:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int16:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int32:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Int64:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt8:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt16:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt32:
+        return [SwifQLPartSafeValue(value)]
+    case let value as UInt64:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Float:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Double:
+        return [SwifQLPartSafeValue(value)]
+    case let value as Decimal:
+        return [SwifQLPartSafeValue(value)]
+    default:
+        let parts = value.parts
+        if !parts.isEmpty && parts.allSatisfy({ $0 is SwifQLPartSafeValue }) {
+            return parts
+        }
+        if parts.count == 1, let unsafe = parts[0] as? SwifQLPartUnsafeValue {
+            return duckSamplingLiteralParts(unsafe.unsafeValue)
+        }
+        return [SwifQLPartOperator("<duck_sampling_argument_requires_safe_literal>")]
+    }
+}
+
 class DuckDialect: SQLDialect {
     private static let unqualifiedKeyPathScopes: Set<SwifQLRenderScope> = [
         .simplifiedPivotOn,
@@ -20,6 +97,14 @@ class DuckDialect: SQLDialect {
     override func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
         hybrid.representation(for: .duck)
             ?? SwifQLPartOperator("<duck_hybrid_operator_requires_explicit_duck_branch>")
+    }
+
+    override func sampling(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
+        sample.renderedParts(
+            argumentParts: sample.arguments.map { duckSamplingLiteralParts($0.value) },
+            seedParts: sample.seed.map { duckSamplingLiteralParts($0.value) },
+            repeatabilityParts: sample.repeatability.map { duckSamplingLiteralParts($0.value) }
+        )
     }
 
     private var utcCalendar: Calendar {
