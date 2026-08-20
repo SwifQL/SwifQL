@@ -30,7 +30,11 @@ public struct SwifQLClauseOwner: Hashable, Sendable {
     public func renderScope(for kind: SwifQLClauseKind) -> SwifQLRenderScope {
         SwifQLRenderScope(
             namespace: "swifql.clause-owner",
-            name: "\(namespace).\(name).\(kind.namespace).\(kind.name)"
+            name: "\(namespace).\(name).\(kind.namespace).\(kind.name)",
+            identityComponents: [
+                .init(namespace: namespace, name: name),
+                .init(namespace: kind.namespace, name: kind.name)
+            ]
         )
     }
 }

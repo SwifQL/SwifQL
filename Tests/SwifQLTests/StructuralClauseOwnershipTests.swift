@@ -66,6 +66,47 @@ struct StructuralClauseOwnershipTests {
         root(of: query).children.compactMap { $0 as? SwifQLOrderByPart }.first!
     }
 
+    @Test("Clause-owner render scopes preserve collision-free identity")
+    func collisionFreeRenderScopeIdentity() {
+        let kind = SwifQLClauseKind(namespace: "d", name: "e")
+        let firstOwner = SwifQLClauseOwner(namespace: "a.b", name: "c")
+        let secondOwner = SwifQLClauseOwner(namespace: "a", name: "b.c")
+        let firstScope = firstOwner.renderScope(for: kind)
+        let secondScope = secondOwner.renderScope(for: kind)
+        let context = SwifQLRenderContext(scopes: [firstScope])
+
+        #expect(firstScope != secondScope)
+        #expect(context.contains(firstScope))
+        #expect(context.contains(secondScope) == false)
+        #expect(firstScope == firstOwner.renderScope(for: kind))
+        #expect(Set([firstScope, firstOwner.renderScope(for: kind)]).count == 1)
+        #expect(
+            firstScope != SwifQLClauseOwner(namespace: "a.b", name: "different")
+                .renderScope(for: kind)
+        )
+        #expect(
+            firstScope != firstOwner.renderScope(
+                for: SwifQLClauseKind(namespace: "d.e", name: "different")
+            )
+        )
+        #expect(firstScope.namespace == "swifql.clause-owner")
+        #expect(firstScope.name == "a.b.c.d.e")
+        #expect(firstScope.identityComponents == [
+            .init(namespace: "a.b", name: "c"),
+            .init(namespace: "d", name: "e")
+        ])
+    }
+
+    @Test("Simple named render scopes retain namespaced identity")
+    func namedRenderScopeCompatibility() {
+        let reconstructed = SwifQLRenderScope(namespace: "swifql", name: "starPattern")
+
+        #expect(SwifQLRenderScope.starPattern == reconstructed)
+        #expect(reconstructed.namespace == "swifql")
+        #expect(reconstructed.name == "starPattern")
+        #expect(reconstructed.identityComponents.isEmpty)
+    }
+
     @Test("Ordinary GROUP BY and ORDER BY keep nil ownership")
     func ordinaryOwnershipAndSQL() {
         let table = Path.Table("users")
@@ -158,6 +199,14 @@ struct StructuralClauseOwnershipTests {
         #expect(orderByPart(in: copied).items.count == 1)
         #expect(copied.structuralOwner(for: .groupBy) == owner)
         #expect(copied.structuralOwner(for: .orderBy) == owner)
+        #expect(
+            groupByPart(in: copied).owner?.renderScope(for: .groupBy)
+                == owner.renderScope(for: .groupBy)
+        )
+        #expect(
+            orderByPart(in: copied).owner?.renderScope(for: .orderBy)
+                == owner.renderScope(for: .orderBy)
+        )
     }
 
     @Test("Nested frames isolate render context while sharing preparation")

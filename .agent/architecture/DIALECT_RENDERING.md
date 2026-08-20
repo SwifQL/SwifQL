@@ -176,7 +176,7 @@ The render-scope abstraction should provide a narrow public, value-semantic exte
 
 The current narrow extension point is the public, value-semantic `SwifQLRenderScope(namespace:name:)` plus `SwifQLable.scoped(_:)`. `SwifQLRenderContext` is public and read-only, while the concrete scoped part and recursive renderer remain library-owned. A downstream module can define a semantic scope, wrap a normal `SwifQLable`, and observe that scope through an additive context-aware dialect hook without relying on mutable ambient state.
 
-Keep scope identifiers namespaced and value-semantic. Do not expose mutable preparation state, raw global strings with collision-prone semantics, or unknown-part escape hatches.
+Keep scope identifiers namespaced and value-semantic. Scope identity derived from open owner and kind values must preserve their raw components structurally and injectively; delimiter-concatenated display text must never be the semantic identity. Do not expose mutable preparation state, raw global strings with collision-prone semantics, or unknown-part escape hatches.
 
 Extensibility is a design goal, not permission to add unsafe escape hatches. If a clean public extension point would require leaking renderer internals or false compatibility guarantees, keep that portion internal until the underlying API can support it honestly.
 
