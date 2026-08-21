@@ -80,6 +80,11 @@ public struct SwifQLStructuralFramePart: SwifQLPart {
     }
 }
 
+enum _SwifQLStructuralSpacingPolicy {
+    case normalizedContinuation
+    case literal
+}
+
 enum _SwifQLStructuralComposition {
     static func rootFrame(in parts: [SwifQLPart]) -> SwifQLStructuralFramePart? {
         parts.first as? SwifQLStructuralFramePart
@@ -116,7 +121,8 @@ enum _SwifQLStructuralComposition {
     static func append(
         _ base: SwifQLable,
         parts newParts: [SwifQLPart],
-        owners newOwners: [SwifQLClauseKind: SwifQLClauseOwner] = [:]
+        owners newOwners: [SwifQLClauseKind: SwifQLClauseOwner] = [:],
+        spacing: _SwifQLStructuralSpacingPolicy = .normalizedContinuation
     ) -> SwifQLable {
         func continuationParts(
             _ parts: [SwifQLPart],
@@ -140,8 +146,17 @@ enum _SwifQLStructuralComposition {
             return parts
         }
 
+        func partsToAppend(after existingParts: [SwifQLPart]) -> [SwifQLPart] {
+            switch spacing {
+            case .normalizedContinuation:
+                return continuationParts(newParts, after: existingParts)
+            case .literal:
+                return newParts
+            }
+        }
+
         guard let root = rootFrame(in: base.parts) else {
-            let appendedParts = continuationParts(newParts, after: base.parts)
+            let appendedParts = partsToAppend(after: base.parts)
             guard !newOwners.isEmpty else {
                 return SwifQLableParts(rawParts: base.parts + appendedParts)
             }
@@ -155,7 +170,7 @@ enum _SwifQLStructuralComposition {
             ])
         }
 
-        let appendedParts = continuationParts(newParts, after: root.children)
+        let appendedParts = partsToAppend(after: root.children)
         return SwifQLableParts(rawParts: [root.appending(appendedParts, owners: newOwners)])
     }
 

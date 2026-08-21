@@ -27,7 +27,11 @@ public func ~ (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
         if rhs.parts.first is SwifQLStructuralFramePart {
             return SwifQLableParts(rawParts: lhs.parts + rhs.parts)
         }
-        return lhs.structurallyAppending(rhs)
+        return _SwifQLStructuralComposition.append(
+            lhs,
+            parts: rhs.parts,
+            spacing: .literal
+        )
     }
 
     return SwifQLableParts(rawParts: lhs.parts + rhs.parts)
@@ -35,7 +39,11 @@ public func ~ (lhs: SwifQLable, rhs: SwifQLable) -> SwifQLable {
 public func ~ (lhs: SwifQLable, rhs: SwifQLPartOperator) -> SwifQLable {
     let fragment = SwifQLableParts(parts: rhs)
     if lhs.parts.first is SwifQLStructuralFramePart {
-        return lhs.structurallyAppending(fragment)
+        return _SwifQLStructuralComposition.append(
+            lhs,
+            parts: fragment.parts,
+            spacing: .literal
+        )
     }
 
     return SwifQLableParts(rawParts: lhs.parts + fragment.parts)

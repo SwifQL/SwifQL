@@ -201,6 +201,98 @@ struct StructuralBuilderCompatibilityTests: SwifQLTests {
         #expect(builder.build().prepare(.psql).splitted.values.map { String(describing: $0) } == ["18", "1", "20", "2"])
     }
 
+    @Test("Historical raw tilde composition retains Task 01 PostgreSQL/MySQL bytes")
+    func historicalTildeCompositionCompatibility() {
+        let users = Path.Table("users")
+        let age = users.column("age")
+        let tildeParts: [SwifQLable] = [
+            SwifQL, Op.select, Op.space, users.*,
+            Op.space, Op.from, Op.space, users,
+            Op.space, Op.where, Op.space, (age > 18)
+        ]
+        let tilde = tildeParts.dropFirst().reduce(tildeParts[0]) { $0 ~ $1 }
+
+        let psql = tilde.prepare(.psql)
+        #expect(psql.plain == #"SELECT "users".*  FROM "users" WHERE "users"."age" > 18"#)
+        #expect(psql.splitted.query == #"SELECT "users".*  FROM "users" WHERE "users"."age" > $1"#)
+        #expect(psql.splitted.values.map { String(describing: $0) } == ["18"])
+
+        let mysql = tilde.prepare(.mysql)
+        #expect(mysql.plain == "SELECT users.*  FROM users WHERE users.age > 18")
+        #expect(mysql.splitted.query == "SELECT users.*  FROM users WHERE users.age > ?")
+        #expect(mysql.splitted.values.map { String(describing: $0) } == ["18"])
+    }
+
+    @Test("Raw tilde with an unframed SwifQLable preserves explicit spaces and owner")
+    func rawTildeSwifQLableFragmentPreservesSpaces() {
+        let owner = SwifQLClauseOwner(namespace: "example", name: "raw")
+        let lhs: SwifQLable = SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            owners: [.groupBy: owner],
+            children: [
+                SwifQLPartOperator.custom("BASE"),
+                SwifQLPartOperator.space
+            ]
+        ))
+        let rhsParts: [SwifQLPart] = [
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.custom("TAIL")
+        ]
+        let rhs: SwifQLable = SwifQLableParts(parts: rhsParts)
+
+        let query = lhs ~ rhs
+        let frame = root(of: query)
+        #expect(query.parts.count == 1)
+        #expect(frame.owner(for: .groupBy) == owner)
+        #expect(frame.children.filter {
+            ($0 as? SwifQLPartOperator)?._value == " "
+        }.count == 2)
+        #expect(query.prepare(.psql).plain == "BASE  TAIL")
+    }
+
+    @Test("Raw tilde with a SwifQLPartOperator preserves an explicit second space")
+    func rawTildeOperatorFragmentPreservesSpaces() {
+        let lhs: SwifQLable = SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            children: [
+                SwifQLPartOperator.custom("BASE"),
+                SwifQLPartOperator.space
+            ]
+        ))
+
+        let query = lhs ~ SwifQLPartOperator.space
+        let frame = root(of: query)
+        #expect(query.parts.count == 1)
+        #expect(frame.children.filter {
+            ($0 as? SwifQLPartOperator)?._value == " "
+        }.count == 2)
+        #expect(query.prepare(.psql).plain == "BASE  ")
+    }
+
+    @Test("structurallyAppending retains normalized single-separator behavior")
+    func structurallyAppendingRemainsNormalized() {
+        let lhs: SwifQLable = SwifQLableParts(parts: SwifQLStructuralFramePart(
+            region: .statement,
+            children: [
+                SwifQLPartOperator.custom("BASE"),
+                SwifQLPartOperator.space
+            ]
+        ))
+        let fragmentParts: [SwifQLPart] = [
+            SwifQLPartOperator.space,
+            SwifQLPartOperator.custom("TAIL")
+        ]
+        let fragment: SwifQLable = SwifQLableParts(parts: fragmentParts)
+
+        let query = lhs.structurallyAppending(fragment)
+        let frame = root(of: query)
+        #expect(query.parts.count == 1)
+        #expect(frame.children.filter {
+            ($0 as? SwifQLPartOperator)?._value == " "
+        }.count == 1)
+        #expect(query.prepare(.psql).plain == "BASE TAIL")
+    }
+
     @Test("Expression parentheses stay syntax-only and raw tilde semantics remain distinct")
     func parenthesesAndTilde() {
         let expression = |(Path.Table("events").column("year") + 1)|
