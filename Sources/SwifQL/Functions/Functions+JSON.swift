@@ -17,9 +17,9 @@ extension Fn.Name {
     public static let jsonValid: Self = .init("json_valid")
     public static let jsonValue: Self = .init("json_value")
     public static let jsonTransform: Self = .init("json_transform")
-    public static let fromJson: Self = .init("from_json")
+    public static let fromJSON: Self = .init("from_json")
     public static let jsonTransformStrict: Self = .init("json_transform_strict")
-    public static let fromJsonStrict: Self = .init("from_json_strict")
+    public static let fromJSONStrict: Self = .init("from_json_strict")
     public static let jsonTree: Self = .init("json_tree")
 }
 
@@ -102,16 +102,16 @@ extension Fn {
         build(.jsonTransform, body: commaSeparated([json, structure]))
     }
 
-    public static func fromJson(_ json: SwifQLable, structure: SwifQLable) -> SwifQLable {
-        build(.fromJson, body: commaSeparated([json, structure]))
+    public static func fromJSON(_ json: SwifQLable, structure: SwifQLable) -> SwifQLable {
+        build(.fromJSON, body: commaSeparated([json, structure]))
     }
 
     public static func jsonTransformStrict(_ json: SwifQLable, structure: SwifQLable) -> SwifQLable {
         build(.jsonTransformStrict, body: commaSeparated([json, structure]))
     }
 
-    public static func fromJsonStrict(_ json: SwifQLable, structure: SwifQLable) -> SwifQLable {
-        build(.fromJsonStrict, body: commaSeparated([json, structure]))
+    public static func fromJSONStrict(_ json: SwifQLable, structure: SwifQLable) -> SwifQLable {
+        build(.fromJSONStrict, body: commaSeparated([json, structure]))
     }
 
     public static func jsonTree(_ json: SwifQLable) -> SwifQLable {

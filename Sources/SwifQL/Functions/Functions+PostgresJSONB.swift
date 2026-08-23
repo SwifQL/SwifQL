@@ -9,9 +9,9 @@ extension Fn.Name {
     public static var jsonbAgg: Self = .init("jsonb_agg")
     @available(*, deprecated, renamed: "jsonbAgg")
     public static var jsonb_agg: Self { .jsonbAgg }
-    public static var toJsonb: Self = .init("to_jsonb")
-    @available(*, deprecated, renamed: "toJsonb")
-    public static var to_jsonb: Self { .toJsonb }
+    public static var toJSONB: Self = .init("to_jsonb")
+    @available(*, deprecated, renamed: "toJSONB")
+    public static var to_jsonb: Self { .toJSONB }
     public static var jsonbBuildArray: Self = .init("jsonb_build_array")
     @available(*, deprecated, renamed: "jsonbBuildArray")
     public static var jsonb_build_array: Self { .jsonbBuildArray }
@@ -42,24 +42,24 @@ extension Fn.Name {
     public static var jsonbPopulateRecord: Self = .init("jsonb_populate_record")
     @available(*, deprecated, renamed: "jsonbPopulateRecord")
     public static var jsonb_populate_record: Self { .jsonbPopulateRecord }
-    public static var jsonbPopulateRecordset: Self = .init("jsonb_populate_recordset")
-    @available(*, deprecated, renamed: "jsonbPopulateRecordset")
-    public static var jsonb_populate_recordset: Self { .jsonbPopulateRecordset }
+    public static var jsonbPopulateRecordSet: Self = .init("jsonb_populate_recordset")
+    @available(*, deprecated, renamed: "jsonbPopulateRecordSet")
+    public static var jsonb_populate_recordset: Self { .jsonbPopulateRecordSet }
     public static var jsonbArrayElements: Self = .init("jsonb_array_elements")
     @available(*, deprecated, renamed: "jsonbArrayElements")
     public static var jsonb_array_elements: Self { .jsonbArrayElements }
     public static var jsonbArrayElementsText: Self = .init("jsonb_array_elements_text")
     @available(*, deprecated, renamed: "jsonbArrayElementsText")
     public static var jsonb_array_elements_text: Self { .jsonbArrayElementsText }
-    public static var jsonbTypeof: Self = .init("jsonb_typeof")
-    @available(*, deprecated, renamed: "jsonbTypeof")
-    public static var jsonb_typeof: Self { .jsonbTypeof }
+    public static var jsonbTypeOf: Self = .init("jsonb_typeof")
+    @available(*, deprecated, renamed: "jsonbTypeOf")
+    public static var jsonb_typeof: Self { .jsonbTypeOf }
     public static var jsonbToRecord: Self = .init("jsonb_to_record")
     @available(*, deprecated, renamed: "jsonbToRecord")
     public static var jsonb_to_record: Self { .jsonbToRecord }
-    public static var jsonbToRecordset: Self = .init("jsonb_to_recordset")
-    @available(*, deprecated, renamed: "jsonbToRecordset")
-    public static var jsonb_to_recordset: Self { .jsonbToRecordset }
+    public static var jsonbToRecordSet: Self = .init("jsonb_to_recordset")
+    @available(*, deprecated, renamed: "jsonbToRecordSet")
+    public static var jsonb_to_recordset: Self { .jsonbToRecordSet }
     public static var jsonbStripNulls: Self = .init("jsonb_strip_nulls")
     @available(*, deprecated, renamed: "jsonbStripNulls")
     public static var jsonb_strip_nulls: Self { .jsonbStripNulls }
@@ -91,13 +91,13 @@ extension Fn {
         /// otherwise, a scalar value is produced.
         /// For any scalar type other than a number, a Boolean, or a null value,
         /// the text representation will be used, in such a fashion that it is a valid json or jsonb value.
-        public static func toJsonb(_ aggregateExpression: SwifQLable) -> SwifQLable {
-            build(.toJsonb, body: aggregateExpression.parts)
+        public static func toJSONB(_ aggregateExpression: SwifQLable) -> SwifQLable {
+            build(.toJSONB, body: aggregateExpression.parts)
         }
 
-        @available(*, deprecated, renamed: "toJsonb(_:)")
+        @available(*, deprecated, renamed: "toJSONB(_:)")
         public static func to_jsonb(_ aggregateExpression: SwifQLable) -> SwifQLable {
-            toJsonb(aggregateExpression)
+            toJSONB(aggregateExpression)
         }
         
         /// Builds a possibly-heterogeneously-typed JSON array out of a variadic argument list
@@ -308,32 +308,32 @@ extension Fn {
         
         /// Expands the object in from_json to a row whose columns match the record type defined by base (see note below).
         /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-        public static func jsonbPopulateRecord(base: SwifQLable, fromJson: SwifQLable) -> SwifQLable {
+        public static func jsonbPopulateRecord(base: SwifQLable, fromJSON: SwifQLable) -> SwifQLable {
             var parts: [SwifQLPart] = base.parts
             parts.append(o: .comma)
             parts.append(o: .space)
-            parts.append(contentsOf: fromJson.parts)
+            parts.append(contentsOf: fromJSON.parts)
             return build(.jsonbPopulateRecord, body: parts)
         }
 
-        @available(*, deprecated, renamed: "jsonbPopulateRecord(base:fromJson:)")
+        @available(*, deprecated, renamed: "jsonbPopulateRecord(base:fromJSON:)")
         public static func jsonb_populate_record(base: SwifQLable, from_json: SwifQLable) -> SwifQLable {
-            jsonbPopulateRecord(base: base, fromJson: from_json)
+            jsonbPopulateRecord(base: base, fromJSON: from_json)
         }
         
         /// Expands the outermost array of objects in from_json to a set of rows whose columns match the record type defined by base (see note below).
         /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-        public static func jsonbPopulateRecordset(base: SwifQLable, fromJson: SwifQLable) -> SwifQLable {
+        public static func jsonbPopulateRecordSet(base: SwifQLable, fromJSON: SwifQLable) -> SwifQLable {
             var parts: [SwifQLPart] = base.parts
             parts.append(o: .comma)
             parts.append(o: .space)
-            parts.append(contentsOf: fromJson.parts)
-            return build(.jsonbPopulateRecordset, body: parts)
+            parts.append(contentsOf: fromJSON.parts)
+            return build(.jsonbPopulateRecordSet, body: parts)
         }
 
-        @available(*, deprecated, renamed: "jsonbPopulateRecordset(base:fromJson:)")
+        @available(*, deprecated, renamed: "jsonbPopulateRecordSet(base:fromJSON:)")
         public static func jsonb_populate_recordset(base: SwifQLable, from_json: SwifQLable) -> SwifQLable {
-            jsonbPopulateRecordset(base: base, fromJson: from_json)
+            jsonbPopulateRecordSet(base: base, fromJSON: from_json)
         }
         
         /// Expands a JSON array to a set of JSON values.
@@ -360,13 +360,13 @@ extension Fn {
         
         /// Returns the type of the outermost JSON value as a text string. Possible types are object, array, string, number, boolean, and null.
         /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-        public static func jsonbTypeof(_ aggregateExpression: SwifQLable) -> SwifQLable {
-            build(.jsonbTypeof, body: aggregateExpression.parts)
+        public static func jsonbTypeOf(_ aggregateExpression: SwifQLable) -> SwifQLable {
+            build(.jsonbTypeOf, body: aggregateExpression.parts)
         }
 
-        @available(*, deprecated, renamed: "jsonbTypeof(_:)")
+        @available(*, deprecated, renamed: "jsonbTypeOf(_:)")
         public static func jsonb_typeof(_ aggregateExpression: SwifQLable) -> SwifQLable {
-            jsonbTypeof(aggregateExpression)
+            jsonbTypeOf(aggregateExpression)
         }
         
         /// Builds an arbitrary record from a JSON object (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
@@ -382,13 +382,13 @@ extension Fn {
         
         /// Builds an arbitrary set of records from a JSON array of objects (see note below). As with all functions returning record, the caller must explicitly define the structure of the record with an AS clause.
         /// [Learn more →](https://www.postgresql.org/docs/current/functions-json.html)
-        public static func jsonbToRecordset(_ aggregateExpression: SwifQLable) -> SwifQLable {
-            build(.jsonbToRecordset, body: aggregateExpression.parts)
+        public static func jsonbToRecordSet(_ aggregateExpression: SwifQLable) -> SwifQLable {
+            build(.jsonbToRecordSet, body: aggregateExpression.parts)
         }
 
-        @available(*, deprecated, renamed: "jsonbToRecordset(_:)")
+        @available(*, deprecated, renamed: "jsonbToRecordSet(_:)")
         public static func jsonb_to_recordset(_ aggregateExpression: SwifQLable) -> SwifQLable {
-            jsonbToRecordset(aggregateExpression)
+            jsonbToRecordSet(aggregateExpression)
         }
         
         /// Returns from_json with all object fields that have null values omitted. Other null values are untouched.

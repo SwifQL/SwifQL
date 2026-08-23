@@ -234,10 +234,10 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select btrim")
-    func selectFnBtrim() {
+    @Test("Select bTrim")
+    func selectFnBTrim() {
         check(
-            SwifQL.select(Fn.btrim("hello", "ll")),
+            SwifQL.select(Fn.bTrim("hello", "ll")),
             .psql("SELECT btrim('hello', 'll')"),
             .mysql("SELECT btrim('hello', 'll')")
         )
@@ -279,10 +279,10 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select initcap")
-    func selectFnInitcap() {
+    @Test("Select initCap")
+    func selectFnInitCap() {
         check(
-            SwifQL.select(Fn.initcap("hello")),
+            SwifQL.select(Fn.initCap("hello")),
             .psql("SELECT initcap('hello')"),
             .mysql("SELECT initcap('hello')")
         )
@@ -306,19 +306,19 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select lpad")
-    func selectFnLpad() {
+    @Test("Select lPad")
+    func selectFnLPad() {
         check(
-            SwifQL.select(Fn.lpad("hello", 3, "lo")),
+            SwifQL.select(Fn.lPad("hello", 3, "lo")),
             .psql("SELECT lpad('hello', 3, 'lo')"),
             .mysql("SELECT lpad('hello', 3, 'lo')")
         )
     }
     
-    @Test("Select ltrim")
+    @Test("Select lTrim")
     func selectFnLtrim() {
         check(
-            SwifQL.select(Fn.ltrim("hello", "he")),
+            SwifQL.select(Fn.lTrim("hello", "he")),
             .psql("SELECT ltrim('hello', 'he')"),
             .mysql("SELECT ltrim('hello', 'he')")
         )
@@ -351,28 +351,28 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select rpad")
-    func selectFnRpad() {
+    @Test("Select rPad")
+    func selectFnRPad() {
         check(
-            SwifQL.select(Fn.rpad("hello", 2, "ho")),
+            SwifQL.select(Fn.rPad("hello", 2, "ho")),
             .psql("SELECT rpad('hello', 2, 'ho')"),
             .mysql("SELECT rpad('hello', 2, 'ho')")
         )
     }
     
-    @Test("Select rtrim")
-    func selectFnRtrim() {
+    @Test("Select rTrim")
+    func selectFnRTrim() {
         check(
-            SwifQL.select(Fn.rtrim(" hello ", " ")),
+            SwifQL.select(Fn.rTrim(" hello ", " ")),
             .psql("SELECT rtrim(' hello ', ' ')"),
             .mysql("SELECT rtrim(' hello ', ' ')")
         )
     }
     
-    @Test("Select strpos")
-    func selectFnStrpos() {
+    @Test("Select strPos")
+    func selectFnStrPos() {
         check(
-            SwifQL.select(Fn.strpos("hello", "ll")),
+            SwifQL.select(Fn.strPos("hello", "ll")),
             .psql("SELECT strpos('hello', 'll')"),
             .mysql("SELECT strpos('hello', 'll')")
         )
@@ -406,10 +406,10 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select ltrim")
+    @Test("Select lTrim")
     func selectFnLTrim() {
         check(
-            SwifQL.select(Fn.ltrim("hello", "he")),
+            SwifQL.select(Fn.lTrim("hello", "he")),
             .psql("SELECT ltrim('hello', 'he')"),
             .mysql("SELECT ltrim('hello', 'he')")
         )
@@ -534,10 +534,10 @@ struct SelectTests: SwifQLTests {
         )
     }
     
-    @Test("Select setseed")
+    @Test("Select setSeed")
     func selectFnSetSeed() {
         check(
-            SwifQL.select(Fn.setseed(12)),
+            SwifQL.select(Fn.setSeed(12)),
             .psql("SELECT setseed(12)"),
             .mysql("SELECT setseed(12)")
         )
@@ -584,10 +584,10 @@ struct SelectTests: SwifQLTests {
         )
     }
 
-    @Test("Select regexpReplace")
-    func selectFnRegexpReplace() {
+    @Test("Select regExpReplace")
+    func selectFnRegExpReplace() {
         check(
-            SwifQL.select(Fn.regexpReplace("/full/path/to/filename", "^.+/", "")),
+            SwifQL.select(Fn.regExpReplace("/full/path/to/filename", "^.+/", "")),
             .psql(#"SELECT regexp_replace('/full/path/to/filename', '^.+/', '')"#),
             .mysql("SELECT regexp_replace('/full/path/to/filename', '^.+/', '')")
         )

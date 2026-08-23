@@ -10,7 +10,7 @@ struct DuckExactFunctionTests: SwifQLTests {
     @Test("General helpers preserve exact Duck function identity and grammar")
     func generalFunctions() {
         expectDuck(
-            SwifQL.select(Fn.substr("abcdef", 2)),
+            SwifQL.select(Fn.subStr("abcdef", 2)),
             "SELECT substr('abcdef', 2)"
         )
         expectDuck(
@@ -61,7 +61,7 @@ struct DuckExactFunctionTests: SwifQLTests {
         expectDuck(SwifQL.select(Fn.random()), "SELECT random()")
         expectDuck(SwifQL.select(Fn.round(2.345)), "SELECT round(2.345)")
         expectDuck(SwifQL.select(Fn.round(2.345, 2)), "SELECT round(2.345, 2)")
-        expectDuck(SwifQL.select(Fn.setseed(0.5)), "SELECT setseed(0.5)")
+        expectDuck(SwifQL.select(Fn.setSeed(0.5)), "SELECT setseed(0.5)")
         expectDuck(SwifQL.select(Fn.sign(-8)), "SELECT sign(-8)")
         expectDuck(SwifQL.select(Fn.sqrt(9)), "SELECT sqrt(9)")
         expectDuck(SwifQL.select(Fn.sum(1)), "SELECT sum(1)")
@@ -185,19 +185,19 @@ struct DuckExactFunctionTests: SwifQLTests {
     @Test("Existing one-argument JSON reuse stays exact while pretty forms remain unclaimed")
     func existingJSONOneArgumentReuse() {
         expectDuck(
-            SwifQL.select(Fn.arrayToJson(Fn.listValue(1, 2))),
+            SwifQL.select(Fn.arrayToJSON(Fn.listValue(1, 2))),
             "SELECT array_to_json(list_value(1, 2))"
         )
         expectDuck(
-            SwifQL.select(Fn.rowToJson(Fn.listValue(1, 2))),
+            SwifQL.select(Fn.rowToJSON(Fn.listValue(1, 2))),
             "SELECT row_to_json(list_value(1, 2))"
         )
         expectDuck(
-            SwifQL.select(Fn.arrayToJson(Fn.listValue(1, 2), pretty: true)),
+            SwifQL.select(Fn.arrayToJSON(Fn.listValue(1, 2), pretty: true)),
             "SELECT array_to_json(list_value(1, 2), TRUE)"
         )
         expectDuck(
-            SwifQL.select(Fn.rowToJson(Fn.listValue(1, 2), pretty: true)),
+            SwifQL.select(Fn.rowToJSON(Fn.listValue(1, 2), pretty: true)),
             "SELECT row_to_json(list_value(1, 2), TRUE)"
         )
     }
@@ -232,17 +232,17 @@ struct DuckExactFunctionTests: SwifQLTests {
         expectDuck(SwifQL.select(Fn.charLength("jose")), "SELECT char_length('jose')")
         expectDuck(SwifQL.select(Fn.characterLength("jose")), "SELECT character_length('jose')")
         expectDuck(SwifQL.select(Fn.concat("Post", "greSQL")), "SELECT concat('Post', 'greSQL')")
-        expectDuck(SwifQL.select(Fn.concatWs("-", "Post", "greSQL")), "SELECT concat_ws('-', 'Post', 'greSQL')")
+        expectDuck(SwifQL.select(Fn.concatWS("-", "Post", "greSQL")), "SELECT concat_ws('-', 'Post', 'greSQL')")
         expectDuck(SwifQL.select(Fn.length("jose")), "SELECT length('jose')")
         expectDuck(SwifQL.select(Fn.lower("JOSE")), "SELECT lower('JOSE')")
-        expectDuck(SwifQL.select(Fn.lpad("hi", 5, "x")), "SELECT lpad('hi', 5, 'x')")
-        expectDuck(SwifQL.select(Fn.ltrim("xxalpha", "x")), "SELECT ltrim('xxalpha', 'x')")
+        expectDuck(SwifQL.select(Fn.lPad("hi", 5, "x")), "SELECT lpad('hi', 5, 'x')")
+        expectDuck(SwifQL.select(Fn.lTrim("xxalpha", "x")), "SELECT ltrim('xxalpha', 'x')")
         expectDuck(SwifQL.select(Fn.position("ifq", in: "swifql")), "SELECT position('ifq' IN 'swifql')")
         expectDuck(SwifQL.select(Fn.repeat("ab", 3)), "SELECT repeat('ab', 3)")
         expectDuck(SwifQL.select(Fn.replace("abcabc", "ab", "X")), "SELECT replace('abcabc', 'ab', 'X')")
-        expectDuck(SwifQL.select(Fn.rpad("hi", 5, "x")), "SELECT rpad('hi', 5, 'x')")
-        expectDuck(SwifQL.select(Fn.rtrim("alphaxx", "x")), "SELECT rtrim('alphaxx', 'x')")
-        expectDuck(SwifQL.select(Fn.strpos("swifql", "ifq")), "SELECT strpos('swifql', 'ifq')")
+        expectDuck(SwifQL.select(Fn.rPad("hi", 5, "x")), "SELECT rpad('hi', 5, 'x')")
+        expectDuck(SwifQL.select(Fn.rTrim("alphaxx", "x")), "SELECT rtrim('alphaxx', 'x')")
+        expectDuck(SwifQL.select(Fn.strPos("swifql", "ifq")), "SELECT strpos('swifql', 'ifq')")
         expectDuck(SwifQL.select(Fn.substring("abcdef", from: 2)), "SELECT substring('abcdef' FROM 2)")
         expectDuck(SwifQL.select(Fn.substring("abcdef", for: 3)), "SELECT substring('abcdef' FOR 3)")
         expectDuck(SwifQL.select(Fn.substring("abcdef", from: 2, for: 3)), "SELECT substring('abcdef' FROM 2 FOR 3)")
@@ -251,7 +251,7 @@ struct DuckExactFunctionTests: SwifQLTests {
         expectDuck(SwifQL.select(Fn.upper("jose")), "SELECT upper('jose')")
         expectDuck(SwifQL.select(Fn.stringAgg("a", "-")), "SELECT string_agg('a', '-')")
         expectDuck(
-            SwifQL.select(Fn.regexpReplace("abc123", "[0-9]+", "#")),
+            SwifQL.select(Fn.regExpReplace("abc123", "[0-9]+", "#")),
             "SELECT regexp_replace('abc123', '[0-9]+', '#')"
         )
     }
@@ -294,7 +294,7 @@ struct DuckExactFunctionTests: SwifQLTests {
             SwifQL.select(Fn.extract("year", from: timestamp)),
             "SELECT extract('year' FROM cast('2001-02-16 20:38:40' as timestamp))"
         )
-        expectDuck(SwifQL.select(Fn.isfinite(date)), "SELECT isfinite(cast('2020-01-02' as date))")
+        expectDuck(SwifQL.select(Fn.isFinite(date)), "SELECT isfinite(cast('2020-01-02' as date))")
         expectDuck(SwifQL.select(Fn.makeDate(2013, 7, 15)), "SELECT make_date(2013, 7, 15)")
         expectDuck(SwifQL.select(Fn.makeTime(8, 15, 23.5)), "SELECT make_time(8, 15, 23.5)")
         expectDuck(
@@ -302,17 +302,17 @@ struct DuckExactFunctionTests: SwifQLTests {
             "SELECT make_timestamp(2013, 7, 15, 8, 15, 23.5)"
         )
         expectDuck(
-            SwifQL.select(Fn.makeTimestamptz(2013, 7, 15, 8, 15, 23.5)),
+            SwifQL.select(Fn.makeTimestampTZ(2013, 7, 15, 8, 15, 23.5)),
             "SELECT make_timestamptz(2013, 7, 15, 8, 15, 23.5)"
         )
         expectDuck(
-            SwifQL.select(Fn.makeTimestamptz(2013, 7, 15, 8, 15, 23.5, "UTC")),
+            SwifQL.select(Fn.makeTimestampTZ(2013, 7, 15, 8, 15, 23.5, "UTC")),
             "SELECT make_timestamptz(2013, 7, 15, 8, 15, 23.5, 'UTC')"
         )
         expectDuck(SwifQL.select(Fn.now()), "SELECT now()")
         expectDuck(SwifQL.select(Fn.currentDate), "SELECT current_date")
-        expectDuck(SwifQL.select(Fn.localtime), "SELECT localtime")
-        expectDuck(SwifQL.select(Fn.localtimestamp), "SELECT localtimestamp")
+        expectDuck(SwifQL.select(Fn.localTime), "SELECT localtime")
+        expectDuck(SwifQL.select(Fn.localTimestamp), "SELECT localtimestamp")
         expectDuck(SwifQL.select(Fn.transactionTimestamp()), "SELECT transaction_timestamp()")
         expectDuck(SwifQL.select(Fn.toTimestamp(1284352323.0)), "SELECT to_timestamp(1284352323.0)")
     }
@@ -333,7 +333,7 @@ struct DuckExactFunctionTests: SwifQLTests {
                 ordered(Fn.denseRank()),
                 ordered(Fn.percentRank()),
                 ordered(Fn.cumeDist()),
-                ordered(Fn.ntile(2)),
+                ordered(Fn.nTile(2)),
                 ordered(Fn.lag(value)),
                 ordered(Fn.lag(value, 1)),
                 ordered(Fn.lead(value)),
@@ -354,7 +354,7 @@ struct DuckExactFunctionTests: SwifQLTests {
     func bindings() {
         let first = "O'Reilly"
         let second = "Привет 🦆"
-        let query = SwifQL.select(Fn.coalesce(first, second), Fn.substr("abcdef", 2))
+        let query = SwifQL.select(Fn.coalesce(first, second), Fn.subStr("abcdef", 2))
         let prepared = query.prepare(.duck)
 
         #expect(prepared.plain == "SELECT coalesce('O''Reilly','Привет 🦆'), substr('abcdef', 2)")
@@ -365,7 +365,7 @@ struct DuckExactFunctionTests: SwifQLTests {
     @Test("Copied and stored exact helpers keep the same Duck structure")
     func compositionInvariance() {
         func helper() -> SwifQLable {
-            Fn.coalesce("primary", Fn.substr("fallback", 2))
+            Fn.coalesce("primary", Fn.subStr("fallback", 2))
         }
 
         let stored: SwifQLable = helper()
@@ -393,7 +393,7 @@ struct DuckExactFunctionTests: SwifQLTests {
     func establishedDialectRegression() {
         let query = SwifQL.select(
             Fn.abs(-5),
-            Fn.substr("abcdef", 2),
+            Fn.subStr("abcdef", 2),
             Fn.stringAgg(CarBrands.column("name"), ", ")
         )
 

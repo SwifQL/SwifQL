@@ -80,10 +80,10 @@ struct DuckSequenceMacroTests: SwifQLTests {
         }
     }
 
-    @Test("nextval, currval, DEFAULT, and historical sequence controls preserve binding semantics")
+    @Test("nextVal, currVal, DEFAULT, and historical sequence controls preserve binding semantics")
     func sequenceFunctionsAndDefaults() {
-        let next = Fn.nextval("order_id_seq")
-        let current = Fn.currval("order_id_seq")
+        let next = Fn.nextVal("order_id_seq")
+        let current = Fn.currVal("order_id_seq")
         let nextPrepared = next.prepare(.duck).splitted
         let currentPrepared = current.prepare(.duck).splitted
 

@@ -6,28 +6,28 @@
 //
 
 extension Fn.Name {
-    public static var fromUnixtime: Self = .init("FROM_UNIXTIME")
-    @available(*, deprecated, renamed: "fromUnixtime")
-    public static var from_unixtime: Self { .fromUnixtime }
+    public static var fromUnixTime: Self = .init("FROM_UNIXTIME")
+    @available(*, deprecated, renamed: "fromUnixTime")
+    public static var from_unixtime: Self { .fromUnixTime }
     public static var dateFormat: Self = .init("DATE_FORMAT")
     @available(*, deprecated, renamed: "dateFormat")
     public static var date_format: Self { .dateFormat }
 }
 
 extension Fn {
-    public static func fromUnixtime(_ timeinterval: SwifQLable, _ format: String? = nil) -> SwifQLable {
+    public static func fromUnixTime(_ timeinterval: SwifQLable, _ format: String? = nil) -> SwifQLable {
         var parts: [SwifQLPart] = timeinterval.parts
         if let format = format {
             parts.append(o: .comma)
             parts.append(o: .space)
             parts.append(o: .custom(format.singleQuotted))
         }
-        return build(.fromUnixtime, body: parts)
+        return build(.fromUnixTime, body: parts)
     }
 
-    @available(*, deprecated, renamed: "fromUnixtime(_:_:)")
+    @available(*, deprecated, renamed: "fromUnixTime(_:_:)")
     public static func from_unixtime(_ timeinterval: SwifQLable, _ format: String? = nil) -> SwifQLable {
-        fromUnixtime(timeinterval, format)
+        fromUnixTime(timeinterval, format)
     }
 
     /// Formats the date value according to the format string.

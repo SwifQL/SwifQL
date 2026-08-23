@@ -26,7 +26,7 @@ struct DuckJSONPrecedenceTests: SwifQLTests {
     @Test("Duck traversal protection composes through aliases, functions, ordering, and predicates")
     func grammarPositions() {
         let alias = field => "field_value"
-        let length = Fn.substr(nestedText, 1)
+        let length = Fn.subStr(nestedText, 1)
         let order = SwifQL.select(field).from(Path.Table("events")).orderBy(.asc(field))
         let predicate = fieldText == "alpha"
 
@@ -78,9 +78,9 @@ struct DuckJSONPrecedenceTests: SwifQLTests {
                 Fn.jsonValid(json),
                 Fn.jsonValue(json, path: "$.a"),
                 Fn.jsonTransform(json, structure: structure),
-                Fn.fromJson(json, structure: structure),
+                Fn.fromJSON(json, structure: structure),
                 Fn.jsonTransformStrict(json, structure: structure),
-                Fn.fromJsonStrict(json, structure: structure)
+                Fn.fromJSONStrict(json, structure: structure)
             ),
             .duck(#"SELECT json_array(1, 'alpha'), json_merge_patch('{"a":"alpha","n":7}', '{"b":2}'), json_group_array(1), json_group_object('a', 1), json_group_structure('{"a":"alpha","n":7}'), json_keys('{"a":"alpha","n":7}'), json_keys('{"a":"alpha","n":7}', 'a'), json_structure('{"a":"alpha","n":7}'), json_type('{"a":"alpha","n":7}'), json_type('{"a":"alpha","n":7}', 'a'), json_valid('{"a":"alpha","n":7}'), json_value('{"a":"alpha","n":7}', '$.a'), json_transform('{"a":"alpha","n":7}', '{"a":"VARCHAR","n":"INTEGER"}'), from_json('{"a":"alpha","n":7}', '{"a":"VARCHAR","n":"INTEGER"}'), json_transform_strict('{"a":"alpha","n":7}', '{"a":"VARCHAR","n":"INTEGER"}'), from_json_strict('{"a":"alpha","n":7}', '{"a":"VARCHAR","n":"INTEGER"}')"#)
         )

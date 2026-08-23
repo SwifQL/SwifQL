@@ -25,66 +25,66 @@ struct FnTests: SwifQLTests {
             .mysql("concat('Hello ', CarBrands.name)")
         )
         check(
-            Fn.concatWs(", ", "Hello", CarBrands.column("name")),
+            Fn.concatWS(", ", "Hello", CarBrands.column("name")),
             .psql(#"concat_ws(', ', 'Hello', "CarBrands"."name")"#),
             .mysql("concat_ws(', ', 'Hello', CarBrands.name)")
         )
     }
     
-    // MARK: - Fn.toTsvector
+    // MARK: - Fn.toTSVector
     
-    @Test("Test toTsvector")
-    func toTsvector() {
+    @Test("Test toTSVector")
+    func toTSVector() {
         check(
-            SwifQL.select(Fn.toTsvector("english", "a fat  cat sat on a mat - it ate a fat rats")),
+            SwifQL.select(Fn.toTSVector("english", "a fat  cat sat on a mat - it ate a fat rats")),
             .psql(#"SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')"#),
             .mysql("SELECT to_tsvector('english', 'a fat  cat sat on a mat - it ate a fat rats')")
         )
         check(
-            SwifQL.select(Fn.toTsvector("english")),
+            SwifQL.select(Fn.toTSVector("english")),
             .psql("SELECT to_tsvector('english')"),
             .mysql("SELECT to_tsvector('english')")
         )
     }
     
-    // MARK: - Fn.toTsquery
+    // MARK: - Fn.toTSQuery
     
-    @Test("Test toTsquery")
-    func toTsquery() {
+    @Test("Test toTSQuery")
+    func toTSQuery() {
         check(
-            SwifQL.select(Fn.toTsquery("english", "The & Fat & Rats")),
+            SwifQL.select(Fn.toTSQuery("english", "The & Fat & Rats")),
             .psql("SELECT to_tsquery('english', 'The & Fat & Rats')"),
             .mysql("SELECT to_tsquery('english', 'The & Fat & Rats')")
         )
         check(
-            SwifQL.select(Fn.toTsquery("english")),
+            SwifQL.select(Fn.toTSQuery("english")),
             .psql("SELECT to_tsquery('english')"),
             .mysql("SELECT to_tsquery('english')")
         )
     }
     
-    // MARK: - Fn.plaintoTsquery
+    // MARK: - Fn.plainToTSQuery
     
-    @Test("Test plaintoTsquery")
-    func plaintoTsquery() {
+    @Test("Test plainToTSQuery")
+    func plainToTSQuery() {
         check(
-            SwifQL.select(Fn.plaintoTsquery("english", "The Fat Rats")),
+            SwifQL.select(Fn.plainToTSQuery("english", "The Fat Rats")),
             .psql("SELECT plainto_tsquery('english', 'The Fat Rats')"),
             .mysql("SELECT plainto_tsquery('english', 'The Fat Rats')")
         )
         check(
-            SwifQL.select(Fn.plaintoTsquery("english")),
+            SwifQL.select(Fn.plainToTSQuery("english")),
             .psql("SELECT plainto_tsquery('english')"),
             .mysql("SELECT plainto_tsquery('english')")
         )
     }
     
-    // MARK: - Fn.tsRankCd
+    // MARK: - Fn.tsRankCD
     
-    @Test("Test tsRankCd")
-    func tsRankCd() {
+    @Test("Test tsRankCD")
+    func tsRankCD() {
         check(
-            SwifQL.select(Fn.tsRankCd(FormattedKeyPath(CarBrands.self, "id"), Fn.toTsquery("The Fat Rats"))),
+            SwifQL.select(Fn.tsRankCD(FormattedKeyPath(CarBrands.self, "id"), Fn.toTSQuery("The Fat Rats"))),
             .psql(#"SELECT ts_rank_cd("CarBrands"."id", to_tsquery('The Fat Rats'))"#),
             .mysql("SELECT ts_rank_cd(CarBrands.id, to_tsquery('The Fat Rats'))")
         )

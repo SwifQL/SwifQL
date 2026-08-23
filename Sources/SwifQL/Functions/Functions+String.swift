@@ -9,31 +9,45 @@ extension Fn.Name {
     public static var bitLength: Self = .init("bit_length")
     @available(*, deprecated, renamed: "bitLength")
     public static var bit_length: Self { .bitLength }
-    public static var btrim: Self = .init("btrim")
+    public static var bTrim: Self = .init("btrim")
+    @available(*, deprecated, renamed: "bTrim")
+    public static var btrim: Self { .bTrim }
     public static var charLength: Self = .init("char_length")
     @available(*, deprecated, renamed: "charLength")
     public static var char_length: Self { .charLength }
     public static var characterLength: Self = .init("character_length")
     @available(*, deprecated, renamed: "characterLength")
     public static var character_length: Self { .characterLength }
-    public static var initcap: Self = .init("initcap")
+    public static var initCap: Self = .init("initcap")
+    @available(*, deprecated, renamed: "initCap")
+    public static var initcap: Self { .initCap }
     public static var concat: Self = .init("concat")
-    public static var concatWs: Self = .init("concat_ws")
-    @available(*, deprecated, renamed: "concatWs")
-    public static var concat_ws: Self { .concatWs }
+    public static var concatWS: Self = .init("concat_ws")
+    @available(*, deprecated, renamed: "concatWS")
+    public static var concat_ws: Self { .concatWS }
     public static var arrayLength: Self = .init("array_length")
     @available(*, deprecated, renamed: "arrayLength")
     public static var array_length: Self { .arrayLength }
     public static var length: Self = .init("length")
     public static var lower: Self = .init("lower")
-    public static var lpad: Self = .init("lpad")
-    public static var ltrim: Self = .init("ltrim")
+    public static var lPad: Self = .init("lpad")
+    @available(*, deprecated, renamed: "lPad")
+    public static var lpad: Self { .lPad }
+    public static var lTrim: Self = .init("ltrim")
+    @available(*, deprecated, renamed: "lTrim")
+    public static var ltrim: Self { .lTrim }
     public static var position: Self = .init("position")
     public static var `repeat`: Self = .init("repeat")
     public static var replace: Self = .init("replace")
-    public static var rpad: Self = .init("rpad")
-    public static var rtrim: Self = .init("rtrim")
-    public static var strpos: Self = .init("strpos")
+    public static var rPad: Self = .init("rpad")
+    @available(*, deprecated, renamed: "rPad")
+    public static var rpad: Self { .rPad }
+    public static var rTrim: Self = .init("rtrim")
+    @available(*, deprecated, renamed: "rTrim")
+    public static var rtrim: Self { .rTrim }
+    public static var strPos: Self = .init("strpos")
+    @available(*, deprecated, renamed: "strPos")
+    public static var strpos: Self { .strPos }
     public static var substring: Self = .init("substring")
     public static var translate: Self = .init("translate")
     public static var trim: Self = .init("trim")
@@ -41,9 +55,9 @@ extension Fn.Name {
     public static var stringAgg: Self = .init("string_agg")
     @available(*, deprecated, renamed: "stringAgg")
     public static var string_agg: Self { .stringAgg }
-    public static var regexpReplace: Self = .init("regexp_replace")
-    @available(*, deprecated, renamed: "regexpReplace")
-    public static var regexp_replace: Self { .regexpReplace }
+    public static var regExpReplace: Self = .init("regexp_replace")
+    @available(*, deprecated, renamed: "regExpReplace")
+    public static var regexp_replace: Self { .regExpReplace }
 } 
 
 extension Fn {
@@ -76,12 +90,17 @@ extension Fn {
     
     /// Removes all specified characters from both the beginning and the end of a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/btrim.php)
-    public static func btrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
+    public static func bTrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(safe: characters)
-        return build(.btrim, body: parts)
+        return build(.bTrim, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "bTrim(_:_:)")
+    public static func btrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
+        bTrim(string, characters)
     }
     
     /// Returns the length of the specified string
@@ -108,8 +127,13 @@ extension Fn {
     
     /// Converts the first letter of each word to uppercase and all other letters are converted to lowercase
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/initcap.php)
+    public static func initCap(_ string: SwifQLable) -> SwifQLable {
+        build(.initCap, body: string.parts)
+    }
+
+    @available(*, deprecated, renamed: "initCap(_:)")
     public static func initcap(_ string: SwifQLable) -> SwifQLable {
-        build(.initcap, body: string.parts)
+        initCap(string)
     }
     
     /// Concatenate all arguments. NULL arguments are ignored.
@@ -154,34 +178,34 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.concatWs(", ", "Hello", \User.name)
+    /// Fn.concatWS(", ", "Hello", \User.name)
     /// ```
     /// # Result
     /// ```
     /// concat_ws(', ', 'Hello', "User"."name")
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
-    public static func concatWs(_ values: SwifQLable...) -> SwifQLable {
-        concatWs(values)
+    public static func concatWS(_ values: SwifQLable...) -> SwifQLable {
+        concatWS(values)
     }
 
-    @available(*, deprecated, renamed: "concatWs(_:)")
+    @available(*, deprecated, renamed: "concatWS(_:)")
     public static func concat_ws(_ values: SwifQLable...) -> SwifQLable {
-        concatWs(values)
+        concatWS(values)
     }
     
     /// Concatenate all arguments. NULL arguments are ignored.
     ///
     /// # Example
     /// ```swift
-    /// Fn.concatWs(", ", "Hello", \User.name)
+    /// Fn.concatWS(", ", "Hello", \User.name)
     /// ```
     /// # Result
     /// ```
     /// concat_ws(', ', 'Hello', "User"."name")
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/9.1/functions-string.html)
-    public static func concatWs(_ values: [SwifQLable]) -> SwifQLable {
+    public static func concatWS(_ values: [SwifQLable]) -> SwifQLable {
         var parts: [SwifQLPart] = []
         values.enumerated().forEach { offset, value in
             parts.append(contentsOf: value.parts)
@@ -190,12 +214,12 @@ extension Fn {
                 parts.append(o: .space)
             }
         }
-        return build(.concatWs, body: parts)
+        return build(.concatWS, body: parts)
     }
 
-    @available(*, deprecated, renamed: "concatWs(_:)")
+    @available(*, deprecated, renamed: "concatWS(_:)")
     public static func concat_ws(_ values: [SwifQLable]) -> SwifQLable {
-        concatWs(values)
+        concatWS(values)
     }
     
     /// Returns the length of the requested array dimension
@@ -226,7 +250,7 @@ extension Fn {
     
     /// Returns a string that is left-padded with a specified string to a certain length
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/lpad.php)
-    public static func lpad(_ string: SwifQLable, _ length: Int, _ padString: SwifQLable) -> SwifQLable {
+    public static func lPad(_ string: SwifQLable, _ length: Int, _ padString: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
         parts.append(o: .comma)
         parts.append(o: .space)
@@ -234,17 +258,27 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: padString.parts)
-        return build(.lpad, body: parts)
+        return build(.lPad, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "lPad(_:_:_:)")
+    public static func lpad(_ string: SwifQLable, _ length: Int, _ padString: SwifQLable) -> SwifQLable {
+        lPad(string, length, padString)
     }
     
     /// Removes all specified characters from the left-hand side of a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/ltrim.php)
-    public static func ltrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
+    public static func lTrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(safe: characters)
-        return build(.ltrim, body: parts)
+        return build(.lTrim, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "lTrim(_:_:)")
+    public static func ltrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
+        lTrim(string, characters)
     }
     
     /// Returns the location of a substring in a string
@@ -283,7 +317,7 @@ extension Fn {
     
     /// Returns a string that is right-padded with a specified string to a certain length
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/rpad.php)
-    public static func rpad(_ string: SwifQLable, _ length: Int, _ padString: SwifQLable) -> SwifQLable {
+    public static func rPad(_ string: SwifQLable, _ length: Int, _ padString: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
         parts.append(o: .comma)
         parts.append(o: .space)
@@ -291,27 +325,42 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: padString.parts)
-        return build(.rpad, body: parts)
+        return build(.rPad, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "rPad(_:_:_:)")
+    public static func rpad(_ string: SwifQLable, _ length: Int, _ padString: SwifQLable) -> SwifQLable {
+        rPad(string, length, padString)
     }
     
     /// Removes all specified characters from the right-hand side of a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/rtrim.php)
-    public static func rtrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
+    public static func rTrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(safe: characters)
-        return build(.rtrim, body: parts)
+        return build(.rTrim, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "rTrim(_:_:)")
+    public static func rtrim(_ string: SwifQLable, _ characters: String) -> SwifQLable {
+        rTrim(string, characters)
     }
     
     /// Returns the location of a substring in a string
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/strpos.php)
-    public static func strpos(_ string: SwifQLable, _ substring: SwifQLable) -> SwifQLable {
+    public static func strPos(_ string: SwifQLable, _ substring: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = string.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: substring.parts)
-        return build(.strpos, body: parts)
+        return build(.strPos, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "strPos(_:_:)")
+    public static func strpos(_ string: SwifQLable, _ substring: SwifQLable) -> SwifQLable {
+        strPos(string, substring)
     }
     
     /// Allows you to extract a substring from a string
@@ -420,7 +469,7 @@ extension Fn {
     
     /// Replaces a sequence of characters in a string with another set of characters using regular expression pattern matching
     /// [Learn more →](https://www.techonthenet.com/oracle/functions/regexp_replace.php)
-    public static func regexpReplace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
+    public static func regExpReplace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
         var parts: [SwifQLPart] = []
         parts.append(contentsOf: string.parts)
         parts.append(o: .comma)
@@ -429,11 +478,11 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: toSubstring.parts)
-        return build(.regexpReplace, body: parts)
+        return build(.regExpReplace, body: parts)
     }
 
-    @available(*, deprecated, renamed: "regexpReplace(_:_:_:)")
+    @available(*, deprecated, renamed: "regExpReplace(_:_:_:)")
     public static func regexp_replace(_ string: SwifQLable, _ fromRegexp: SwifQLable, _ toSubstring: SwifQLable) -> SwifQLable {
-        regexpReplace(string, fromRegexp, toSubstring)
+        regExpReplace(string, fromRegexp, toSubstring)
     }
 }

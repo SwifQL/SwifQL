@@ -6,28 +6,39 @@
 //
 
 extension Fn.Name {
-    public static var substr: Self = .init("substr")
+    public static var subStr: Self = .init("substr")
+    @available(*, deprecated, renamed: "subStr")
+    public static var substr: Self { .subStr }
     public static var coalesce: Self = .init("coalesce")
     public static var octetLength: Self = .init("octet_length")
     @available(*, deprecated, renamed: "octetLength")
     public static var octet_length: Self { .octetLength }
     public static var cast: Self = .init("cast")
-    public static var nextval: Self = .init("nextval")
-    public static var currval: Self = .init("currval")
-    public static var ifnull: Self = .init("ifnull")
-    public static var isnull: Self = .init("isnull")
+    public static var nextVal: Self = .init("nextval")
+    public static var currVal: Self = .init("currval")
+    public static var ifNull: Self = .init("ifnull")
+    @available(*, deprecated, renamed: "ifNull")
+    public static var ifnull: Self { .ifNull }
+    public static var isNull: Self = .init("isnull")
+    @available(*, deprecated, renamed: "isNull")
+    public static var isnull: Self { .isNull }
     public static var nvl: Self = .init("nvl")
     public static var groupingId: Self = .init("grouping_id")
     public static var expression: Self = .init("expression")
 }
 
 extension Fn {
-    public static func substr(_ queryPart: SwifQLable, _ to: Int) -> SwifQLable {
+    public static func subStr(_ queryPart: SwifQLable, _ to: Int) -> SwifQLable {
         var parts: [SwifQLPart] = queryPart.parts
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(safe: to)
-        return build(.substr, body: parts)
+        return build(.subStr, body: parts)
+    }
+
+    @available(*, deprecated, renamed: "subStr(_:_:)")
+    public static func substr(_ queryPart: SwifQLable, _ to: Int) -> SwifQLable {
+        subStr(queryPart, to)
     }
     
     /// `SELECT COALESCE (NULL, 2 , 1);` will return 2
@@ -98,12 +109,12 @@ extension Fn {
         return build(.cast, body: parts)
     }
 
-    public static func nextval(_ sequence: SwifQLable) -> SwifQLable {
-        build(.nextval, body: sequence.parts)
+    public static func nextVal(_ sequence: SwifQLable) -> SwifQLable {
+        build(.nextVal, body: sequence.parts)
     }
 
-    public static func currval(_ sequence: SwifQLable) -> SwifQLable {
-        build(.currval, body: sequence.parts)
+    public static func currVal(_ sequence: SwifQLable) -> SwifQLable {
+        build(.currVal, body: sequence.parts)
     }
     
     public static func ifNull(_ value1: SwifQLable, _ value2: SwifQLable) -> SwifQLable {
@@ -111,7 +122,7 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: value2.parts)
-        return build(.ifnull, body: parts)
+        return build(.ifNull, body: parts)
     }
     
     public static func isNull(_ value1: SwifQLable, _ value2: SwifQLable) -> SwifQLable {
@@ -119,7 +130,7 @@ extension Fn {
         parts.append(o: .comma)
         parts.append(o: .space)
         parts.append(contentsOf: value2.parts)
-        return build(.isnull, body: parts)
+        return build(.isNull, body: parts)
     }
     
     public static func nvl(_ value1: SwifQLable, _ value2: SwifQLable) -> SwifQLable {

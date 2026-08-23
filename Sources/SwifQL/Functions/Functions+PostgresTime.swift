@@ -26,7 +26,9 @@ extension Fn.Name {
     @available(*, deprecated, renamed: "dateTrunc")
     public static var date_trunc: Self { .dateTrunc }
     public static var extract: Self = .init("extract")
-    public static var isfinite: Self = .init("isfinite")
+    public static var isFinite: Self = .init("isfinite")
+    @available(*, deprecated, renamed: "isFinite")
+    public static var isfinite: Self { .isFinite }
     public static var justifyDays: Self = .init("justify_days")
     @available(*, deprecated, renamed: "justifyDays")
     public static var justify_days: Self { .justifyDays }
@@ -36,8 +38,12 @@ extension Fn.Name {
     public static var justifyInterval: Self = .init("justify_interval")
     @available(*, deprecated, renamed: "justifyInterval")
     public static var justify_interval: Self { .justifyInterval }
-    public static var localtime: Self = .init("localtime")
-    public static var localtimestamp: Self = .init("localtimestamp")
+    public static var localTime: Self = .init("localtime")
+    @available(*, deprecated, renamed: "localTime")
+    public static var localtime: Self { .localTime }
+    public static var localTimestamp: Self = .init("localtimestamp")
+    @available(*, deprecated, renamed: "localTimestamp")
+    public static var localtimestamp: Self { .localTimestamp }
     public static var makeDate: Self = .init("make_date")
     @available(*, deprecated, renamed: "makeDate")
     public static var make_date: Self { .makeDate }
@@ -50,14 +56,16 @@ extension Fn.Name {
     public static var makeTimestamp: Self = .init("make_timestamp")
     @available(*, deprecated, renamed: "makeTimestamp")
     public static var make_timestamp: Self { .makeTimestamp }
-    public static var makeTimestamptz: Self = .init("make_timestamptz")
-    @available(*, deprecated, renamed: "makeTimestamptz")
-    public static var make_timestamptz: Self { .makeTimestamptz }
+    public static var makeTimestampTZ: Self = .init("make_timestamptz")
+    @available(*, deprecated, renamed: "makeTimestampTZ")
+    public static var make_timestamptz: Self { .makeTimestampTZ }
     public static var now: Self = .init("now")
     public static var statementTimestamp: Self = .init("statement_timestamp")
     @available(*, deprecated, renamed: "statementTimestamp")
     public static var statement_timestamp: Self { .statementTimestamp }
-    public static var timeofday: Self = .init("timeofday")
+    public static var timeOfDay: Self = .init("timeofday")
+    @available(*, deprecated, renamed: "timeOfDay")
+    public static var timeofday: Self { .timeOfDay }
     public static var transactionTimestamp: Self = .init("transaction_timestamp")
     @available(*, deprecated, renamed: "transactionTimestamp")
     public static var transaction_timestamp: Self { .transactionTimestamp }
@@ -289,7 +297,7 @@ extension Fn {
     /// Test for finite date (not +/-infinity)
     /// # Example
     /// ```swift
-    /// Fn.isfinite("4 hours" => .interval)
+    /// Fn.isFinite("4 hours" => .interval)
     /// ```
     /// # Result
     /// ```
@@ -297,8 +305,13 @@ extension Fn {
     /// ```
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func isFinite(_ interval: SwifQLable) -> SwifQLable {
+        build(.isFinite, body: interval.parts)
+    }
+
+    @available(*, deprecated, renamed: "isFinite(_:)")
     public static func isfinite(_ interval: SwifQLable) -> SwifQLable {
-        build(.isfinite, body: interval.parts)
+        isFinite(interval)
     }
     
     /// Adjust interval so 30-day time periods are represented as months
@@ -364,23 +377,33 @@ extension Fn {
     /// Current time of day
     /// # Example
     /// ```swift
-    /// Fn.localtime
+    /// Fn.localTime
     /// ```
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static var localTime: SwifQLable {
+        SwifQLableParts(parts: Name.localTime.part)
+    }
+
+    @available(*, deprecated, renamed: "localTime")
     public static var localtime: SwifQLable {
-        SwifQLableParts(parts: Name.localtime.part)
+        localTime
     }
     
     /// Current date and time (start of current transaction)
     /// # Example
     /// ```swift
-    /// Fn.localtimestamp
+    /// Fn.localTimestamp
     /// ```
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static var localTimestamp: SwifQLable {
+        SwifQLableParts(parts: Name.localTimestamp.part)
+    }
+
+    @available(*, deprecated, renamed: "localTimestamp")
     public static var localtimestamp: SwifQLable {
-        SwifQLableParts(parts: Name.localtimestamp.part)
+        localTimestamp
     }
     
     /// Create date from year, month and day fields
@@ -584,7 +607,7 @@ extension Fn {
     /// if timezone is not specified, the current time zone is used
     /// # Example
     /// ```swift
-    /// Fn.makeTimestamptz(2013, 7, 15, 8, 15, 23.5)
+    /// Fn.makeTimestampTZ(2013, 7, 15, 8, 15, 23.5)
     /// ```
     /// # Result
     /// ```
@@ -592,7 +615,7 @@ extension Fn {
     /// ```
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
-    public static func makeTimestamptz(_ year: SwifQLable,
+    public static func makeTimestampTZ(_ year: SwifQLable,
                                                           _ month: SwifQLable,
                                                           _ day: SwifQLable,
                                                           _ hour: SwifQLable,
@@ -620,10 +643,10 @@ extension Fn {
             parts.append(o: .space)
             parts.append(contentsOf: timezone.parts)
         }
-        return build(.makeTimestamptz, body: parts)
+        return build(.makeTimestampTZ, body: parts)
     }
 
-    @available(*, deprecated, renamed: "makeTimestamptz(_:_:_:_:_:_:_:)")
+    @available(*, deprecated, renamed: "makeTimestampTZ(_:_:_:_:_:_:_:)")
     public static func make_timestamptz(_ year: SwifQLable,
                                                           _ month: SwifQLable,
                                                           _ day: SwifQLable,
@@ -631,7 +654,7 @@ extension Fn {
                                                           _ min: SwifQLable,
                                                           _ sec: SwifQLable,
                                                           _ timezone: SwifQLable? = nil) -> SwifQLable {
-        makeTimestamptz(year, month, day, hour, min, sec, timezone)
+        makeTimestampTZ(year, month, day, hour, min, sec, timezone)
     }
     
     /// Current date and time (start of current transaction)
@@ -664,12 +687,17 @@ extension Fn {
     /// Current date and time (like clock_timestamp, but as a text string)
     /// # Example
     /// ```swift
-    /// Fn.timeofday()
+    /// Fn.timeOfDay()
     /// ```
     ///
     /// [Learn more →](https://www.postgresql.org/docs/11/functions-datetime.html)
+    public static func timeOfDay() -> SwifQLable {
+        build(.timeOfDay, body: [])
+    }
+
+    @available(*, deprecated, renamed: "timeOfDay()")
     public static func timeofday() -> SwifQLable {
-        build(.timeofday, body: [])
+        timeOfDay()
     }
     
     /// Current date and time (start of current transaction)

@@ -19,7 +19,9 @@ extension Fn.Name {
     public static var cumeDist: Self = .init("cume_dist")
     @available(*, deprecated, renamed: "cumeDist")
     public static var cume_dist: Self { .cumeDist }
-    public static var ntile: Self = .init("ntile")
+    public static var nTile: Self = .init("ntile")
+    @available(*, deprecated, renamed: "nTile")
+    public static var ntile: Self { .nTile }
     public static var lag: Self = .init("lag")
     public static var lead: Self = .init("lead")
     public static var firstValue: Self = .init("first_value")
@@ -135,15 +137,20 @@ extension Fn {
     ///
     /// # Example
     /// ```swift
-    /// Fn.ntile()
+    /// Fn.nTile()
     /// ```
     /// # Result
     /// ```
     /// ntile()
     /// ```
     /// [Learn more →](https://www.postgresql.org/docs/current/functions-window.html)
+    public static func nTile(_ num_buckets: SwifQLable) -> SwifQLable {
+        build(.nTile, body: num_buckets.parts)
+    }
+
+    @available(*, deprecated, renamed: "nTile(_:)")
     public static func ntile(_ num_buckets: SwifQLable) -> SwifQLable {
-        build(.ntile, body: num_buckets.parts)
+        nTile(num_buckets)
     }
     
     /// Returns `value` evaluated at the row that is `offset` rows before the current row within the partition

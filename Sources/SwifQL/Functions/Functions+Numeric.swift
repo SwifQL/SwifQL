@@ -21,7 +21,9 @@ extension Fn.Name {
     public static var power: Self = .init("power")
     public static var random: Self = .init("random")
     public static var round: Self = .init("round")
-    public static var setseed: Self = .init("setseed")
+    public static var setSeed: Self = .init("setseed")
+    @available(*, deprecated, renamed: "setSeed")
+    public static var setseed: Self { .setSeed }
     public static var sign: Self = .init("sign")
     public static var sqrt: Self = .init("sqrt")
     public static var sum: Self = .init("sum")
@@ -152,8 +154,13 @@ extension Fn {
     /// If you do not call setseed, PostgreSQL will use its own seed value.
     /// This may or may not be truly random.
     /// [Learn more →](https://www.techonthenet.com/postgresql/functions/setseed.php)
+    public static func setSeed(_ number: SwifQLable) -> SwifQLable {
+        build(.setSeed, body: number.parts)
+    }
+
+    @available(*, deprecated, renamed: "setSeed(_:)")
     public static func setseed(_ number: SwifQLable) -> SwifQLable {
-        build(.setseed, body: number.parts)
+        setSeed(number)
     }
     
     /// Returns a value indicating the sign of a number
