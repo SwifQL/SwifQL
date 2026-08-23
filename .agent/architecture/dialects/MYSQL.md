@@ -56,7 +56,7 @@ The same marker spelling is reused for each bound value. Traversal/value orderin
 
 The current MySQL dialect renders Foundation `Date` through MySQL `FROM_UNIXTIME(...)` semantics using the value's Unix timestamp.
 
-The canonical Swift helper naming migration uses `Fn.fromUnixtime(...)`, while emitted SQL remains exact MySQL spelling.
+The canonical Swift helper naming migration uses `Fn.fromUnixTime(...)`, while emitted SQL remains exact MySQL spelling `FROM_UNIXTIME(...)`.
 
 Do not change this behavior during unrelated Duck/Swift 6 work.
 

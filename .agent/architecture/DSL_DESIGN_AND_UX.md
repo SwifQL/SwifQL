@@ -275,31 +275,82 @@ Dialect-specific APIs are tested only for the dialects deliberately supported. H
 
 See `TESTING_RULES.md` for the detailed testing policy.
 
-## DESIGN-012 — Swift naming is idiomatic Swift, SQL spelling stays exact
+## DESIGN-012 — Swift naming is SQL-shaped camelCase, SQL spelling stays exact
 
-New public Swift API uses standard Swift naming conventions even when the corresponding SQL token/function uses underscores or uppercase spelling.
+SwifQL is an SQL DSL. Its public Swift names should remain visually and lexically close to the SQL a database engineer already knows while still following Swift camelCase syntax.
+
+Canonical Swift naming therefore **preserves SQL vocabulary while exposing the useful internal components of that vocabulary**. CamelCase may split a glued database token into recognizable SQL-derived pieces. True abbreviations use one consistent position-aware casing rule, while ordinary shortened fragments remain ordinary camelCase components. The API must not translate an SQL fragment into a different English word.
 
 Rules:
 
-- public methods, properties, variables, enum cases, and function helpers use `lowerCamelCase`;
-- public types/protocols use `UpperCamelCase`;
-- SQL `snake_case` is represented in the emitted SQL string/`Fn.Name`/operator part, not copied into the Swift symbol name;
-- acronym/capitalization choices follow normal readable Swift style rather than reproducing database casing mechanically;
-- labels also use idiomatic Swift naming while preserving the SQL concept they represent.
+- public methods, properties, variables, enum cases, function helpers, and public argument labels use `lowerCamelCase`; public types/protocols use `UpperCamelCase`;
+- SQL underscore separators become camelCase boundaries, then each SQL-derived component uses the repository's casing rules: `json_build_array` -> `jsonBuildArray`, `grouping_id` -> `groupingId`, `concat_ws` -> `concatWS`, `from_json` -> `fromJSON`, `read_csv` -> `readCSV`, `read_json` -> `readJSON`, `ts_rank_cd` -> `tsRankCD`;
+- when one SQL token visibly concatenates recognizable pieces, Swift exposes those boundaries while retaining the SQL-derived pieces: `setseed` -> `setSeed`, `nextval` -> `nextVal`, `currval` -> `currVal`, `initcap` -> `initCap`, `isfinite` -> `isFinite`, `localtime` -> `localTime`, `localtimestamp` -> `localTimestamp`, `timeofday` -> `timeOfDay`, `lpad` -> `lPad`, `btrim` -> `bTrim`, `strpos` -> `strPos`, `substr` -> `subStr`, `ntile` -> `nTile`;
+- selected compact SQL tokens are themselves decomposed where the useful database vocabulary is clearer as multiple Swift components: `tsvector` -> `ts + vector`, `tsquery` -> `ts + query`, `timestamptz` -> `timestamp + tz`, `recordset` -> `record + set`, `regexp` -> `reg + exp`;
+- do **not** expand or translate SQL abbreviations into different words merely to make the Swift name more descriptive: `val` stays `Val`, `curr` stays `curr`, `l`/`r` stay `l`/`r`, `elems` stays `Elems`, `mins` stays `mins`, and `secs` stays `secs`;
+- true abbreviations are cased uniformly by position: when an abbreviation begins a `lowerCamelCase` identifier, the whole abbreviation is lowercase; when it is a later component, the whole abbreviation is uppercase. Therefore SQL `json` -> leading `json` / medial `JSON`, `jsonb` -> `jsonb` / `JSONB`, `csv` -> `csv` / `CSV`, `ts` -> `ts` / `TS`, `tz` -> `tz` / `TZ`, `ws` -> `ws` / `WS`, and `cd` -> `cd` / `CD`;
+- `Id` is the explicit repository exception to the general abbreviation rule: identifier-like SQL `id` is `id` when leading and `Id` when medial, never `ID`;
+- ordinary shortened fragments are not abbreviations and never become all-caps: `str` -> leading `str` / medial `Str`, `pos` -> `pos` / `Pos`, `val` -> `val` / `Val`, `curr` remains an ordinary word fragment;
+- compound lexical pieces are position-aware camelCase, not abbreviations: `recordset` decomposes to leading `recordSet` / medial `RecordSet`; `regexp` decomposes to leading `regExp` / medial `RegExp`; `base64` remains leading `base64` / medial `Base64`;
+- existing concise public labels such as `pathElems:`, `mins:`, and `secs:` remain valid when they already mirror the project's SQL-shaped vocabulary; do not expand them mechanically;
+- `Fn.Name` is public Swift API too: its canonical member should use the same SQL-shaped camelCase base name as the corresponding `Fn` helper while storing/emitting the exact SQL identifier;
+- preserve established database/type/function terms as indivisible fragments only where splitting them would reduce SQL recognizability or blur a different SQL construct. This is not a blanket exemption for glued words: `recordset`, `tsvector`, `tsquery`, `timestamptz`, `substr`, `btrim`, and `strpos` are explicitly split by the policy above;
+- SQL spelling remains exact in emitted SQL/internal SQL identity. A Swift rename never authorizes changing `setseed` to `set_seed`, `FROM_UNIXTIME` to another function, or any other database token;
+- naming is not semantic substitution: `Fn.setSeed(...)` still represents the concrete SQL function `setseed(...)`, and `Fn.nextVal(...)` still represents concrete SQL `nextval(...)`; DESIGN-002/004 continue to forbid remapping one named SQL construct to another.
 
-Examples:
+Examples of canonical SQL-shaped naming:
 
+- Swift `Fn.setSeed(...)` -> SQL `setseed(...)`;
+- Swift `Fn.nextVal(...)` -> SQL `nextval(...)`;
+- Swift `Fn.currVal(...)` -> SQL `currval(...)`;
+- Swift `Fn.subStr(...)` -> SQL `substr(...)`;
+- Swift `Fn.bTrim(...)` -> SQL `btrim(...)`;
+- Swift `Fn.strPos(...)` -> SQL `strpos(...)`;
+- Swift `Fn.concatWS(...)` -> SQL `concat_ws(...)`;
+- Swift `Fn.localTimestamp` -> SQL `localtimestamp`;
+- Swift `Fn.timeOfDay()` -> SQL `timeofday()`;
+- Swift `Fn.fromUnixTime(...)` -> SQL `FROM_UNIXTIME(...)`;
+- Swift `Fn.fromJSON(...)` -> SQL `from_json(...)`;
+- Swift `Fn.readCSV(...)` -> SQL `read_csv(...)`;
+- Swift `Fn.readJSON(...)` -> SQL `read_json(...)`;
+- Swift `Fn.toJSON(...)` -> SQL `to_json(...)`;
+- Swift `Fn.jsonTypeOf(...)` -> SQL `json_typeof(...)`;
+- Swift `Fn.jsonbTypeOf(...)` -> SQL `jsonb_typeof(...)`;
+- Swift `Fn.toJSONB(...)` -> SQL `to_jsonb(...)`;
+- Swift `Fn.lPad(...)` -> SQL `lpad(...)`;
+- Swift `Fn.toTSVector(...)` -> SQL `to_tsvector(...)`;
+- Swift `Fn.toTSQuery(...)` -> SQL `to_tsquery(...)`;
+- Swift `Fn.plainToTSQuery(...)` -> SQL `plainto_tsquery(...)`;
+- Swift `Fn.tsRankCD(...)` -> SQL `ts_rank_cd(...)`;
+- Swift `Fn.makeTimestampTZ(...)` -> SQL `make_timestamptz(...)`;
+- Swift `Fn.jsonPopulateRecordSet(...)` -> SQL `json_populate_recordset(...)`;
 - Swift `Fn.jsonBuildArray(...)` -> SQL `json_build_array(...)`;
-- Swift `Fn.jsonGroupArray(...)` -> SQL `json_group_array(...)`;
 - Swift `Fn.generateSeries(...)` -> SQL `generate_series(...)`;
-- Swift `Fn.rowNumber()` -> SQL `row_number()`;
-- Swift `Fn.fromUnixtime(...)` may emit SQL `FROM_UNIXTIME(...)` when that exact function is being represented.
+- Swift `Fn.groupingId(...)` -> SQL `grouping_id(...)`.
 
-The repository contains historical public `snake_case` `Fn` symbols. They are legacy compatibility surface, not a naming precedent. The existing supported surface has completed this additive migration: every such public function/name symbol receives a canonical camelCase counterpart with identical SQL behavior, while the old snake_case symbol remains source-compatible and is marked `@available(*, deprecated, renamed: "...")`. The same policy applies to any historical symbol encountered in future maintenance; do not remove the old symbol in a non-major release.
+Examples of intentionally preserved database terms:
 
-The camelCase conversion is deterministic: remove underscore separators and capitalize the first letter of each following underscore-delimited token without inventing new word boundaries inside an existing SQL token. Examples: `json_build_array` -> `jsonBuildArray`, `array_agg` -> `arrayAgg`, `row_number` -> `rowNumber`, `generate_series` -> `generateSeries`, `jsonb_agg` -> `jsonbAgg`, `make_timestamptz` -> `makeTimestamptz`, `to_tsvector` -> `toTsvector`, `from_unixtime` -> `fromUnixtime`.
+- `Fn.substring(...)` remains `substring` because that full SQL function name is already a complete recognizable term and is separately modeled from `substr`/`subStr`;
+- `nvl`, leading `jsonb...`, and standard mathematical/SQL notation remain intact where no clearer project-approved component split exists;
+- `cumeDist` remains the direct camelCase of SQL `cume_dist`;
+- `fromBase64` remains the established `Base64` spelling.
 
-Canonical implementations and ordinary tests/docs use the camelCase stable API. Deprecated snake_case declarations delegate to the canonical camelCase implementation and must generate byte-for-byte identical SQL. New work normally must not introduce additional public snake_case Swift identifiers. A maintainer-approved compatibility alias may be added only as an immediately deprecated `renamed:` bridge to the canonical camelCase API; it must never become the documented/canonical surface. For the planned exact SQL `from_base64` helper, the canonical Swift spelling is `Fn.fromBase64(...)`, while `Fn.from_base64(...)` is only a deprecated renamed bridge if included by the approved migration plan.
+When a new or existing public name is reviewed, use this decision order:
+
+1. identify the exact SQL identifier/construct and its database spelling;
+2. split underscores into camelCase boundaries;
+3. identify clear internal boundaries inside glued SQL tokens, including approved compound splits such as `recordSet`, `TSVector`, `TimestampTZ`, `subStr`, and `strPos`;
+4. classify each component as a true abbreviation, an ordinary shortened fragment, or a compound lexical piece; apply position-aware abbreviation casing, the explicit `Id` exception, and ordinary camelCase to non-abbreviations;
+5. never replace an SQL-derived fragment with a different English synonym;
+6. compare neighboring SwifQL APIs for project consistency;
+7. confirm that a database engineer can still recognize the exact SQL construct from the Swift name;
+8. only then decide compatibility handling from release history.
+
+Do not create a permanent compatibility alias merely because an intermediate unreleased branch used a bad canonical spelling. Correct unreleased mistakes directly. Conversely, an established historical public spelling that may already be used by downstream clients remains source-compatible: add the final SQL-shaped canonical spelling, keep the old spelling only as `@available(*, deprecated, renamed: "...")`, and delegate to the canonical implementation with byte-for-byte identical SQL.
+
+This compatibility policy applies to **all historical noncanonical public names**, not only `snake_case`. Existing historical snake_case declarations remain compatibility bridges, while any other historical spelling that violates the SQL-shaped camelCase policy receives the same additive treatment when release history requires it.
+
+Canonical implementations and ordinary tests/docs use the SQL-shaped camelCase API. Compatibility tests prove every retained legacy spelling renders byte-for-byte identical SQL. New work must not expand SQL abbreviations or normalize their initialism casing merely to make the API read like general-purpose English Swift.
 
 ## DESIGN-013 — Decision checklist for a new API
 

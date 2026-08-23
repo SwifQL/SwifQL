@@ -572,7 +572,7 @@ Duck-compatible.
 | Prepared placeholders in sequence option positions | Native-invalid at prepare/parse time for START, START WITH, INCREMENT BY, MINVALUE, and MAXVALUE. SwifQL keeps the numeric option methods safe-inline and does not add a dialect-specific runtime rejection. |
 | Int64 upper-bound literals | The tested literal 9223372036854775806 with MAXVALUE 9223372036854775807 is accepted and returns the exact start value. No broader overflow guarantee is claimed. |
 
-Fn.nextval and Fn.currval intentionally accept ordinary SwifQLable children. A
+Fn.nextVal and Fn.currVal intentionally accept ordinary SwifQLable children. A
 String therefore renders as a normal Duck string literal in .plain and remains
 a normal prepared value in .splitted; prepared invocation with a name,
 including a schema-qualified name string, was native-positive. currval before
@@ -582,7 +582,7 @@ connection advances a sequence, currval in the other connection succeeds and
 observes the latest sequence value; the first connection also observes that
 latest value. Sequence consumption is not rewound by transaction rollback.
 
-The explicit expression source SwifQL.default(Fn.nextval("order_id_seq")) is
+The explicit expression source SwifQL.default(Fn.nextVal("order_id_seq")) is
 supported in the tested CREATE TABLE and insert flow. A literal sequence name
 in a default is native-positive. A prepared parameter inside DEFAULT
 nextval(?) is rejected by DuckDB's binder, and the tested ALTER TABLE ...
@@ -623,7 +623,7 @@ SwifQL.create.sequence.if.not.exists[any: sequence]
     .maxValue(99)
     .cycle
 
-SwifQL.default(Fn.nextval("order_id_seq"))
+SwifQL.default(Fn.nextVal("order_id_seq"))
 
 let x = MacroParameter("x")
 let typed = MacroParameter("value", .integer)
@@ -841,7 +841,7 @@ of this first public convenience set; neither are overwrite/append helpers.
 
 #### Table functions and glob
 
-The exact helper identities are:
+The final SQL-shaped canonical helper identities are:
 
 ~~~swift
 Fn.readCSV("events.csv", options: .header(true), .delimiter("|"), .sampleSize(2))
