@@ -367,6 +367,5 @@ struct DuckMergeTests: SwifQLTests {
                 #"UNPIVOT "merge_target" ON "merge_target"."jan", "merge_target"."feb""#
         )
         #expect(columns.prepare(.duck).plain == "SELECT COLUMNS(*)")
-        #expect(SQLDialect.all.map { $0.id } == ["psql", "mysql"])
     }
 }

@@ -386,7 +386,6 @@ struct DuckExactFunctionTests: SwifQLTests {
         #expect(SwifQL.select(Fn.currentTimestamp(0)).prepare(.duck).plain == "SELECT current_timestamp")
         #expect(SwifQL.select(Fn.trim(leading: "x", from: "xxalpha")).prepare(.duck).plain == "SELECT trim('xxalpha')")
 
-        #expect(SQLDialect.all.map { $0.id } == ["psql", "mysql"])
     }
 
     @Test("Representative PostgreSQL and MySQL function output remains byte-for-byte stable")

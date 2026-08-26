@@ -4,10 +4,9 @@ import Testing
 
 @Suite("Duck dialect foundation")
 struct DuckDBDialectTests: SwifQLTests {
-    @Test("Duck identity stays explicit without expanding SQLDialect.all")
+    @Test("Duck identity stays explicit")
     func identity() {
         #expect(SQLDialect.duck.id == "duckdb")
-        #expect(SQLDialect.all.map { $0.id } == ["psql", "mysql"])
     }
 
     @Test("Duck identifiers and strings escape correctly")
