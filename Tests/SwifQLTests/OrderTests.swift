@@ -10,7 +10,8 @@ struct OrderTests: SwifQLTests {
         check(
             SwifQL.orderBy(.asc(CarBrands.column("name")), .desc(CarBrands.column("id"))),
             .psql(#"ORDER BY "CarBrands"."name" ASC, "CarBrands"."id" DESC"#),
-            .mysql("ORDER BY CarBrands.name ASC, CarBrands.id DESC")
+            .mysql("ORDER BY CarBrands.name ASC, CarBrands.id DESC"),
+            .duck(#"ORDER BY "CarBrands"."name" ASC, "CarBrands"."id" DESC"#)
         )
     }
     
@@ -20,7 +21,8 @@ struct OrderTests: SwifQLTests {
     func orderByWithNulls() {
         check(
             SwifQL.orderBy(.asc(CarBrands.column("name"), nulls: .first), .desc(CarBrands.column("id"), nulls: .last)),
-            .psql(#"ORDER BY "CarBrands"."name" ASC NULLS FIRST, "CarBrands"."id" DESC NULLS LAST"#)
+            .psql(#"ORDER BY "CarBrands"."name" ASC NULLS FIRST, "CarBrands"."id" DESC NULLS LAST"#),
+            .duck(#"ORDER BY "CarBrands"."name" ASC NULLS FIRST, "CarBrands"."id" DESC NULLS LAST"#)
         )
         check(
             SwifQL.orderBy(.asc(CarBrands.column("name") == nil, CarBrands.column("name")), .desc(CarBrands.column("id") != nil, CarBrands.column("id"))),
@@ -34,7 +36,8 @@ struct OrderTests: SwifQLTests {
     func orderByDirection() {
         check(
             SwifQL.orderBy(.direction(.asc, CarBrands.column("name"), nulls: .last)),
-            .psql(#"ORDER BY "CarBrands"."name" ASC NULLS LAST"#)
+            .psql(#"ORDER BY "CarBrands"."name" ASC NULLS LAST"#),
+            .duck(#"ORDER BY "CarBrands"."name" ASC NULLS LAST"#)
         )
         check(
             SwifQL.orderBy(.direction(.desc, CarBrands.column("id"), nulls: .first)),
@@ -48,7 +51,8 @@ struct OrderTests: SwifQLTests {
     func orderByRandom() {
         check(
             SwifQL.orderBy(.random),
-            .psql(#"ORDER BY random()"#)
+            .psql(#"ORDER BY random()"#),
+            .duck(#"ORDER BY random()"#)
         )
         check(
             SwifQL.orderBy(.random),

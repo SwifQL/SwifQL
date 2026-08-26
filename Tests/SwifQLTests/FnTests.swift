@@ -22,12 +22,14 @@ struct FnTests: SwifQLTests {
         check(
             Fn.concat("Hello ", CarBrands.column("name")),
             .psql(#"concat('Hello ', "CarBrands"."name")"#),
-            .mysql("concat('Hello ', CarBrands.name)")
+            .mysql("concat('Hello ', CarBrands.name)"),
+            .duck(#"concat('Hello ', "CarBrands"."name")"#)
         )
         check(
             Fn.concatWS(", ", "Hello", CarBrands.column("name")),
             .psql(#"concat_ws(', ', 'Hello', "CarBrands"."name")"#),
-            .mysql("concat_ws(', ', 'Hello', CarBrands.name)")
+            .mysql("concat_ws(', ', 'Hello', CarBrands.name)"),
+            .duck(#"concat_ws(', ', 'Hello', "CarBrands"."name")"#)
         )
     }
     
@@ -97,12 +99,14 @@ struct FnTests: SwifQLTests {
         check(
             SwifQL.select(Fn.generateSeries(1, 4)),
             .psql("SELECT generate_series(1, 4)"),
-            .mysql("SELECT generate_series(1, 4)")
+            .mysql("SELECT generate_series(1, 4)"),
+            .duck("SELECT generate_series(1, 4)")
         )
         check(
             SwifQL.select(Fn.generateSeries(1, 4, 2)),
             .psql("SELECT generate_series(1, 4, 2)"),
-            .mysql("SELECT generate_series(1, 4, 2)")
+            .mysql("SELECT generate_series(1, 4, 2)"),
+            .duck("SELECT generate_series(1, 4, 2)")
         )
     }
     

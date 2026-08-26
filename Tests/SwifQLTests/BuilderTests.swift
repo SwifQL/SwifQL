@@ -10,7 +10,8 @@ struct BuilderTests: SwifQLTests {
         check(
             query,
             .psql(#"SELECT "CarBrands".* FROM "CarBrands" LIMIT 10 OFFSET 0"#),
-            .mysql("SELECT CarBrands.* FROM CarBrands LIMIT 10 OFFSET 0")
+            .mysql("SELECT CarBrands.* FROM CarBrands LIMIT 10 OFFSET 0"),
+            .duck(#"SELECT "CarBrands".* FROM "CarBrands" LIMIT 10 OFFSET 0"#)
         )
     }
     
@@ -37,13 +38,15 @@ struct BuilderTests: SwifQLTests {
             UpdateTableBuilder<CarBrands>()
                 .addColumn(NewColumn.init("hello", .text)),
             .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "hello" text;"#),
-            .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;")
+            .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;"),
+                .duck(#"ALTER TABLE "CarBrands" ADD COLUMN "hello" text;"#)
         )
         check(
             UpdateTableBuilder<CarBrands>()
                 .addColumn("hello", .text),
             .psql(#"ALTER TABLE "CarBrands" ADD COLUMN "hello" text;"#),
-            .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;")
+            .mysql("ALTER TABLE CarBrands ADD COLUMN hello text;"),
+                .duck(#"ALTER TABLE "CarBrands" ADD COLUMN "hello" text;"#)
         )
     }
 }

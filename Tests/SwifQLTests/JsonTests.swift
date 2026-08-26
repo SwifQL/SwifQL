@@ -11,7 +11,8 @@ struct JsonTests: SwifQLTests {
         check(
             SwifQL.select(Fn.jsonExtractPath(json, pathElems: ["f4"])),
             .psql(#"SELECT json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#),
-            .mysql(#"SELECT json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#)
+            .mysql(#"SELECT json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#),
+            .duck(#"SELECT json_extract_path('{"f2":{"f3":1},"f4":{"f5":99,"f6":"foo"}}', 'f4')"#)
         )
     }
     

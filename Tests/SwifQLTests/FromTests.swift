@@ -28,7 +28,8 @@ struct FromTests: SwifQLTests {
         check(
             SwifQL.from(CarBrands.table),
             .psql(#"FROM "CarBrands""#),
-            .mysql("FROM CarBrands")
+            .mysql("FROM CarBrands"),
+            .duck(#"FROM "CarBrands""#)
         )
     }
     
@@ -37,7 +38,8 @@ struct FromTests: SwifQLTests {
         check(
             SwifQL.from(CarBrands.table, CarBrands.table),
             .psql(#"FROM "CarBrands", "CarBrands""#),
-            .mysql("FROM CarBrands, CarBrands")
+            .mysql("FROM CarBrands, CarBrands"),
+            .duck(#"FROM "CarBrands", "CarBrands""#)
         )
     }
     
@@ -46,7 +48,8 @@ struct FromTests: SwifQLTests {
         check(
             SwifQL.from(cb.table),
             .psql(#"FROM "CarBrands" AS "cb""#),
-            .mysql("FROM CarBrands AS cb")
+            .mysql("FROM CarBrands AS cb"),
+            .duck(#"FROM "CarBrands" AS "cb""#)
         )
     }
     
@@ -55,7 +58,8 @@ struct FromTests: SwifQLTests {
         check(
             SwifQL.from(cb.table, cb.table),
             .psql(#"FROM "CarBrands" AS "cb", "CarBrands" AS "cb""#),
-            .mysql("FROM CarBrands AS cb, CarBrands AS cb")
+            .mysql("FROM CarBrands AS cb, CarBrands AS cb"),
+            .duck(#"FROM "CarBrands" AS "cb", "CarBrands" AS "cb""#)
         )
     }
     
@@ -64,7 +68,8 @@ struct FromTests: SwifQLTests {
         check(
             SwifQL.from(CarBrands.table, cb.table),
             .psql(#"FROM "CarBrands", "CarBrands" AS "cb""#),
-            .mysql("FROM CarBrands, CarBrands AS cb")
+            .mysql("FROM CarBrands, CarBrands AS cb"),
+            .duck(#"FROM "CarBrands", "CarBrands" AS "cb""#)
         )
     }
 }

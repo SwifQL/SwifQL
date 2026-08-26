@@ -15,7 +15,8 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.in([UserRole.admin, .staff, .vendor]),
             .psql(#"IN ('admin', 'staff', 'vendor')"#),
-            .mysql(#"IN ('admin', 'staff', 'vendor')"#)
+            .mysql(#"IN ('admin', 'staff', 'vendor')"#),
+            .duck(#"IN ('admin', 'staff', 'vendor')"#)
         )
     }
     
@@ -31,7 +32,8 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.in([UserRole.admin, .staff, .vendor]),
             .psql(#"IN (0, 1, 2)"#),
-            .mysql(#"IN (0, 1, 2)"#)
+            .mysql(#"IN (0, 1, 2)"#),
+            .duck(#"IN (0, 1, 2)"#)
         )
     }
     
@@ -47,7 +49,8 @@ struct OtherTests: SwifQLTests {
         check(
             0 == UserRole.admin,
             .psql(#"0 = 0"#),
-            .mysql(#"0 = 0"#)
+            .mysql(#"0 = 0"#),
+            .duck(#"0 = 0"#)
         )
     }
     
@@ -63,7 +66,8 @@ struct OtherTests: SwifQLTests {
         check(
             "admin" == UserRole.admin,
             .psql(#"'admin' = 'admin'"#),
-            .mysql(#"'admin' = 'admin'"#)
+            .mysql(#"'admin' = 'admin'"#),
+            .duck(#"'admin' = 'admin'"#)
         )
     }
 
@@ -74,12 +78,14 @@ struct OtherTests: SwifQLTests {
         check(
             "hello" == SwifQLNull,
             .psql(#"'hello' = NULL"#),
-            .mysql(#"'hello' = NULL"#)
+            .mysql(#"'hello' = NULL"#),
+            .duck(#"'hello' = NULL"#)
         )
         check(
             "hello" == nil,
             .psql(#"'hello' IS NULL"#),
-            .mysql(#"'hello' IS NULL"#)
+            .mysql(#"'hello' IS NULL"#),
+            .duck(#"'hello' IS NULL"#)
         )
     }
     
@@ -125,7 +131,8 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.update(alias.table).set[items: alias.$id == 1, alias.$createdAt == 2],
             .psql(#"UPDATE "hello"."CarBrands" SET "id" = 1, "createdAt" = 2"#),
-            .mysql(#"UPDATE hello.CarBrands SET id = 1, createdAt = 2"#)
+            .mysql(#"UPDATE hello.CarBrands SET id = 1, createdAt = 2"#),
+            .duck(#"UPDATE "hello"."CarBrands" SET "id" = 1, "createdAt" = 2"#)
         )
     }
     
@@ -135,7 +142,8 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.update(alias.table).set[items: alias.$id == 1, alias.$createdAt == 2],
             .psql(#"UPDATE "hello"."CarBrands" SET "id" = 1, "createdAt" = 2"#),
-            .mysql(#"UPDATE hello.CarBrands SET id = 1, createdAt = 2"#)
+            .mysql(#"UPDATE hello.CarBrands SET id = 1, createdAt = 2"#),
+            .duck(#"UPDATE "hello"."CarBrands" SET "id" = 1, "createdAt" = 2"#)
         )
     }
     
@@ -146,22 +154,26 @@ struct OtherTests: SwifQLTests {
         check(
             CarBrands.as("c"),
             .psql(#""c""#),
-            .mysql(#"c"#)
+            .mysql(#"c"#),
+            .duck(#""c""#)
         )
         check(
             CarBrands.as("c").$id,
             .psql(#""c"."id""#),
-            .mysql(#"c.id"#)
+            .mysql(#"c.id"#),
+            .duck(#""c"."id""#)
         )
         check(
             CarBrands.as("c").table,
             .psql(#""CarBrands" AS "c""#),
-            .mysql(#"CarBrands AS c"#)
+            .mysql(#"CarBrands AS c"#),
+            .duck(#""CarBrands" AS "c""#)
         )
         check(
             SchemableCarBrands.as("c").table,
             .psql(#""public"."CarBrands" AS "c""#),
-            .mysql(#"public.CarBrands AS c"#)
+            .mysql(#"public.CarBrands AS c"#),
+            .duck(#""public"."CarBrands" AS "c""#)
         )
     }
     
@@ -192,7 +204,8 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.select(Mood.happy),
             .psql(#"SELECT 'happy'"#),
-            .mysql(#"SELECT 'happy'"#)
+            .mysql(#"SELECT 'happy'"#),
+            .duck(#"SELECT 'happy'"#)
         )
     }
     
@@ -201,7 +214,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Rename Table")
     func renameTable() {
         check(UpdateTableBuilder<CarBrands>().renameTable(to: "aaa"),
-              .psql(#"ALTER TABLE "CarBrands" RENAME TO "aaa";"#))
+              .psql(#"ALTER TABLE "CarBrands" RENAME TO "aaa";"#), .duck(#"ALTER TABLE "CarBrands" RENAME TO "aaa";"#))
     }
     
     // MARK: Add Column
@@ -223,25 +236,25 @@ struct OtherTests: SwifQLTests {
     @Test("Test Drop Column")
     func dropColumn() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa"),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#), .duck(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa";"#))
     }
 
     @Test("Test Drop Column If Exists")
     func dropColumnIfExists() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa";"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa";"#), .duck(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa";"#))
     }
 
     @Test("Test Drop Column Cascade")
     func dropColumnCascade() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", cascade: true),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#), .duck(#"ALTER TABLE "CarBrands" DROP COLUMN "aaa" CASCADE;"#))
     }
 
     @Test("Test Drop Column If Exists Cascade")
     func dropColumnIfExistsCascade() {
         check(UpdateTableBuilder<CarBrands>().dropColumn("aaa", checkIfExists: true, cascade: true),
-              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" CASCADE;"#))
+              .psql(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" CASCADE;"#), .duck(#"ALTER TABLE "CarBrands" DROP COLUMN IF EXISTS "aaa" CASCADE;"#))
     }
 
     // MARK: Set Default
@@ -249,7 +262,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Set Default")
     func setDefault() {
         check(UpdateTableBuilder<CarBrands>().setDefault("aaa", constant: 0),
-              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET DEFAULT 0;"#))
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET DEFAULT 0;"#), .duck(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET DEFAULT 0;"#))
     }
     
     // MARK: Drop Default
@@ -257,7 +270,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Drop Default")
     func dropDefault() {
         check(UpdateTableBuilder<CarBrands>().dropDefault("aaa"),
-              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP DEFAULT;"#))
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP DEFAULT;"#), .duck(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP DEFAULT;"#))
     }
     
     // MARK: Set Not Null
@@ -265,7 +278,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Set Not Null")
     func setNotNull() {
         check(UpdateTableBuilder<CarBrands>().setNotNull("aaa"),
-              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET NOT NULL;"#))
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET NOT NULL;"#), .duck(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" SET NOT NULL;"#))
     }
     
     // MARK: Drop Not Null
@@ -273,7 +286,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Drop Not Null")
     func dropNotNull() {
         check(UpdateTableBuilder<CarBrands>().dropNotNull("aaa"),
-              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP NOT NULL;"#))
+              .psql(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP NOT NULL;"#), .duck(#"ALTER TABLE "CarBrands" ALTER COLUMN "aaa" DROP NOT NULL;"#))
     }
     
     // MARK: Rename Column
@@ -281,7 +294,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Rename Column")
     func renameColumn() {
         check(UpdateTableBuilder<CarBrands>().renameColumn("aaa", to: "bbb"),
-              .psql(#"ALTER TABLE "CarBrands" RENAME COLUMN "aaa" TO "bbb";"#))
+              .psql(#"ALTER TABLE "CarBrands" RENAME COLUMN "aaa" TO "bbb";"#), .duck(#"ALTER TABLE "CarBrands" RENAME COLUMN "aaa" TO "bbb";"#))
     }
     
     // MARK: Add Unique
@@ -297,7 +310,7 @@ struct OtherTests: SwifQLTests {
     @Test("Test Add Primary Key")
     func addPrimaryKey() {
         check(UpdateTableBuilder<CarBrands>().addPrimaryKey(to: "aaa", "bbb"),
-              .psql(#"ALTER TABLE "CarBrands" ADD PRIMARY KEY ("aaa", "bbb");"#))
+              .psql(#"ALTER TABLE "CarBrands" ADD PRIMARY KEY ("aaa", "bbb");"#), .duck(#"ALTER TABLE "CarBrands" ADD PRIMARY KEY ("aaa", "bbb");"#))
     }
     
     // MARK: Drop Constraint
@@ -353,7 +366,7 @@ struct OtherTests: SwifQLTests {
     
     @Test("Test Operator To SwifQLable")
     func operatorToSwifQLable() {
-        check(SwifQL.select(Operator.null), .mysql("SELECT NULL"), .psql("SELECT NULL"))
+        check(SwifQL.select(Operator.null), .mysql("SELECT NULL"), .psql("SELECT NULL"), .duck("SELECT NULL"))
     }
         
     //MARK: - ARRAY
@@ -431,7 +444,8 @@ struct OtherTests: SwifQLTests {
                 SwifQL.select(table3.*).from(table3)
             ),
             .psql(#"(SELECT "Table1".* FROM "Table1") UNION (SELECT "Table2".* FROM "Table2") UNION (SELECT "Table3".* FROM "Table3")"#),
-            .mysql(#"(SELECT Table1.* FROM Table1) UNION (SELECT Table2.* FROM Table2) UNION (SELECT Table3.* FROM Table3)"#)
+            .mysql(#"(SELECT Table1.* FROM Table1) UNION (SELECT Table2.* FROM Table2) UNION (SELECT Table3.* FROM Table3)"#),
+            .duck(#"(SELECT "Table1".* FROM "Table1") UNION (SELECT "Table2".* FROM "Table2") UNION (SELECT "Table3".* FROM "Table3")"#)
         )
         
         check(
@@ -444,7 +458,8 @@ struct OtherTests: SwifQLTests {
                     )
             ),
             .psql(#"SELECT DISTINCT "uniqueName"::text as "name" FROM (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table1") UNION (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table2")"#),
-            .mysql(#"SELECT DISTINCT uniqueName::text as name FROM (SELECT DISTINCT name::text as uniqueName FROM Table1) UNION (SELECT DISTINCT name::text as uniqueName FROM Table2)"#)
+            .mysql(#"SELECT DISTINCT uniqueName::text as name FROM (SELECT DISTINCT name::text as uniqueName FROM Table1) UNION (SELECT DISTINCT name::text as uniqueName FROM Table2)"#),
+            .duck(#"SELECT DISTINCT "uniqueName"::text as "name" FROM (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table1") UNION (SELECT DISTINCT "name"::text as "uniqueName" FROM "Table2")"#)
         )
     }
 
@@ -455,12 +470,14 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.values(1, 1.2, 1.234, "hello"),
             .psql("(1, 1.2, 1.234, 'hello')"),
-            .mysql("(1, 1.2, 1.234, 'hello')")
+            .mysql("(1, 1.2, 1.234, 'hello')"),
+            .duck("(1, 1.2, 1.234, 'hello')")
         )
         check(
             SwifQL.values(array: [1, 1.2, 1.234, "hello"], [2, 2.3, 2.345, "bye"]),
             .psql("(1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')"),
-            .mysql("(1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')")
+            .mysql("(1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')"),
+            .duck("(1, 1.2, 1.234, 'hello'), (2, 2.3, 2.345, 'bye')")
         )
     }
     
@@ -472,6 +489,9 @@ struct OtherTests: SwifQLTests {
         #expect(query == """
         WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
         """)
+        #expect(SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.duck).splitted.query == """
+        WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
+        """)
     }
     
     @Test("Test Binding For MySQL")
@@ -479,6 +499,9 @@ struct OtherTests: SwifQLTests {
         let query = SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.mysql).splitted.query
         #expect(query == """
         WHERE CarBrands.name = ? OR CarBrands.name = ?
+        """)
+        #expect(SwifQL.where(CarBrands.column("name") == "hello" || CarBrands.column("name") == "world").prepare(.duck).splitted.query == """
+        WHERE "CarBrands"."name" = $1 OR "CarBrands"."name" = $2
         """)
     }
     
@@ -489,12 +512,14 @@ struct OtherTests: SwifQLTests {
         check(
             SwifQL.select(FormattedKeyPath(CarBrands.self, "id")),
             .psql(#"SELECT "CarBrands"."id""#),
-            .mysql("SELECT CarBrands.id")
+            .mysql("SELECT CarBrands.id"),
+            .duck(#"SELECT "CarBrands"."id""#)
         )
         check(
             SwifQL.select(CarBrands.mkp("id")),
             .psql(#"SELECT "CarBrands"."id""#),
-            .mysql("SELECT CarBrands.id")
+            .mysql("SELECT CarBrands.id"),
+            .duck(#"SELECT "CarBrands"."id""#)
         )
     }
 }

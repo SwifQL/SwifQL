@@ -11,7 +11,8 @@ struct WithTests: SwifQLTests {
                 .select(Path.Table("Table1").*)
                 .from(Path.Table("Table1")),
             .psql(#"WITH "Table1" as (SELECT "Table2".* FROM "Table2") SELECT "Table1".* FROM "Table1""#),
-            .mysql("WITH Table1 as (SELECT Table2.* FROM Table2) SELECT Table1.* FROM Table1")
+            .mysql("WITH Table1 as (SELECT Table2.* FROM Table2) SELECT Table1.* FROM Table1"),
+                .duck(#"WITH "Table1" as (SELECT "Table2".* FROM "Table2") SELECT "Table1".* FROM "Table1""#)
         )
     }
     
@@ -27,7 +28,8 @@ struct WithTests: SwifQLTests {
                 .select(Path.Table("Table3").*)
                 .from(Path.Table("Table3")),
             .psql(#"WITH "Table1" as (SELECT "Table1".* FROM "Table1"), "Table2" ("hi", "there") as (SELECT "Table2".* FROM "Table2") SELECT "Table3".* FROM "Table3""#),
-            .mysql("WITH Table1 as (SELECT Table1.* FROM Table1), Table2 (hi, there) as (SELECT Table2.* FROM Table2) SELECT Table3.* FROM Table3")
+            .mysql("WITH Table1 as (SELECT Table1.* FROM Table1), Table2 (hi, there) as (SELECT Table2.* FROM Table2) SELECT Table3.* FROM Table3"),
+                .duck(#"WITH "Table1" as (SELECT "Table1".* FROM "Table1"), "Table2" ("hi", "there") as (SELECT "Table2".* FROM "Table2") SELECT "Table3".* FROM "Table3""#)
         )
     }
 }

@@ -12,7 +12,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score > 10),
             .psql(#"WHERE "CarBrandReferences"."score" > 10"#),
-            .mysql("WHERE CarBrandReferences.score > 10")
+            .mysql("WHERE CarBrandReferences.score > 10"),
+            .duck(#"WHERE "CarBrandReferences"."score" > 10"#)
         )
     }
     
@@ -23,7 +24,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score < 10),
             .psql(#"WHERE "CarBrandReferences"."score" < 10"#),
-            .mysql("WHERE CarBrandReferences.score < 10")
+            .mysql("WHERE CarBrandReferences.score < 10"),
+            .duck(#"WHERE "CarBrandReferences"."score" < 10"#)
         )
     }
     
@@ -34,7 +36,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score >= 10),
             .psql(#"WHERE "CarBrandReferences"."score" >= 10"#),
-            .mysql("WHERE CarBrandReferences.score >= 10")
+            .mysql("WHERE CarBrandReferences.score >= 10"),
+            .duck(#"WHERE "CarBrandReferences"."score" >= 10"#)
         )
     }
     
@@ -45,7 +48,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score <= 10),
             .psql(#"WHERE "CarBrandReferences"."score" <= 10"#),
-            .mysql("WHERE CarBrandReferences.score <= 10")
+            .mysql("WHERE CarBrandReferences.score <= 10"),
+            .duck(#"WHERE "CarBrandReferences"."score" <= 10"#)
         )
     }
     
@@ -56,7 +60,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score == 10),
             .psql(#"WHERE "CarBrandReferences"."score" = 10"#),
-            .mysql("WHERE CarBrandReferences.score = 10")
+            .mysql("WHERE CarBrandReferences.score = 10"),
+            .duck(#"WHERE "CarBrandReferences"."score" = 10"#)
         )
     }
     
@@ -67,7 +72,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$model == "x001"),
             .psql(#"WHERE "CarBrandReferences"."model" = 'x001'"#),
-            .mysql("WHERE CarBrandReferences.model = 'x001'")
+            .mysql("WHERE CarBrandReferences.model = 'x001'"),
+            .duck(#"WHERE "CarBrandReferences"."model" = 'x001'"#)
         )
     }
     
@@ -78,7 +84,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$available == true),
             .psql(#"WHERE "CarBrandReferences"."available" = TRUE"#),
-            .mysql("WHERE CarBrandReferences.available = TRUE")
+            .mysql("WHERE CarBrandReferences.available = TRUE"),
+            .duck(#"WHERE "CarBrandReferences"."available" = TRUE"#)
         )
     }
 
@@ -89,7 +96,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$mainGers == GearboxType.manual),
             .psql(#"WHERE "CarBrandReferences"."mainGers" = 'manual'"#),
-            .mysql("WHERE CarBrandReferences.mainGers = 'manual'")
+            .mysql("WHERE CarBrandReferences.mainGers = 'manual'"),
+            .duck(#"WHERE "CarBrandReferences"."mainGers" = 'manual'"#)
         )
     }
     
@@ -100,7 +108,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$model == nil),
             .psql(#"WHERE "CarBrandReferences"."model" IS NULL"#),
-            .mysql("WHERE CarBrandReferences.model IS NULL")
+            .mysql("WHERE CarBrandReferences.model IS NULL"),
+            .duck(#"WHERE "CarBrandReferences"."model" IS NULL"#)
         )
     }
     
@@ -111,7 +120,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score != 10),
             .psql(#"WHERE "CarBrandReferences"."score" != 10"#),
-            .mysql("WHERE CarBrandReferences.score != 10")
+            .mysql("WHERE CarBrandReferences.score != 10"),
+            .duck(#"WHERE "CarBrandReferences"."score" != 10"#)
         )
     }
     
@@ -122,7 +132,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$model != "x001"),
             .psql(#"WHERE "CarBrandReferences"."model" != 'x001'"#),
-            .mysql("WHERE CarBrandReferences.model != 'x001'")
+            .mysql("WHERE CarBrandReferences.model != 'x001'"),
+            .duck(#"WHERE "CarBrandReferences"."model" != 'x001'"#)
         )
     }
     
@@ -133,7 +144,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$available != true),
             .psql(#"WHERE "CarBrandReferences"."available" != TRUE"#),
-            .mysql("WHERE CarBrandReferences.available != TRUE")
+            .mysql("WHERE CarBrandReferences.available != TRUE"),
+            .duck(#"WHERE "CarBrandReferences"."available" != TRUE"#)
         )
     }
     
@@ -144,7 +156,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$mainGers != GearboxType.manual),
             .psql(#"WHERE "CarBrandReferences"."mainGers" != 'manual'"#),
-            .mysql("WHERE CarBrandReferences.mainGers != 'manual'")
+            .mysql("WHERE CarBrandReferences.mainGers != 'manual'"),
+            .duck(#"WHERE "CarBrandReferences"."mainGers" != 'manual'"#)
         )
     }
     
@@ -155,7 +168,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$model != nil),
             .psql(#"WHERE "CarBrandReferences"."model" IS NOT NULL"#),
-            .mysql("WHERE CarBrandReferences.model IS NOT NULL")
+            .mysql("WHERE CarBrandReferences.model IS NOT NULL"),
+            .duck(#"WHERE "CarBrandReferences"."model" IS NOT NULL"#)
         )
     }
     
@@ -166,7 +180,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$score <> 5 && 20),
             .psql(#"WHERE "CarBrandReferences"."score" BETWEEN 5 AND 20"#),
-            .mysql("WHERE CarBrandReferences.score BETWEEN 5 AND 20")
+            .mysql("WHERE CarBrandReferences.score BETWEEN 5 AND 20"),
+            .duck(#"WHERE "CarBrandReferences"."score" BETWEEN 5 AND 20"#)
         )
     }
     
@@ -177,7 +192,8 @@ struct PredicateTests: SwifQLTests {
         check(
             SwifQL.where(\CarBrandReferences.$model <> "a" && "t"),
             .psql(#"WHERE "CarBrandReferences"."model" BETWEEN 'a' AND 't'"#),
-            .mysql("WHERE CarBrandReferences.model BETWEEN 'a' AND 't'")
+            .mysql("WHERE CarBrandReferences.model BETWEEN 'a' AND 't'"),
+            .duck(#"WHERE "CarBrandReferences"."model" BETWEEN 'a' AND 't'"#)
         )
     }
     
