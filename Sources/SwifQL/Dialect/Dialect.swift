@@ -23,7 +23,7 @@ open class SQLDialect {
     }
     
     public static var all: [SQLDialect] {
-        [.psql, .mysql]
+        [.psql, .mysql, .duck]
     }
     
     /// Good choice only for super short and universal queries like `BEGIN;`, `ROLLBACK;`, `COMMIT;`
