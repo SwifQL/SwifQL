@@ -103,7 +103,7 @@ Traversal order, marker replacement, value collection, and prepared-output mecha
 
 Every supported dialect needs an explicit representation for `SwifQLHybridOperator` or any future dialect-polymorphic operator mechanism.
 
-Preserve the established public two-argument PostgreSQL/MySQL initializer for downstream source compatibility. The additive three-argument initializer provides an explicit Duck representation. Before Duck reaches final closure, separately decide/document what preparing an old two-argument custom hybrid with `.duck` means. The shared value may carry an open value-semantic mapping from a public representation key to an operator, and a dialect may select its key through an additive hook; legacy whole-`hybridOperator(_:)` overrides remain authoritative.
+Preserve the established public two-argument PostgreSQL/MySQL initializer for downstream source compatibility. The additive three-argument initializer provides an explicit Duck representation. Preparing a legacy two-branch custom hybrid with `.duck` does not silently reuse another dialect representation: if no explicit Duck representation exists, preparation fails deterministically. The shared value may carry an open value-semantic mapping from a public representation key to an operator, and a dialect may select its key through an additive hook; legacy whole-`hybridOperator(_:)` overrides remain authoritative.
 
 A new dialect support claim must not rely on another dialect's syntax as semantic evidence.
 
@@ -260,7 +260,7 @@ This rule does not authorize speculative feature implementation. It requires cro
 
 Only if verified dialect grammar later requires structural reordering, omission, duplication, or whole-statement decisions that cannot be expressed truthfully by ordinary/scoped parts plus the evidence-proven structural-region model may a focused semantic statement representation be proposed. That proposal requires its own research, compatibility analysis, plan audit, and maintainer approval before implementation.
 
-For the current Duck PIVOT/UNPIVOT/MERGE wave, bounded render scopes remain approved. The independent root clause-ownership audit and focused disposable diagnostic validate the generic structural-frame + dedicated-clause architecture; the PIVOT ownership blocker is closed. Focused semantic-statement representation remains unapproved. The next gate is reconciliation and independent audit of the production implementation/migration plan, not another architecture redesign.
+For the current 2.0.0 Duck PIVOT/UNPIVOT/MERGE implementation, bounded render scopes plus the generic structural-frame + dedicated-clause architecture are production truth. The PIVOT ownership blocker is closed and the implementation/native/compatibility gates have passed. Focused semantic-statement representation remains unapproved and is still only a future escalation path if the existing parts/scopes/structural-region model proves genuinely insufficient.
 
 Any future semantic statement representation must re-enter the same recursive preparation/binding pipeline and must not become a generalized full-query AST or parallel renderer unless a separate architecture decision explicitly proves that such a redesign is required.
 

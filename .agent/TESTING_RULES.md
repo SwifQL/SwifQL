@@ -63,7 +63,7 @@ When binding behavior changes, validate the bind placeholder query, values order
 - `check(_:all:)` currently iterates `SQLDialect.all` and compares plain output for each dialect.
 - The focused `check` helper can compare a supplied binded query.
 
-`SQLDialect.all` intentionally remains PostgreSQL + MySQL until Duck reaches its final support/compatibility/native-validation closure gate. Focused Duck tests use `.duck` explicitly. Adding Duck to `SQLDialect.all` changes the semantic reach of every `all` assertion, so audit and classify those tests before expanding the collection.
+`SQLDialect.all` now contains PostgreSQL, MySQL, and Duck because Duck's first support/compatibility/native-validation closure gate has passed. `check(..., all:)` therefore exercises all three built-in dialects. Adding or removing any dialect from `SQLDialect.all` changes the semantic reach of every `all` assertion, so such collection changes still require an explicit audit/classification of both `all` cases and explicit-dialect cases before the collection changes.
 
 ## SQL fidelity and Swift naming assertions
 

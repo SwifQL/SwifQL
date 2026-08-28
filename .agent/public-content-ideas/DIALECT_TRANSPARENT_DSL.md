@@ -6,7 +6,7 @@ Do not load this shard during ordinary source work. Read/update it only when a p
 
 ## Same clean query, dialect-specific rendering under the hood
 
-Status: architecture-approved
+Status: implemented on 2.0.0 release-candidate mainline
 Good for: README | website docs | article | short post
 
 ### Why users should care
@@ -65,11 +65,11 @@ Architecture checkpoint:
 
 ### Publication caveat
 
-The generic semantic render-scope mechanism exists on the current unreleased mainline, but the clean Duck PIVOT API is still design/research work and is not implemented or shipped. Do not present the conceptual PIVOT API above as currently available until implementation/native-validation/release status is promoted.
+The generic semantic render-scope mechanism and the clean structural Duck PIVOT API are implemented and native-/compatibility-validated on the 2.0.0 release-candidate mainline. Public material may present them as 2.0.0 behavior, while still avoiding a false claim that 2.0.0 has already been tagged/published before the release gate happens.
 
 ## Semantic render scopes: context travels with the expression
 
-Status: architecture-approved
+Status: implemented on 2.0.0 release-candidate mainline
 Good for: website docs | article | technical deep dive | short post
 
 ### Why users should care
@@ -161,15 +161,15 @@ is only a valid PIVOT query when the parent PIVOT construct is actually present.
 - `.agent/architecture/DIALECT_RENDERING.md` DIALECT-008
 - `.agent/TESTING_RULES.md`, contextual rendering/composition equivalence contract
 - architecture commit `65879f7248af6488222655aa33d1316a516a594f`
-- current unreleased mainline source: `SwifQLRenderScope`, `SwifQLRenderContext`, `SwifQLable.scoped(_:)`, and recursive scoped preparation.
+- current 2.0.0 release-candidate source: `SwifQLRenderScope`, `SwifQLRenderContext`, `SwifQLable.scoped(_:)`, structural clause ownership, and recursive scoped preparation.
 
 ### Publication caveat
 
-The generic render-scope mechanism exists on the current unreleased mainline but is not shipped yet. Duck PIVOT APIs that may consume scopes remain separately researched/planned and must not be presented as shipped.
+The generic render-scope mechanism and Duck PIVOT APIs are implemented on the current 2.0.0 release-candidate mainline. Present them as 2.0.0 behavior, not as already-published stable behavior until the release gate actually publishes 2.0.0.
 
 ## Nested expressions keep their grammar context
 
-Status: architecture-approved
+Status: implemented on 2.0.0 release-candidate mainline
 Good for: website docs | article | technical diagram
 
 ### Why users should care
@@ -213,7 +213,7 @@ Architecture decision in `DIALECT_RENDERING.md` DIALECT-008 and Duck-specific qu
 
 ### Publication caveat
 
-Architecture-approved. Exact nested-path support must be demonstrated by implementation tests/native validation before presenting the SQL examples as shipped behavior.
+The nested-path behavior is implemented and covered by the current 2.0.0 Duck validation. Public examples may describe it as 2.0.0 behavior, while the release itself should not be described as already published until that later gate completes.
 
 ## Preserve `KeyPathLastPath` without faking a PIVOT-only overload
 
@@ -252,7 +252,7 @@ Do not describe `KeyPathLastPath` as an internal detail or as removed. It remain
 
 ## Public extension point for semantic scopes
 
-Status: present on current unreleased mainline
+Status: implemented on 2.0.0 release-candidate mainline
 Good for: advanced website docs | article | extension-author docs
 
 ### Why users should care
@@ -310,7 +310,7 @@ External-consumer validation established that `SQLDialect.init()` is public, a d
 
 ### Publication caveat
 
-The scope/extensibility architecture exists on the current unreleased mainline but is not a released Duck feature yet. The generic scope extension API and still-unapproved Duck statement APIs must be described separately.
+The scope/extensibility architecture is implemented on the current 2.0.0 release-candidate mainline together with the approved first-closure Duck statement APIs. Public material should still distinguish these 2.0.0 APIs from later deferred Duck families and from already-published 1.5.x behavior.
 
 ## Scopes first, focused semantic statement representation only when grammar truly needs more
 
@@ -400,4 +400,4 @@ Stable Duck facts are owned by `.agent/architecture/dialects/DUCK.md`. Current t
 
 ### Publication caveat
 
-The native engine facts are validated, but the final redesigned SwifQL PIVOT API is not yet implemented/shipped. Public content must distinguish validated DuckDB behavior from final SwifQL feature availability.
+The native engine facts and the redesigned SwifQL PIVOT API are both implemented/validated for the 2.0.0 release-candidate line. Public content should distinguish that current 2.0.0 feature availability from later deferred Duck work and from the already-published 1.5.x line until 2.0.0 is actually released.

@@ -4,30 +4,14 @@ This file contains only approved current work. Ideas, unresolved choices, verifi
 
 ## Current state
 
-Duck SQL-surface research/classification, Gate A/B architecture evidence, and the complete independent implementation-plan audit lineage are PASS. All original plan-audit blockers 001-006 are CLOSED.
+The first Duck SQL-surface redesign closure is implemented, validated, independently audited, and committed. Tasks 01-27 are complete, including the final `.duck` expansion into `SQLDialect.all` and the native/compatibility closure required for that expansion.
 
-The authorized implementation package now exists under:
+The Swift 6.3 strict-concurrency migration is also implemented, independently audited, and committed. `Package.swift` now uses SwiftPM tools 6.0 and Swift 6 language mode; final validation used Apple Swift 6.3.3 with complete strict-concurrency checking. The migration intentionally preserves non-Sendable query/bind graphs where their semantics are not truthfully Sendable.
 
-`.artifacts/implementation/duck-sql-surface-redesign/`
+Task 29 owns the final stable documentation, migration guide, and release-candidate notes for the structural `parts` migration, first Duck closure, and Swift 6 strict-concurrency truth. Source/tests/Package are closed for Task 29; documentation must describe actual committed behavior without widening implementation claims.
 
-It contains shared execution rules, `TASK_INDEX.md`, numbered surgical Tasks 01-28, append-only `EXECUTION_REPORT.md`, compact `COORDINATOR_PROMPT.md`, and a separate independent `FINAL_AUDIT_TASK.md`.
+After Task 29 passes its documentation, stale-text, full-test, and exact-diff gates, the next action is the separate independent `FINAL_AUDIT_TASK.md` against actual source/tests/docs/evidence/Git. Task 29 must not execute that audit itself.
 
-Implementation execution has started. Main Task 01 PASSed. Main Task 02 attempt 01 failed at focused test compilation; Correction Task 01 fixed the two test initializer ambiguities and exposed the neutral leading-space regression; Correction Task 02 restored the evidence-proven root-frame spacing normalization. Task 02 attempt 02 then PASSed 7 focused tests / 1 suite and the full 192-test / 18-suite run.
+The approved first Duck closure covers ordinary application/analytics/schema SQL including views and the validated catalog/file-function surface. Administration/runtime families such as INSTALL/LOAD, secrets, broad PRAGMA/configuration, checkpoint/vacuum/analyze administration, variables, export/import, SHOW/DESCRIBE/SUMMARIZE convenience, extension-specific SQL universes, and the generic SQL `name := expression` abstraction remain deferred.
 
-Independent coordinator review of the actual live Task 02 source/test/diff is complete and **ACCEPTED**. The review artifact is:
-
-`.artifacts/reviews/duck-sql-surface-redesign-task02-review.md`
-
-Tasks 03-28 have not run.
-
-Current approved sequence:
-
-1. resume the implementation executor through `.artifacts/implementation/duck-sql-surface-redesign/RESUME_TASK03_PROMPT.md`;
-2. start strictly at Task 03, preserving accepted Tasks 01-02 source/test changes and append-only evidence; do not rerun/rewrite Tasks 01-02 unless a later explicitly scoped correction requires it;
-3. continue automatically through Tasks 04-28 after each PASS and stop the whole run on BLOCKED/FAIL without widening scope;
-4. after Tasks 03-28 eventually PASS, executor stops and the independent coordinator/reviewer executes `FINAL_AUDIT_TASK.md` against actual source/diff/Git;
-5. only after independent final audit CLEAN may the maintainer open the separate commit gate; no push is implied.
-
-The approved first Duck closure includes ordinary application/analytics/schema SQL including views, while administrative/runtime families and the generic SQL `name := expression` abstraction are deferred. Exact SQL identity is mandatory: do not introduce semantic portability facades such as a cross-dialect `binary(...)` API that substitutes differently named SQL functions.
-
-Do not mix Swift 6/Sendable implementation, unrelated modernization, dependency/deployment changes, SwiftDuckDB mutation, staging/commit/push, or history changes into this implementation run.
+Do not start new source modernization, new Duck feature waves, release/push work, or unrelated architecture changes as part of Task 29 or the final-audit gate.

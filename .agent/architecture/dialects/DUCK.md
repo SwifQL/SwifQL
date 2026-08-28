@@ -9,7 +9,7 @@ This file intentionally distinguishes:
 - stable Duck API/rendering contracts;
 - verified DuckDB v1.5.5 engine behavior;
 - current implementation state;
-- pre-release blockers that must be corrected before the Duck dialect can be considered finished.
+- current release-candidate state, known limitations, and deferred families that remain outside the first closure.
 
 Do not duplicate these details in the cross-dialect base owner.
 
@@ -35,9 +35,9 @@ Ordinary preparation is:
 query.prepare(.duck)
 ```
 
-The public Duck factory is `.duck`. `SQLDialect.all` intentionally remains `[.psql, .mysql]` until Duck passes its final support/compatibility/native-validation closure gate, because adding Duck changes the semantic reach of every existing `check(..., all:)` assertion.
+The public Duck factory is `.duck`. The first support/compatibility/native-validation closure has passed, so `SQLDialect.all` now contains `[.psql, .mysql, .duck]`. This expands the semantic reach of every existing `check(..., all:)` assertion, which is why the collection change was delayed until the explicit closure/classification gate.
 
-Focused Duck tests use `.duck` explicitly. Internal product identity may still use `"duckdb"`.
+Focused Duck tests may still use `.duck` explicitly where dialect-specific expectations are required. Internal product identity may still use `"duckdb"`.
 
 ### DUCK-002 - Internal database identity
 
@@ -187,7 +187,7 @@ Duck distinguishes:
 
 A fixed ARRAY length must be strictly positive.
 
-The future public type API uses clean SQL-shaped names under `Type`, including:
+The current public type API uses clean SQL-shaped names under `Type`, including:
 
 ```swift
 Type.list(...)
@@ -212,7 +212,7 @@ not `structure(...)` and not `structType(...)`.
 
 Nested STRUCT/UNION identifiers must use proper quoted identifier rendering, including reserved words, spaces, Unicode, and embedded quotes.
 
-Public value-construction APIs for LIST/ARRAY/MAP/STRUCT/UNION/VARIANT are not yet approved. Fresh research must decide whether each concept reuses existing SwifQL, receives a clean SQL-shaped surface, stays internal, or needs no dedicated API.
+The current first-closure value-construction surface includes `Fn.listValue(...)`, `Fn.arrayValue(...)`, and `Fn.map(...)`. Generic STRUCT/UNION value constructors that require a reusable first-class `name := expression` abstraction remain deferred with DUCK-025, and no dedicated VARIANT value-construction API is claimed by the first closure. Do not invent raw-string or Duck-prefixed substitutes for those deferred grammar needs.
 
 ## Type mapping
 
@@ -234,7 +234,7 @@ Sequence/default behavior is modeled separately.
 
 Duck-specific SQL functions live under normal camelCase `Fn.*` Swift names while emitted SQL retains the exact Duck function spelling.
 
-Researched candidate coverage includes JSON, numeric, string, time, and sequence functions.
+The current first-closure function surface includes validated JSON, numeric, string, time, sequence, nested-value, LIST/lambda, table/file, COLUMNS, and related exact SQL helpers. Exact SQL identity remains mandatory; later function families require the same source/API/native review before becoming support claims.
 
 Do not prefix ordinary function calls with `Duck` merely because current support is Duck-only.
 
@@ -257,7 +257,7 @@ Do not add parallel Duck builders only for visual symmetry.
 
 ### DUCK-016 - Native Duck query features remain clean at call sites
 
-Duck-specific/native features already researched as candidate SwifQL coverage include:
+The implemented first-closure Duck/native query surface includes:
 
 - QUALIFY;
 - ORDER BY ALL;
@@ -361,7 +361,7 @@ For simplified PIVOT `GROUP BY` and `ORDER BY`, clause ownership remains separat
 
 The independent root clause-ownership audit and focused disposable evidence diagnostic have validated the cross-dialect major-version architecture: a generic SQL-region frame selects ownership for open clause kinds through one generic root-frame-aware continuation primitive; dedicated owner-sensitive GROUP BY / ORDER BY parts persist the selected owner; bounded semantic render scopes apply Duck's contextual qualification rules only to the affected children. PIVOT is a consumer of this shared composition architecture, not the owner of it.
 
-The focused Gate B diagnostic passed the required nested SELECT/PIVOT, nested PIVOT, set-result/CTE, copied-`parts`, external-extension, binding-order, QueryParts/builder, raw-composition, and byte-for-byte PostgreSQL/MySQL compatibility matrix. `PIVOT-CLAUSE-OWNERSHIP-001` is closed. This validates the architecture, not broad Duck production implementation; implementation still requires the reconciled and independently audited production plan.
+The structural ownership matrix passed the required nested SELECT/PIVOT, nested PIVOT, set-result/CTE, copied-`parts`, external-extension, binding-order, QueryParts/builder, raw-composition, and byte-for-byte PostgreSQL/MySQL compatibility cases. `PIVOT-CLAUSE-OWNERSHIP-001` is closed, and the corresponding structural-frame + dedicated-clause implementation is now production source in the 2.0.0 line.
 
 Do not automatically escalate to semantic statement objects. Do not implement Duck-specific frame routing, scan receiver history for PIVOT, use free-floating forward ownership directives, infer ownership from paths/tables, or expose `belong: .pivot` / PIVOT-specific wrappers in ordinary query source.
 
@@ -382,9 +382,9 @@ Native DuckDB v1.5.5 validation has already established:
 - the complete MERGE B1-B11 matrix described in DUCK-020B;
 - the complete PIVOT qualification/binding matrix described in DUCK-017.
 
-The broader mandatory native matrix is not yet complete.
+The first-closure mandatory native matrix is complete against DuckDB v1.5.5: 15/15 validation domains and 986/986 accepted native cases passed, including 834 positive cases and 152 retained-negative cases. Required public probes, mapping edges, source shapes, SQL fixtures, fail-closed self-tests, public-correlation self-tests, and final assertions also passed.
 
-UNPIVOT, remaining sequence/macro/ATTACH/COPY cases and any other not-yet-reached mandatory cases must not be described as native-validated until the continuation matrix actually runs.
+Future Duck waves must add their own native cases rather than treating this completed first-closure matrix as proof for newly added grammar/features.
 
 ## DML / DDL and advanced statements
 
@@ -392,11 +392,11 @@ UNPIVOT, remaining sequence/macro/ATTACH/COPY cases and any other not-yet-reache
 
 Duck DML/DDL support is additive and exact-SQL oriented.
 
-Researched candidate surface includes normal INSERT/UPDATE/DELETE compatibility plus Duck extensions, CREATE/ALTER/DROP forms, schemas, enums, sequences, indexes, MERGE, COPY, macros, and catalog/database statements.
+The implemented first-closure advanced-statement surface includes validated INSERT/UPDATE/DELETE compatibility plus approved Duck extensions, CREATE/ALTER/DROP forms, schemas, enums/types, sequences, indexes, MERGE, COPY, macros, and catalog/database statements. Exact support/negative boundaries are recorded in the sections below; do not infer broader support from the family name alone.
 
 Do not hide unsupported Duck semantics behind PostgreSQL-looking helpers. Examples from research include PostgreSQL index methods and unsupported constraint/foreign-key behaviors that must remain unclaimed unless current Duck documentation/native tests prove support.
 
-The detailed feature matrix should be expanded here as each advanced area completes native validation rather than duplicated in the common dialect owner.
+Keep the detailed Duck feature/negative matrix in this file as future advanced areas are added and native-validated; do not duplicate Duck-specific support claims in the common dialect owner.
 
 ### DUCK-020A - Ordinary DML support and unclaimed boundaries
 
@@ -414,10 +414,10 @@ The verified DuckDB v1.5.5 ordinary-DML contract is:
 - Basic `TRUNCATE <table>` is supported, including schema-qualified structural table targets.
 
 These are feature-specific support and unclaimed claims for the verified runtime,
-not a general portability promise. The final Duck closure gate must revalidate
-these ordinary-DML boundaries, together with the rest of the approved Duck
-surface and downstream compatibility, before `.duck` is added to
-`SQLDialect.all`.
+not a general portability promise. These ordinary-DML boundaries were included
+in the final Duck closure revalidation before `.duck` was added to
+`SQLDialect.all`, and they remain the exact current support/non-claim boundary
+for this section.
 
 ### DUCK-020B - MERGE direct-composition contract and native boundaries
 
@@ -520,8 +520,9 @@ ALTER TABLE:
 All unsupported or unclaimed forms above remain mechanically renderable. The
 Duck renderer does not add runtime rejection, and no Duck-specific table DDL
 wrapper or broad builder conformance is implied. Transaction rollback of table
-DDL was separately verified. `.duck` remains outside `SQLDialect.all` until
-the complete Duck closure gate passes.
+DDL was separately verified. The first Duck closure is complete and `.duck`
+is now part of `SQLDialect.all`; the table-DDL support/non-claim boundary above
+remains exact.
 
 ### DUCK-026 - Schema-level DDL is claimed per exact source/action
 
@@ -765,8 +766,9 @@ Path.Catalog("analytics")
 ~~~
 
 The catalog, schema, table, column, and alias renderers remain distinct. No
-second database/catalog identifier type is introduced, and `.duck` remains
-outside `SQLDialect.all` until the broader closure boundary is complete.
+second database/catalog identifier type is introduced. The first Duck closure
+is complete and `.duck` is now part of `SQLDialect.all`; the
+ATTACH/catalog/session support/non-claim boundary above remains exact.
 
 ### DUCK-029 - COPY and table-file functions are claimed per exact source/action
 
@@ -867,8 +869,9 @@ This exact table-function grammar is distinct from the deferred generic
 
 Single paths and glob patterns are claimed. Duck LIST multiple-file input was
 native-characterized but is not claimed by the public API because no new
-multiple-file list representation was required or frozen. `.duck` remains
-outside `SQLDialect.all` until the broader closure boundary is complete.
+multiple-file list representation was required or frozen. The first Duck
+closure is complete and `.duck` is now part of `SQLDialect.all`; the
+COPY/table-function support/non-claim boundary above remains exact.
 
 ## Catalog paths
 
@@ -890,17 +893,17 @@ If an internal Duck-specific helper remains necessary, use `duck...` naming.
 
 ### DUCK-022 - Unreleased Duck API may be corrected directly
 
-Duck support has not shipped from this working tree.
+Duck support is implemented and validated on the current 2.0.0 release-candidate mainline, but the 2.0.0 release has not yet been published from this working tree.
 
-Therefore incorrect new Duck API names/shapes should be fixed directly before release, without compatibility aliases whose only purpose would be preserving an unreleased mistake.
+Therefore incorrect 2.0.0-only Duck API names/shapes may still be corrected directly before the release tag, without compatibility aliases whose only purpose would be preserving an unreleased mistake.
 
-The canonical unreleased spelling is already `.duck`; no compatibility alias for `.duckdb` is required because that spelling has not shipped. New Duck API symbols still require the full API review described by DUCK-023.
+The canonical 2.0.0 spelling is `.duck`; no compatibility alias for `.duckdb` is required because that spelling has not shipped in a stable release. Future Duck API additions still require the full API review described by DUCK-023.
 
 This rule does not authorize changing established pre-Duck SwifQL APIs used by existing users.
 
-### DUCK-023 - Complete API-surface review before continuing feature implementation
+### DUCK-023 - API-surface review for future Duck feature waves
 
-Before any new Duck feature implementation resumes, classify the intended unreleased Duck surface into:
+Before any future Duck feature implementation begins, classify the intended new Duck surface into:
 
 1. reuse existing SwifQL API unchanged;
 2. generic clean SQL-concept API;
@@ -908,17 +911,17 @@ Before any new Duck feature implementation resumes, classify the intended unrele
 4. genuinely Duck-specific implementation symbol using `Duck...` / `duck...`;
 5. unresolved UX requiring focused research.
 
-Known areas requiring this review include PIVOT, UNPIVOT, MERGE, COLUMNS, star modifiers, nested values, sequences, macros, catalog paths, sampling helper types, and COPY/ATTACH option types.
+The first 2.0.0 closure already completed this review for PIVOT, UNPIVOT, MERGE, COLUMNS, star modifiers, nested values, sequences, macros, catalog paths, sampling, and COPY/ATTACH option types. Apply the same classification discipline to later administration/runtime and extension-specific families rather than reopening the completed first-closure decisions.
 
-The fresh `duck-sql-surface-redesign` research has completed this classification at planning level. Bounded semantic render scope has passed Gate A, and the focused clause-ownership diagnostic has passed Gate B. Production implementation remains blocked only on reconciliation and independent audit of the detailed implementation/migration plan. Future source changes must follow the audited final plan rather than repeating a broad API inventory.
+The `duck-sql-surface-redesign` research/classification, Gate A bounded semantic render-scope work, Gate B structural clause-ownership work, production implementation, native/public closure, and independent audits are complete for the first 2.0.0 Duck closure. Future source changes must follow the stable architecture and current release contract rather than repeating the completed broad API inventory or assuming that first-closure acceptance authorizes unrelated Duck expansion.
 
 ### DUCK-024 - First `.duck` closure boundary
 
-The first release that adds `.duck` to `SQLDialect.all` must cover and native-/compatibility-validate the ordinary application/analytics/schema surface approved by the maintainer: core rendering/binds/values/date exact behavior; paths/catalogs/JSON; exact scalar/nested types and values that do not require the deferred generic `:=` abstraction; high-value exact functions/operators; SELECT-family clauses; GROUPING SETS/ROLLUP/CUBE; future-safe lambdas/list functions; joins; set operations; star/COLUMNS; scope-proven PIVOT/UNPIVOT; DML/RETURNING/MERGE where clean composition is proven; truthful CREATE/ALTER/DROP for tables/schemas/views/types/indexes/constraints; sequences/macros only where they do not require the deferred generic `:=` abstraction; ATTACH/DETACH/USE; COPY; common table/file functions; full DuckDB v1.5.5 native validation; and downstream compatibility validation.
+The first `.duck` closure is complete. It covers and native-/compatibility-validates the ordinary application/analytics/schema surface approved by the maintainer: core rendering/binds/values/date behavior; paths/catalogs/JSON; exact scalar/nested types and values that do not require the deferred generic `:=` abstraction; high-value exact functions/operators; SELECT-family clauses; GROUPING SETS/ROLLUP/CUBE; lambdas/list functions; joins; set operations; star/COLUMNS; scope-proven PIVOT/UNPIVOT; DML/RETURNING/MERGE where clean composition is proven; truthful CREATE/ALTER/DROP for tables/schemas/views/types/indexes/constraints; sequences/macros where they do not require the deferred generic `:=` abstraction; ATTACH/DETACH/USE; COPY; common table/file functions; DuckDB v1.5.5 native validation; and downstream compatibility validation.
 
-Later typed waves do not block `.duck` closure: INSTALL/LOAD, CREATE SECRET, broad PRAGMA/configuration, CHECKPOINT, VACUUM/ANALYZE administration, SET/RESET VARIABLE, EXPORT/IMPORT DATABASE, SHOW/DESCRIBE/SUMMARIZE convenience, and extension-specific SQL universes.
+The completed closure adds `.duck` to `SQLDialect.all`, which is now `[.psql, .mysql, .duck]`.
 
-`SQLDialect.all` remains `[.psql, .mysql]` until that first closure passes.
+Later typed waves do not retroactively block that closure: INSTALL/LOAD, CREATE SECRET, broad PRAGMA/configuration, CHECKPOINT, VACUUM/ANALYZE administration, SET/RESET VARIABLE, EXPORT/IMPORT DATABASE, SHOW/DESCRIBE/SUMMARIZE convenience, extension-specific SQL universes, and other administration/runtime families remain separate future work.
 
 ### DUCK-025 - Generic SQL `name := expression` is deferred
 

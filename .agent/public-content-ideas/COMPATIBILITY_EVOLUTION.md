@@ -241,7 +241,7 @@ Relevant architecture commits:
 
 ### Publication caveat
 
-The compatibility philosophy is stable architecture. Generic semantic render scopes exist on the current mainline but are not released yet; clean Duck PIVOT remains architecture direction rather than an approved implementation. Future publication must clearly separate established released SwifQL behavior, current unreleased infrastructure, and still-planned Duck APIs.
+The compatibility philosophy is stable architecture. Generic semantic render scopes and the clean structural Duck PIVOT implementation are now present on the 2.0.0 release-candidate mainline. Public material should still distinguish the already-released 1.5.x line from the implemented-but-not-yet-published 2.0.0 line and from later deferred Duck families.
 
 ## Migration story: Structural `parts` Without Rewriting Query Source
 
@@ -250,7 +250,7 @@ Good for: migration guide | release notes | README | article | maintainer post
 
 ### Why users should care
 
-The next major version may deliberately change the internal/public `SwifQLable.parts` shape at true SQL statement/subquery/set-result boundaries so semantic ownership survives incremental composition, copied parts, helpers, nested SQL, CTEs, and set operations without hidden mutable state or token scanning.
+SwifQL 2.0.0 deliberately changes the public `SwifQLable.parts` shape at true SQL statement/subquery/set-result boundaries so semantic ownership survives incremental composition, copied parts, helpers, nested SQL, CTEs, and set operations without hidden mutable state or token scanning.
 
 The important user-facing promise is the contrast:
 
@@ -288,4 +288,4 @@ This creates a strong explanation of why a breaking internal/public representati
 
 ### Publication caveat
 
-The architecture is validated by a disposable real-source prototype, exact PostgreSQL/MySQL compatibility matrix, 20-case structural matrix, and external consumer, but it is not yet implemented or shipped in production SwifQL source. Do not present structural SQL-region frames, `SwifQLClauseOwner` / `SwifQLClauseKind`, or the migration API as released behavior until production implementation, production compatibility/native audit, and release gates pass.
+The structural SQL-region frames, `SwifQLClauseOwner` / `SwifQLClauseKind`, owner-sensitive clauses, and `structurallyAppending(_:)` are now implemented and validated on the 2.0.0 release-candidate mainline. Public material may present them as 2.0.0 behavior, while still avoiding a false claim that 2.0.0 has already been tagged/published before the release gate actually happens.

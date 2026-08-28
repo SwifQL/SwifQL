@@ -5,7 +5,7 @@
         <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
     </a>
     <a href="https://swift.org">
-        <img src="https://img.shields.io/badge/swift-5.2-brightgreen.svg" alt="Swift 5.2">
+        <img src="https://img.shields.io/badge/swift-6-brightgreen.svg" alt="Swift 6">
     </a>
     <img src="https://img.shields.io/github/workflow/status/MihaelIsaev/SwifQL/test" alt="Github Actions">
     <a href="https://discord.gg/q5wCPYv">
@@ -26,7 +26,7 @@ This lib can be used either stand alone, or with frameworks like Vapor, Kitura, 
 
 We recommend to use it with our [Bridges](https://github.com/SwifQL/Bridges) lib which is built on top of SwifQL and support all its flexibility
 
-It supports PostgreSQL and MySQL. And it's not so hard to add other dialects 🙂 just check [SwifQL/Dialect](https://github.com/SwifQL/SwifQL/tree/master/Sources/SwifQL/Dialect) folder
+It supports PostgreSQL, MySQL, and DuckDB. The canonical Duck dialect spelling is `.duck`, and `SQLDialect.all` now includes all three built-in dialects. It's also not hard to add other dialects 🙂 just check [SwifQL/Dialect](https://github.com/SwifQL/SwifQL/tree/master/Sources/SwifQL/Dialect) folder
 
 Please feel free to ask any questions in issues, and also you could find me in the [Discord app](https://discordapp.com) as `@iMike#3049` or even better just join **#swifql** channel on [Vapor's Discord server](https://discord.gg/vapor) 🙂
 
@@ -40,7 +40,26 @@ Please feel free to ask any questions in issues, and also you could find me in t
 
 ### Support SwifQL development by giving a ⭐️
 
+## Which version should I use?
+
+Still on a Vapor 4 / Swift 5 project? **1.5.0 is the last stable Swift 5 release**, so you can safely stay on the 1.5.x line until you're ready to migrate.
+
+Starting a new project? Target the upcoming **2.0.0** line 🚀 It moves SwifQL to Swift 6, adds DuckDB support, and includes the new structural query composition model. It is currently being prepared and is not published yet.
+
+If you're upgrading from 1.5.x, check [MIGRATION.md](MIGRATION.md). For a quick overview of 2.0.0 see [RELEASE_NOTES.md](RELEASE_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
+
 ## Installation
+
+### Swift 5 / existing Vapor 4 projects
+
+```swift
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from: "1.5.0")
+```
+
+### Swift 6 / upcoming SwifQL 2.0.0
+
+The `2.0.0` pins below are for **after the 2.0.0 release is tagged/published** — they're not current install instructions yet.
+
 ### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + PostgreSQL
 ```swift
 .package(url: "https://github.com/vapor/vapor.git", from:"4.0.0-rc"),
@@ -67,7 +86,7 @@ Please feel free to ask any questions in issues, and also you could find me in t
 
 ### Pure
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"2.0.0-beta"),
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"2.0.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
 ]),
@@ -75,7 +94,7 @@ Please feel free to ask any questions in issues, and also you could find me in t
 
 ### Pure on NIO2
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"2.0.0-beta"),
+.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"2.0.0"),
 .package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"2.0.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),

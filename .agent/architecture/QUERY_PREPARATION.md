@@ -10,7 +10,7 @@ Nested `SwifQLPartArray` values and scoped expressions are traversed in order th
 
 An unsafe value appends its value to `_values`, appends the dialect-formatted representation to `_formattedValues`, and emits the dialect's internal bind symbol into the query. The exact external bind-key syntax is owned by `DIALECT_RENDERING.md`.
 
-Established `Data` composition remains unchanged. Hybrid operator behavior remains on its established PostgreSQL/MySQL model; Duck hybrid behavior is a separate open design decision.
+Established `Data` composition remains unchanged. Hybrid operator preparation preserves the historical PostgreSQL/MySQL behavior while supported dialects may select an explicit representation key. Duck selects the `.duck` representation; a legacy two-branch hybrid without an explicit Duck representation fails deterministically rather than silently borrowing another dialect branch.
 
 An unknown or unhandled part falls through the current `default: return ""` branch. Adding a concrete part that needs special rendering without dispatch support can therefore silently omit SQL and is a correctness hazard.
 

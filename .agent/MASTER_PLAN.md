@@ -49,7 +49,7 @@ Focused semantic statement representation remains only a future escalation bound
 
 ## Duck direction
 
-Canonical public spelling is `.duck`. Ordinary Duck query source remains SQL-shaped and dialect-transparent; Duck-only support does not automatically justify a `Duck...` public wrapper. Dialect-transparent rendering may adapt syntax/qualification/casing for the same exact SQL construct, but it must not become a portability facade that swaps differently named SQL constructs such as `decode` and `from_base64`. Keep `.duck` out of `SQLDialect.all` until the final Duck closure gate proves the dialect ready to expand every existing `all` assertion.
+Canonical public spelling is `.duck`. Ordinary Duck query source remains SQL-shaped and dialect-transparent; Duck-only support does not automatically justify a `Duck...` public wrapper. Dialect-transparent rendering may adapt syntax/qualification/casing for the same exact SQL construct, but it must not become a portability facade that swaps differently named SQL constructs such as `decode` and `from_base64`. The first Duck closure has passed its support/compatibility/native-validation gates and `.duck` is now included in `SQLDialect.all`; future changes to that built-in collection still require explicit test-classification and compatibility review.
 
 A target PIVOT call should remain conceptually clean, e.g. `SwifQL.pivot(cities).on(cities.column("year"), in: 2000, 2010)...`, with dialect-specific qualification handled behind the DSL rather than exposed as wrapper objects.
 
@@ -57,17 +57,15 @@ For simplified PIVOT, native DuckDB v1.5.5 evidence already proves qualified ON/
 
 The approved first `.duck` closure covers ordinary application/analytics/schema SQL, including views, and leaves administration/runtime families such as INSTALL/LOAD, secrets, broad PRAGMA/configuration, checkpoint/vacuum/analyze administration, variables, export/import, SHOW/DESCRIBE/SUMMARIZE convenience, and extension-specific universes for later typed waves. The generic SQL `name := expression` abstraction is also deferred; current closure work must not invent it indirectly.
 
-## Current Duck design gate
+## Current Duck and Swift 6 state
 
-Before any new Duck feature implementation executor runs:
+The first Duck closure is implemented, native-/compatibility-validated, independently audited, and committed. Gate A bounded semantic render scopes and Gate B structural clause ownership are now production architecture rather than planning-only evidence. The structural SQL-region/set-result frame model, owner-sensitive GROUP BY/ORDER BY parts, PIVOT/UNPIVOT/MERGE support, first-closure DML/DDL/catalog/file-function surface, and `.duck` membership in `SQLDialect.all` are current source truth.
 
-1. keep the completed Duck SQL-surface research/classification and SQL-shaped user-facing API decisions as the planning baseline;
-2. treat Gate A bounded semantic render scopes and Gate B structural clause ownership as evidence-proven architecture gates;
-3. keep the corrected detailed implementation/migration plan aligned with the completed Gate B prototype evidence, explicit major-version migration surface, approved first closure, and deferred generic `name := expression` work;
-4. resolve all findings from the blocked first independent plan audit, then independently re-audit the corrected plan against DESIGN-001/015/017/018, dialect rules, PostgreSQL/MySQL/downstream-extension compatibility, and official/native DuckDB semantics;
-5. only after the latest plan-audit lineage returns PASS create numbered surgical tasks and run an implementation executor.
+The package also now uses SwiftPM tools 6.0 with Swift 6 language mode. The committed Task-28 migration passed final Apple Swift 6.3.3 complete strict-concurrency validation while intentionally preserving non-Sendable query/bind graphs where their semantics are not truthfully Sendable. Consumer actor boundaries normalize on caller isolation and move only consumer-owned checked-Sendable snapshots across actors; this is guidance for consumers, not a new parallel SwifQL preparation architecture.
 
-Current live source and stable architecture owners define the implementation baseline. Disposable artifacts may record the current research/plan/evidence, but they do not override those authorities.
+Future Duck administration/runtime waves and the deferred generic SQL `name := expression` abstraction remain separate work. Any new shared rendering/preparation/composition primitive still requires the normal architecture/research/audit gates; completed first-closure evidence is not blanket permission to widen Duck claims or redesign established PostgreSQL/MySQL behavior.
+
+Current live source and stable architecture owners define the implementation baseline. Disposable artifacts may record execution evidence, but they do not override those authorities.
 
 ## Future validation gates
 
