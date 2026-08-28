@@ -6,70 +6,70 @@
 //
 
 extension Fn.Name {
-    public static var age: Self = .init("age")
-    public static var clockTimestamp: Self = .init("clock_timestamp")
+    public static let age: Self = .init("age")
+    public static let clockTimestamp: Self = .init("clock_timestamp")
     @available(*, deprecated, renamed: "clockTimestamp")
     public static var clock_timestamp: Self { .clockTimestamp }
-    public static var currentDate: Self = .init("current_date")
+    public static let currentDate: Self = .init("current_date")
     @available(*, deprecated, renamed: "currentDate")
     public static var current_date: Self { .currentDate }
-    public static var currentTime: Self = .init("current_time")
+    public static let currentTime: Self = .init("current_time")
     @available(*, deprecated, renamed: "currentTime")
     public static var current_time: Self { .currentTime }
-    public static var currentTimestamp: Self = .init("current_timestamp")
+    public static let currentTimestamp: Self = .init("current_timestamp")
     @available(*, deprecated, renamed: "currentTimestamp")
     public static var current_timestamp: Self { .currentTimestamp }
-    public static var datePart: Self = .init("date_part")
+    public static let datePart: Self = .init("date_part")
     @available(*, deprecated, renamed: "datePart")
     public static var date_part: Self { .datePart }
-    public static var dateTrunc: Self = .init("date_trunc")
+    public static let dateTrunc: Self = .init("date_trunc")
     @available(*, deprecated, renamed: "dateTrunc")
     public static var date_trunc: Self { .dateTrunc }
-    public static var extract: Self = .init("extract")
-    public static var isFinite: Self = .init("isfinite")
+    public static let extract: Self = .init("extract")
+    public static let isFinite: Self = .init("isfinite")
     @available(*, deprecated, renamed: "isFinite")
     public static var isfinite: Self { .isFinite }
-    public static var justifyDays: Self = .init("justify_days")
+    public static let justifyDays: Self = .init("justify_days")
     @available(*, deprecated, renamed: "justifyDays")
     public static var justify_days: Self { .justifyDays }
-    public static var justifyHours: Self = .init("justify_hours")
+    public static let justifyHours: Self = .init("justify_hours")
     @available(*, deprecated, renamed: "justifyHours")
     public static var justify_hours: Self { .justifyHours }
-    public static var justifyInterval: Self = .init("justify_interval")
+    public static let justifyInterval: Self = .init("justify_interval")
     @available(*, deprecated, renamed: "justifyInterval")
     public static var justify_interval: Self { .justifyInterval }
-    public static var localTime: Self = .init("localtime")
+    public static let localTime: Self = .init("localtime")
     @available(*, deprecated, renamed: "localTime")
     public static var localtime: Self { .localTime }
-    public static var localTimestamp: Self = .init("localtimestamp")
+    public static let localTimestamp: Self = .init("localtimestamp")
     @available(*, deprecated, renamed: "localTimestamp")
     public static var localtimestamp: Self { .localTimestamp }
-    public static var makeDate: Self = .init("make_date")
+    public static let makeDate: Self = .init("make_date")
     @available(*, deprecated, renamed: "makeDate")
     public static var make_date: Self { .makeDate }
-    public static var makeInterval: Self = .init("make_interval")
+    public static let makeInterval: Self = .init("make_interval")
     @available(*, deprecated, renamed: "makeInterval")
     public static var make_interval: Self { .makeInterval }
-    public static var makeTime: Self = .init("make_time")
+    public static let makeTime: Self = .init("make_time")
     @available(*, deprecated, renamed: "makeTime")
     public static var make_time: Self { .makeTime }
-    public static var makeTimestamp: Self = .init("make_timestamp")
+    public static let makeTimestamp: Self = .init("make_timestamp")
     @available(*, deprecated, renamed: "makeTimestamp")
     public static var make_timestamp: Self { .makeTimestamp }
-    public static var makeTimestampTZ: Self = .init("make_timestamptz")
+    public static let makeTimestampTZ: Self = .init("make_timestamptz")
     @available(*, deprecated, renamed: "makeTimestampTZ")
     public static var make_timestamptz: Self { .makeTimestampTZ }
-    public static var now: Self = .init("now")
-    public static var statementTimestamp: Self = .init("statement_timestamp")
+    public static let now: Self = .init("now")
+    public static let statementTimestamp: Self = .init("statement_timestamp")
     @available(*, deprecated, renamed: "statementTimestamp")
     public static var statement_timestamp: Self { .statementTimestamp }
-    public static var timeOfDay: Self = .init("timeofday")
+    public static let timeOfDay: Self = .init("timeofday")
     @available(*, deprecated, renamed: "timeOfDay")
     public static var timeofday: Self { .timeOfDay }
-    public static var transactionTimestamp: Self = .init("transaction_timestamp")
+    public static let transactionTimestamp: Self = .init("transaction_timestamp")
     @available(*, deprecated, renamed: "transactionTimestamp")
     public static var transaction_timestamp: Self { .transactionTimestamp }
-    public static var toTimestamp: Self = .init("to_timestamp")
+    public static let toTimestamp: Self = .init("to_timestamp")
     @available(*, deprecated, renamed: "toTimestamp")
     public static var to_timestamp: Self { .toTimestamp }
 }

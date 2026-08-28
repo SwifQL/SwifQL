@@ -6,10 +6,10 @@
 //
 
 extension Fn.Name {
-    public static var fromUnixTime: Self = .init("FROM_UNIXTIME")
+    public static let fromUnixTime: Self = .init("FROM_UNIXTIME")
     @available(*, deprecated, renamed: "fromUnixTime")
     public static var from_unixtime: Self { .fromUnixTime }
-    public static var dateFormat: Self = .init("DATE_FORMAT")
+    public static let dateFormat: Self = .init("DATE_FORMAT")
     @available(*, deprecated, renamed: "dateFormat")
     public static var date_format: Self { .dateFormat }
 }

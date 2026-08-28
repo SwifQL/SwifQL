@@ -77,7 +77,7 @@ struct CarBrandReferences: Table {
     init() {}
 }
 
-let cb = CarBrands.as("cb")
+var cb: GenericTableAlias<CarBrands> { CarBrands.as("cb") }
 
 struct QueryWithDialect {
     let dialect: SQLDialect

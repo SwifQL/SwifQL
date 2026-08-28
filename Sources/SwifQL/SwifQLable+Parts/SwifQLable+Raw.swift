@@ -20,7 +20,7 @@ extension SwifQLable {
     public static func raw(_ anything: String) -> SwifQLable {
         var parts: [SwifQLPart] = []
         parts.append(o: .space)
-        parts.append(safe: value)
+        parts.append(o: .custom(anything))
         return SwifQLableParts(parts: parts)
     }
 }

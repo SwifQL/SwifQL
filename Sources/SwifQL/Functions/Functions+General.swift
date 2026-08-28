@@ -6,25 +6,25 @@
 //
 
 extension Fn.Name {
-    public static var subStr: Self = .init("substr")
+    public static let subStr: Self = .init("substr")
     @available(*, deprecated, renamed: "subStr")
     public static var substr: Self { .subStr }
-    public static var coalesce: Self = .init("coalesce")
-    public static var octetLength: Self = .init("octet_length")
+    public static let coalesce: Self = .init("coalesce")
+    public static let octetLength: Self = .init("octet_length")
     @available(*, deprecated, renamed: "octetLength")
     public static var octet_length: Self { .octetLength }
-    public static var cast: Self = .init("cast")
-    public static var nextVal: Self = .init("nextval")
-    public static var currVal: Self = .init("currval")
-    public static var ifNull: Self = .init("ifnull")
+    public static let cast: Self = .init("cast")
+    public static let nextVal: Self = .init("nextval")
+    public static let currVal: Self = .init("currval")
+    public static let ifNull: Self = .init("ifnull")
     @available(*, deprecated, renamed: "ifNull")
     public static var ifnull: Self { .ifNull }
-    public static var isNull: Self = .init("isnull")
+    public static let isNull: Self = .init("isnull")
     @available(*, deprecated, renamed: "isNull")
     public static var isnull: Self { .isNull }
-    public static var nvl: Self = .init("nvl")
-    public static var groupingId: Self = .init("grouping_id")
-    public static var expression: Self = .init("expression")
+    public static let nvl: Self = .init("nvl")
+    public static let groupingId: Self = .init("grouping_id")
+    public static let expression: Self = .init("expression")
 }
 
 extension Fn {

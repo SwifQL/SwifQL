@@ -269,6 +269,31 @@ struct StructuralBuilderCompatibilityTests: SwifQLTests {
         #expect(query.prepare(.psql).plain == "BASE  ")
     }
 
+    @Test("Static raw uses supplied trusted text across dialects without binds")
+    func staticRawUsesSuppliedTrustedText() {
+        let staticRaw = SwifQLableParts.raw("TAIL")
+        let stringRaw = "TAIL".raw
+        let base: SwifQLable = SwifQLableParts(parts: SwifQLPartOperator.custom("BASE"))
+        let composed = base ~ staticRaw
+
+        for dialect in [SQLDialect.psql, SQLDialect.mysql, SQLDialect.duck] {
+            let staticPrepared = staticRaw.prepare(dialect)
+            #expect(staticPrepared.plain == " TAIL")
+            #expect(staticPrepared.splitted.query == " TAIL")
+            #expect(staticPrepared.splitted.values.isEmpty)
+
+            let stringPrepared = stringRaw.prepare(dialect)
+            #expect(stringPrepared.plain == "TAIL")
+            #expect(stringPrepared.splitted.query == "TAIL")
+            #expect(stringPrepared.splitted.values.isEmpty)
+
+            let composedPrepared = composed.prepare(dialect)
+            #expect(composedPrepared.plain == "BASE TAIL")
+            #expect(composedPrepared.splitted.query == "BASE TAIL")
+            #expect(composedPrepared.splitted.values.isEmpty)
+        }
+    }
+
     @Test("structurallyAppending retains normalized single-separator behavior")
     func structurallyAppendingRemainsNormalized() {
         let lhs: SwifQLable = SwifQLableParts(parts: SwifQLStructuralFramePart(

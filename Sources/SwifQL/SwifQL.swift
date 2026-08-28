@@ -7,7 +7,7 @@
 
 import Foundation
 
-public let SwifQL: SwifQLable = _SwifQL()
+public var SwifQL: SwifQLable { _SwifQL() }
 
 public func SwifQL(_ query: SwifQLable) -> SwifQLable {
     _SwifQL(query)

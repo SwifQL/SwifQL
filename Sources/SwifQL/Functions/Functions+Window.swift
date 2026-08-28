@@ -6,31 +6,31 @@
 //
 
 extension Fn.Name {
-    public static var rowNumber: Self = .init("row_number")
+    public static let rowNumber: Self = .init("row_number")
     @available(*, deprecated, renamed: "rowNumber")
     public static var row_number: Self { .rowNumber }
-    public static var rank: Self = .init("rank")
-    public static var denseRank: Self = .init("dense_rank")
+    public static let rank: Self = .init("rank")
+    public static let denseRank: Self = .init("dense_rank")
     @available(*, deprecated, renamed: "denseRank")
     public static var dense_rank: Self { .denseRank }
-    public static var percentRank: Self = .init("percent_rank")
+    public static let percentRank: Self = .init("percent_rank")
     @available(*, deprecated, renamed: "percentRank")
     public static var percent_rank: Self { .percentRank }
-    public static var cumeDist: Self = .init("cume_dist")
+    public static let cumeDist: Self = .init("cume_dist")
     @available(*, deprecated, renamed: "cumeDist")
     public static var cume_dist: Self { .cumeDist }
-    public static var nTile: Self = .init("ntile")
+    public static let nTile: Self = .init("ntile")
     @available(*, deprecated, renamed: "nTile")
     public static var ntile: Self { .nTile }
-    public static var lag: Self = .init("lag")
-    public static var lead: Self = .init("lead")
-    public static var firstValue: Self = .init("first_value")
+    public static let lag: Self = .init("lag")
+    public static let lead: Self = .init("lead")
+    public static let firstValue: Self = .init("first_value")
     @available(*, deprecated, renamed: "firstValue")
     public static var first_value: Self { .firstValue }
-    public static var lastValue: Self = .init("last_value")
+    public static let lastValue: Self = .init("last_value")
     @available(*, deprecated, renamed: "lastValue")
     public static var last_value: Self { .lastValue }
-    public static var nthValue: Self = .init("nth_value")
+    public static let nthValue: Self = .init("nth_value")
     @available(*, deprecated, renamed: "nthValue")
     public static var nth_value: Self { .nthValue }
 }

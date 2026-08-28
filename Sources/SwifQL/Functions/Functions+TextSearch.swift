@@ -6,16 +6,16 @@
 //
 
 extension Fn.Name {
-    public static var toTSVector: Self = .init("to_tsvector")
+    public static let toTSVector: Self = .init("to_tsvector")
     @available(*, deprecated, renamed: "toTSVector")
     public static var to_tsvector: Self { .toTSVector }
-    public static var toTSQuery: Self = .init("to_tsquery")
+    public static let toTSQuery: Self = .init("to_tsquery")
     @available(*, deprecated, renamed: "toTSQuery")
     public static var to_tsquery: Self { .toTSQuery }
-    public static var plainToTSQuery: Self = .init("plainto_tsquery")
+    public static let plainToTSQuery: Self = .init("plainto_tsquery")
     @available(*, deprecated, renamed: "plainToTSQuery")
     public static var plainto_tsquery: Self { .plainToTSQuery }
-    public static var tsRankCD: Self = .init("ts_rank_cd")
+    public static let tsRankCD: Self = .init("ts_rank_cd")
     @available(*, deprecated, renamed: "tsRankCD")
     public static var ts_rank_cd: Self { .tsRankCD }
 }

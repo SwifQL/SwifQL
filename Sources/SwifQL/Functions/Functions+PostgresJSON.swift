@@ -6,67 +6,67 @@
 //
 
 extension Fn.Name {
-    public static var jsonAgg: Self = .init("json_agg")
+    public static let jsonAgg: Self = .init("json_agg")
     @available(*, deprecated, renamed: "jsonAgg")
     public static var json_agg: Self { .jsonAgg }
-    public static var toJSON: Self = .init("to_json")
+    public static let toJSON: Self = .init("to_json")
     @available(*, deprecated, renamed: "toJSON")
     public static var to_json: Self { .toJSON }
-    public static var arrayToJSON: Self = .init("array_to_json")
+    public static let arrayToJSON: Self = .init("array_to_json")
     @available(*, deprecated, renamed: "arrayToJSON")
     public static var array_to_json: Self { .arrayToJSON }
-    public static var rowToJSON: Self = .init("row_to_json")
+    public static let rowToJSON: Self = .init("row_to_json")
     @available(*, deprecated, renamed: "rowToJSON")
     public static var row_to_json: Self { .rowToJSON }
-    public static var jsonBuildArray: Self = .init("json_build_array")
+    public static let jsonBuildArray: Self = .init("json_build_array")
     @available(*, deprecated, renamed: "jsonBuildArray")
     public static var json_build_array: Self { .jsonBuildArray }
-    public static var jsonBuildObject: Self = .init("json_build_object")
+    public static let jsonBuildObject: Self = .init("json_build_object")
     @available(*, deprecated, renamed: "jsonBuildObject")
     public static var json_build_object: Self { .jsonBuildObject }
-    public static var jsonObject: Self = .init("json_object")
+    public static let jsonObject: Self = .init("json_object")
     @available(*, deprecated, renamed: "jsonObject")
     public static var json_object: Self { .jsonObject }
-    public static var jsonArrayLength: Self = .init("json_array_length")
+    public static let jsonArrayLength: Self = .init("json_array_length")
     @available(*, deprecated, renamed: "jsonArrayLength")
     public static var json_array_length: Self { .jsonArrayLength }
-    public static var jsonEach: Self = .init("json_each")
+    public static let jsonEach: Self = .init("json_each")
     @available(*, deprecated, renamed: "jsonEach")
     public static var json_each: Self { .jsonEach }
-    public static var jsonEachText: Self = .init("json_each_text")
+    public static let jsonEachText: Self = .init("json_each_text")
     @available(*, deprecated, renamed: "jsonEachText")
     public static var json_each_text: Self { .jsonEachText }
-    public static var jsonExtractPath: Self = .init("json_extract_path")
+    public static let jsonExtractPath: Self = .init("json_extract_path")
     @available(*, deprecated, renamed: "jsonExtractPath")
     public static var json_extract_path: Self { .jsonExtractPath }
-    public static var jsonExtractPathText: Self = .init("json_extract_path_text")
+    public static let jsonExtractPathText: Self = .init("json_extract_path_text")
     @available(*, deprecated, renamed: "jsonExtractPathText")
     public static var json_extract_path_text: Self { .jsonExtractPathText }
-    public static var jsonObjectKeys: Self = .init("json_object_keys")
+    public static let jsonObjectKeys: Self = .init("json_object_keys")
     @available(*, deprecated, renamed: "jsonObjectKeys")
     public static var json_object_keys: Self { .jsonObjectKeys }
-    public static var jsonPopulateRecord: Self = .init("json_populate_record")
+    public static let jsonPopulateRecord: Self = .init("json_populate_record")
     @available(*, deprecated, renamed: "jsonPopulateRecord")
     public static var json_populate_record: Self { .jsonPopulateRecord }
-    public static var jsonPopulateRecordSet: Self = .init("json_populate_recordset")
+    public static let jsonPopulateRecordSet: Self = .init("json_populate_recordset")
     @available(*, deprecated, renamed: "jsonPopulateRecordSet")
     public static var json_populate_recordset: Self { .jsonPopulateRecordSet }
-    public static var jsonArrayElements: Self = .init("json_array_elements")
+    public static let jsonArrayElements: Self = .init("json_array_elements")
     @available(*, deprecated, renamed: "jsonArrayElements")
     public static var json_array_elements: Self { .jsonArrayElements }
-    public static var jsonArrayElementsText: Self = .init("json_array_elements_text")
+    public static let jsonArrayElementsText: Self = .init("json_array_elements_text")
     @available(*, deprecated, renamed: "jsonArrayElementsText")
     public static var json_array_elements_text: Self { .jsonArrayElementsText }
-    public static var jsonTypeOf: Self = .init("json_typeof")
+    public static let jsonTypeOf: Self = .init("json_typeof")
     @available(*, deprecated, renamed: "jsonTypeOf")
     public static var json_typeof: Self { .jsonTypeOf }
-    public static var jsonToRecord: Self = .init("json_to_record")
+    public static let jsonToRecord: Self = .init("json_to_record")
     @available(*, deprecated, renamed: "jsonToRecord")
     public static var json_to_record: Self { .jsonToRecord }
-    public static var jsonToRecordSet: Self = .init("json_to_recordset")
+    public static let jsonToRecordSet: Self = .init("json_to_recordset")
     @available(*, deprecated, renamed: "jsonToRecordSet")
     public static var json_to_recordset: Self { .jsonToRecordSet }
-    public static var jsonStripNulls: Self = .init("json_strip_nulls")
+    public static let jsonStripNulls: Self = .init("json_strip_nulls")
     @available(*, deprecated, renamed: "jsonStripNulls")
     public static var json_strip_nulls: Self { .jsonStripNulls }
 }

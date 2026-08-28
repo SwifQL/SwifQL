@@ -41,7 +41,7 @@ public struct CopyOption: SwifQLable {
         Self(name: Name("FORMAT"), value: value)
     }
 
-    public static let header = Self(name: Name("HEADER"))
+    public static var header: Self { Self(name: Name("HEADER")) }
 
     public static func header(_ value: SwifQLable) -> Self {
         Self(name: Name("HEADER"), value: value)
@@ -63,7 +63,7 @@ public struct CopyOption: SwifQLable {
         Self(name: Name("NULL"), value: value)
     }
 
-    public static let array = Self(name: Name("ARRAY"))
+    public static var array: Self { Self(name: Name("ARRAY")) }
 
     public static func array(_ value: SwifQLable) -> Self {
         Self(name: Name("ARRAY"), value: value)
@@ -81,7 +81,7 @@ public struct CopyOption: SwifQLable {
         Self(name: Name("COMPRESSION_LEVEL"), value: value)
     }
 
-    public static let schema = Self(name: Name("SCHEMA"))
+    public static var schema: Self { Self(name: Name("SCHEMA")) }
 }
 
 private func appendCopyOptions(_ options: [CopyOption], to parts: inout [SwifQLPart]) {

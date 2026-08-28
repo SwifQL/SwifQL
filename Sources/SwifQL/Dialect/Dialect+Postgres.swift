@@ -53,7 +53,14 @@ class PostgreSQLDialect: SQLDialect {
         return result
     }
     
-    private lazy var _dateFormatter = PostgresDateFormatter()
+    private lazy var _dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .iso8601)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ssZZZZZ"
+        return formatter
+    }()
     
     override func date(_ value: Date) -> String {
         let date = _dateFormatter.string(from: value) => .timestamptz
@@ -69,18 +76,4 @@ class PostgreSQLDialect: SQLDialect {
     
     override var arrayEnd: String { Operator.closeSquareBracket._value }
     override var emptyArrayEnd: String { Operator.closeBrace._value + "'" }
-}
-
-class PostgresDateFormatter: DateFormatter {
-    override init() {
-        super.init()
-        calendar = Calendar(identifier: .iso8601)
-        locale = Locale(identifier: "en_US_POSIX")
-        timeZone = TimeZone.current
-        dateFormat = "yyyy-MM-dd HH:mm:ssZZZZZ"
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }

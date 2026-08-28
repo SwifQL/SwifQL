@@ -6,7 +6,7 @@
 //
 
 extension Fn.Name {
-    public static var generateSeries: Self = .init("generate_series")
+    public static let generateSeries: Self = .init("generate_series")
     @available(*, deprecated, renamed: "generateSeries")
     public static var generate_series: Self { .generateSeries }
 }

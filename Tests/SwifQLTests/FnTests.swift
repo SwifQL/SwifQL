@@ -125,7 +125,11 @@ struct FnTests: SwifQLTests {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss"
         df.timeZone = TimeZone(secondsFromGMT: 0)
-        let pdf = PostgresDateFormatter()
+        let pdf = DateFormatter()
+        pdf.calendar = Calendar(identifier: .iso8601)
+        pdf.locale = Locale(identifier: "en_US_POSIX")
+        pdf.timeZone = TimeZone.current
+        pdf.dateFormat = "yyyy-MM-dd HH:mm:ssZZZZZ"
         let date1 = df.date(from: "2019-10-01 00:00:00")!
         let date2 = df.date(from: "2019-10-04 00:00:00")!
         check(

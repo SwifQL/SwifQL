@@ -6,56 +6,56 @@
 //
 
 extension Fn.Name {
-    public static var bitLength: Self = .init("bit_length")
+    public static let bitLength: Self = .init("bit_length")
     @available(*, deprecated, renamed: "bitLength")
     public static var bit_length: Self { .bitLength }
-    public static var bTrim: Self = .init("btrim")
+    public static let bTrim: Self = .init("btrim")
     @available(*, deprecated, renamed: "bTrim")
     public static var btrim: Self { .bTrim }
-    public static var charLength: Self = .init("char_length")
+    public static let charLength: Self = .init("char_length")
     @available(*, deprecated, renamed: "charLength")
     public static var char_length: Self { .charLength }
-    public static var characterLength: Self = .init("character_length")
+    public static let characterLength: Self = .init("character_length")
     @available(*, deprecated, renamed: "characterLength")
     public static var character_length: Self { .characterLength }
-    public static var initCap: Self = .init("initcap")
+    public static let initCap: Self = .init("initcap")
     @available(*, deprecated, renamed: "initCap")
     public static var initcap: Self { .initCap }
-    public static var concat: Self = .init("concat")
-    public static var concatWS: Self = .init("concat_ws")
+    public static let concat: Self = .init("concat")
+    public static let concatWS: Self = .init("concat_ws")
     @available(*, deprecated, renamed: "concatWS")
     public static var concat_ws: Self { .concatWS }
-    public static var arrayLength: Self = .init("array_length")
+    public static let arrayLength: Self = .init("array_length")
     @available(*, deprecated, renamed: "arrayLength")
     public static var array_length: Self { .arrayLength }
-    public static var length: Self = .init("length")
-    public static var lower: Self = .init("lower")
-    public static var lPad: Self = .init("lpad")
+    public static let length: Self = .init("length")
+    public static let lower: Self = .init("lower")
+    public static let lPad: Self = .init("lpad")
     @available(*, deprecated, renamed: "lPad")
     public static var lpad: Self { .lPad }
-    public static var lTrim: Self = .init("ltrim")
+    public static let lTrim: Self = .init("ltrim")
     @available(*, deprecated, renamed: "lTrim")
     public static var ltrim: Self { .lTrim }
-    public static var position: Self = .init("position")
-    public static var `repeat`: Self = .init("repeat")
-    public static var replace: Self = .init("replace")
-    public static var rPad: Self = .init("rpad")
+    public static let position: Self = .init("position")
+    public static let `repeat`: Self = .init("repeat")
+    public static let replace: Self = .init("replace")
+    public static let rPad: Self = .init("rpad")
     @available(*, deprecated, renamed: "rPad")
     public static var rpad: Self { .rPad }
-    public static var rTrim: Self = .init("rtrim")
+    public static let rTrim: Self = .init("rtrim")
     @available(*, deprecated, renamed: "rTrim")
     public static var rtrim: Self { .rTrim }
-    public static var strPos: Self = .init("strpos")
+    public static let strPos: Self = .init("strpos")
     @available(*, deprecated, renamed: "strPos")
     public static var strpos: Self { .strPos }
-    public static var substring: Self = .init("substring")
-    public static var translate: Self = .init("translate")
-    public static var trim: Self = .init("trim")
-    public static var upper: Self = .init("upper")
-    public static var stringAgg: Self = .init("string_agg")
+    public static let substring: Self = .init("substring")
+    public static let translate: Self = .init("translate")
+    public static let trim: Self = .init("trim")
+    public static let upper: Self = .init("upper")
+    public static let stringAgg: Self = .init("string_agg")
     @available(*, deprecated, renamed: "stringAgg")
     public static var string_agg: Self { .stringAgg }
-    public static var regExpReplace: Self = .init("regexp_replace")
+    public static let regExpReplace: Self = .init("regexp_replace")
     @available(*, deprecated, renamed: "regExpReplace")
     public static var regexp_replace: Self { .regExpReplace }
 } 

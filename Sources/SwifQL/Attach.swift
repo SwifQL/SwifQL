@@ -48,7 +48,7 @@ public struct AttachOption: SwifQLable {
         return parts
     }
 
-    public static let readOnly = Self(name: Name("READ_ONLY"))
+    public static var readOnly: Self { Self(name: Name("READ_ONLY")) }
 
     public static func compress(_ value: SwifQLable) -> Self {
         Self(name: Name("COMPRESS"), value: value)
