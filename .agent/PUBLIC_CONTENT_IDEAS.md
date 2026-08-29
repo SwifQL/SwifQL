@@ -56,6 +56,8 @@ Never bulk-load all shards. Read the router, then exactly the relevant shard(s).
 
 This bank does not consume architecture-owner slots.
 
+When captured material is promoted into final README/public docs/release notes/changelog/GitHub Release/post copy, load `PUBLIC_WRITING_STYLE.md`. The idea bank owns what is worth saying; `PUBLIC_WRITING_STYLE.md` owns how the final public text is written.
+
 ## Shard layout
 
 Current shards:

@@ -1,24 +1,134 @@
-# SwifQL 2.0.0 🚀
+# SwifQL 2.0.0-beta.5.0.0 🚀
 
-SwifQL 2.0.0 is the new major version we're preparing for Swift 6 projects.
+SwifQL 2 now runs in Swift 6 language mode, with a much broader SQL surface and safer query composition.
 
-If you already have a long-lived Vapor 4 / Swift 5 project and don't want to migrate yet, **SwifQL 1.5.0 remains the last stable Swift 5 release**.
+Install it with:
 
-## What's new
+```swift
+.package(
+    url: "https://github.com/MihaelIsaev/SwifQL.git",
+    exact: "2.0.0-beta.5.0.0"
+)
+```
 
-### Swift 6
+If you are updating an existing project, also check [MIGRATION.md](MIGRATION.md).
 
-SwifQL now builds in Swift 6 language mode and was validated with Apple Swift 6.3.3 under complete strict-concurrency checking.
+## Swift 6
+
+SwifQL now builds in Swift 6 language mode:
+
+```swift
+// swift-tools-version:6.0
+```
+
+```swift
+swiftLanguageModes: [.v6]
+```
 
 The macOS deployment target is still 10.15.
 
-One important detail: strict-concurrency compatibility does **not** mean every query object is `Sendable`. SwifQL keeps the query/bind graph non-Sendable where that is the truthful model. If you use actors, prepare the query on the caller side and pass your own Sendable snapshot to the actor. There is a full example in [MIGRATION.md](MIGRATION.md).
+Most importantly, moving SwifQL itself to strict concurrency did not turn the query DSL into a pile of `@unchecked Sendable` conformances.
 
-### DuckDB support 🦆
-
-DuckDB is now a first-class dialect:
+Normal query code is still normal query code:
 
 ```swift
+let query = SwifQL
+    .select(\User.email, \User.name)
+    .from(User.table)
+    .where(\User.email == "john@gmail.com")
+    .orderBy(.asc(\User.name))
+    .limit(10)
+```
+
+## More SQL, same SwifQL style
+
+A lot of the SQL surface has grown without creating a second database-specific query language.
+
+### PIVOT
+
+```swift
+let cities = Path.Table("cities")
+
+let query = SwifQL
+    .pivot(cities)
+    .on(cities.column("year"), in: 2000, 2010)
+    .using(Fn.sum(cities.column("population")) => "total")
+    .groupBy(cities.column("country"))
+    .orderBy(.desc(cities.column("country")))
+    .limit(2)
+
+query.prepare(.duck).plain
+```
+
+will give:
+
+```sql
+PIVOT "cities" ON "year" IN (2000, 2010) USING sum("population") as "total" GROUP BY "country" ORDER BY "country" DESC LIMIT 2
+```
+
+### MERGE
+
+```swift
+let target = Path.Table("merge_target")
+let source = Path.Table("merge_source")
+
+let query = SwifQL.merge(
+    into: target,
+    using: source,
+    on: target.column("id") == source.column("id")
+)
+
+query.prepare(.duck).plain
+```
+
+will give:
+
+```sql
+MERGE INTO "merge_target" USING "merge_source" ON "merge_target"."id" = "merge_source"."id"
+```
+
+You can also build it incrementally:
+
+```swift
+SwifQL
+    .merge(into: target)
+    .using(source)
+    .on(target.column("id") == source.column("id"))
+```
+
+and get the same query.
+
+### COPY
+
+```swift
+let events = Path.Table("events")
+
+let query = SwifQL.copy(
+    events,
+    to: "events.csv",
+    options: .format("csv"), .header
+)
+
+query.prepare(.duck).plain
+```
+
+will give:
+
+```sql
+COPY "events" TO 'events.csv' (FORMAT 'csv', HEADER)
+```
+
+The same release also includes the current SQL support around SELECT analytics, JSON, nested types/values, LIST/lambda helpers, joins, set operations, star/COLUMNS, UNPIVOT, DML/RETURNING, DDL, sequences, macros, ATTACH/DETACH/USE, table/file functions, and related SQL surfaces.
+
+The point is not a separate API for every database. The point is to keep writing the SQL idea directly in Swift and let the selected dialect render it correctly.
+
+## Dialects
+
+SwifQL 2 keeps the same preparation model across its built-in dialects:
+
+```swift
+query.prepare(.psql)
+query.prepare(.mysql)
 query.prepare(.duck)
 ```
 
@@ -28,76 +138,136 @@ and:
 SQLDialect.all // [.psql, .mysql, .duck]
 ```
 
-The first DuckDB release covers the ordinary application / analytics / schema surface we validated: SELECT-family queries, joins, set operations, JSON, nested types and values, PIVOT / UNPIVOT, MERGE, DML with RETURNING where supported, common DDL, sequences, macros, ATTACH / DETACH / USE, COPY, and common table/file functions.
+So if your own tests assumed that `SQLDialect.all` always contained exactly PostgreSQL and MySQL, update that assumption.
 
-Some administration/runtime families are intentionally left for later: INSTALL / LOAD, secrets, broad PRAGMA/configuration, CHECKPOINT, VACUUM / ANALYZE administration, variables, EXPORT / IMPORT DATABASE, SHOW / DESCRIBE / SUMMARIZE, extension-specific SQL, and the generic SQL `name := expression` API.
+## Breaking change: `SwifQLable.parts` keeps real SQL regions now
 
-### Better query composition
+This mostly affects advanced extensions that manually modify `parts`.
 
-`SwifQLable.parts` now keeps real statement / subquery / set-result boundaries structurally instead of flattening everything into one top-level array.
-
-Most normal SwifQL query source stays the same. The breaking change mainly affects advanced extensions that manually inspect or append `parts`.
-
-For helpers that mean "continue this query", use:
+### Was
 
 ```swift
-query.structurallyAppending(fragment)
+extension SwifQLable {
+    func appendingMyFragment(_ fragment: SwifQLable) -> SwifQLable {
+        SwifQLableParts(parts: self.parts + fragment.parts)
+    }
+}
 ```
 
-See [MIGRATION.md](MIGRATION.md) for before/after examples.
+### Became
 
-### `Fn.Name` predefined values are immutable
+When the helper means “continue this query”:
 
-This no longer works:
+```swift
+extension SwifQLable {
+    func appendingMyFragment(_ fragment: SwifQLable) -> SwifQLable {
+        structurallyAppending(fragment)
+    }
+}
+```
+
+This lets statement/subquery/set-result ownership survive copied parts, type erasure, builders, nested SQL, PIVOT/UNPIVOT, and set composition without hidden token scanning.
+
+Ordinary SQL-shaped query call sites do not need to start manipulating structural frames.
+
+If you do inspect them, the public representation is available:
+
+```swift
+if let frame = query.parts.first as? SwifQLStructuralFramePart {
+    print(frame.region)
+    print(frame.children)
+}
+```
+
+## Breaking change: predefined `Fn.Name` values are immutable
+
+### Was
 
 ```swift
 Fn.Name.coalesce = .custom("my_coalesce")
 ```
 
-Use a custom function name explicitly instead:
+### Became
 
 ```swift
 let name = Fn.Name.custom("my_coalesce")
 let fn = Fn.build(name)
 ```
 
-### `raw(_:)` fix
-
-The static raw helper now uses the supplied text correctly.
-
-The existing route-specific spacing is preserved:
+Normal function usage does not change:
 
 ```swift
-SwifQLableParts.raw("TAIL") // " TAIL"
-"TAIL".raw                  // "TAIL"
+SwifQL.select(Fn.coalesce("hello", "world"))
 ```
 
-and a normal flat composition still produces:
+## Strict concurrency: send your data, not the SwifQL graph
+
+A `SwifQLable` query and arbitrary `[Encodable]` binds are intentionally not declared `Sendable` just to satisfy the compiler.
+
+For actor-based database wrappers, use this shape:
 
 ```text
-BASE TAIL
+build/prepare SwifQL on caller isolation
+        ↓
+convert to your own Sendable snapshot
+        ↓
+send the snapshot to the actor
 ```
 
-### Small Swift 6 cleanup
+For example:
 
-`SwifQL`, `AttachOption.readOnly`, `CopyOption.header`, `CopyOption.array`, and `CopyOption.schema` now return fresh values instead of sharing stored non-Sendable instances. Normal source syntax is unchanged.
+```swift
+struct QuerySnapshot: Sendable {
+    let sql: String
+    let binds: [String]
+}
 
-PostgreSQL date formatting is also instance-local now; generated PostgreSQL date SQL stays unchanged.
+actor ConnectionActor {
+    func execute(_ snapshot: QuerySnapshot) {
+        // execute through your driver
+    }
+}
+```
 
-## Breaking changes
+Your real snapshot should model the actual bind types your driver accepts. A complete example is in [MIGRATION.md](MIGRATION.md).
 
-The main things to check when moving from 1.5.x to 2.0.0 are:
+## `raw(_:)` fix
 
-- Swift 6 toolchain/language mode;
-- code that manually manipulates `SwifQLable.parts`;
-- code that mutates predefined `Fn.Name` values;
-- actor-based wrappers that tried to send SwifQL query/bind objects directly across isolation boundaries.
+Static raw now uses the supplied text correctly while preserving the established route-specific spacing:
 
-Everything is covered in [MIGRATION.md](MIGRATION.md).
+```swift
+SwifQLableParts.raw("TAIL").prepare(.psql).plain
+// " TAIL"
+
+"TAIL".raw.prepare(.psql).plain
+// "TAIL"
+```
+
+## Small Swift 6 changes with the same call sites
+
+These still look exactly the same:
+
+```swift
+SwifQL
+AttachOption.readOnly
+CopyOption.header
+CopyOption.array
+CopyOption.schema
+```
+
+but they now return fresh values instead of reusing shared non-Sendable instances.
+
+PostgreSQL date formatting also moved to instance-local state while keeping generated PostgreSQL SQL compatible.
+
+## What is intentionally not in the current DuckDB support
+
+This release does not claim every DuckDB administration/runtime feature.
+
+INSTALL/LOAD, secrets, broad PRAGMA/configuration, CHECKPOINT, VACUUM/ANALYZE administration, variables, EXPORT/IMPORT DATABASE, SHOW/DESCRIBE/SUMMARIZE convenience, extension-specific SQL universes, and the generic SQL `name := expression` API remain separate future work.
 
 ## Validation
 
-The final Swift 6.3.3 validation passed:
+The current Swift 6.3.3 suite passes:
 
 ```text
 448 tests / 42 suites
@@ -105,6 +275,6 @@ concurrency errors: 0
 concurrency warnings: 0
 ```
 
-DuckDB behavior was validated against DuckDB v1.5.5 for the first supported surface.
+The current DuckDB SQL support was also validated against DuckDB v1.5.5.
 
-Full version history: [CHANGELOG.md](CHANGELOG.md)
+See [MIGRATION.md](MIGRATION.md) for the actual migration steps and [CHANGELOG.md](CHANGELOG.md) for the compact version history.
