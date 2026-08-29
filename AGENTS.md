@@ -7,7 +7,7 @@ PostgreSQL and MySQL are established SQL-building dialects. SwifQL 2.0.0 adds th
 ## Repository layout
 
 - `AGENTS.md` is the concise repository router.
-- `.agent/` contains durable governance and technical authority.
+- `.agent/` contains durable governance, technical authority, and source-owned Agent Skill packages under `.agent/skills/`.
 - `.artifacts/` contains transient research, plans, evidence, task decomposition, and reports.
 - `Sources/SwifQL/` contains production source.
 - `Tests/SwifQLTests/` contains the test suite.
@@ -25,7 +25,7 @@ When stable documents conflict, follow this order:
 6. `.agent/OPEN_DECISIONS.md` — unresolved choices only.
 7. `.agent/PROJECT_MEMORY.md` and `.agent/SOURCE_MAP.md` — durable current-state and navigation facts.
 8. `.agent/TASKS.md`, `.agent/TODO.md`, `.agent/TECH_DEBT.md`, and `.agent/TASKS_ARCHIVE.md` — active work, future ideas, debt, and compact history.
-9. `.agent/REFERENCE_PROJECTS.md`, `.agent/CONTEXT_LOADING_RULES.md`, `.agent/PUBLIC_CONTENT_IDEAS.md`, `.agent/SKILL_INDEX.md`, and `.agent/skills/*` — evidence routing, lazy public-content capture, and focused operational procedures.
+9. `.agent/REFERENCE_PROJECTS.md`, `.agent/CONTEXT_LOADING_RULES.md`, `.agent/PUBLIC_CONTENT_IDEAS.md`, and `.agent/SKILL_INDEX.md` — evidence routing, lazy public-content capture, and SwifQL-specific skill policy/routing. Source-owned operational procedures live under `.agent/skills/*/SKILL.md`; they are procedures, not architecture authority.
 
 `.artifacts/**` is disposable, Git-ignored working memory and never outranks stable repository authority.
 
@@ -35,4 +35,4 @@ For non-trivial work, use detailed research -> detailed plan in `.artifacts` -> 
 
 Normal context loading is progressive: route through `.agent/ARCH_INDEX.md`, load one primary architecture owner and at most two supporting owners by default, with one explicit dialect exception: dialect work loads the cross-dialect base plus exactly one relevant dialect owner as a single context bundle. Use `.agent/SOURCE_MAP.md` before broad source discovery and load at most one operational skill by default. Any work that designs or changes public SQL/DSL API or developer experience must load `.agent/architecture/DSL_DESIGN_AND_UX.md` so agents reuse the repository's established SQL-first and dialect-transparent design contract instead of rediscovering it from source. Any task that writes or rewrites README, migration docs, release notes, changelog entries, GitHub Releases, or maintainer-facing public posts must load `.agent/PUBLIC_WRITING_STYLE.md` and follow its example-first maintainer style. Cross-cutting governance audits may be explicit exceptions.
 
-Synchronize stable documentation only when an owned durable fact changes. Keep durable `.agent/` authority separate from transient `.artifacts/` evidence and implementation history. After meaningful research/design/implementation/audit, perform the lazy public-content capture check owned by `.agent/PUBLIC_CONTENT_IDEAS.md`; open a shard only when genuinely valuable README/docs/publication material was discovered. Route active tasks, unresolved decisions, current facts, future ideas, and verified debt to `TASKS.md`, `OPEN_DECISIONS.md`, `PROJECT_MEMORY.md`, `TODO.md`, and `TECH_DEBT.md` respectively. External evidence must be portable: stable documentation cannot depend on a machine-local checkout.
+Synchronize stable documentation only when an owned durable fact changes. Keep durable `.agent/` authority separate from transient `.artifacts/` evidence and implementation history. When work changes a durable contract taught by a managed skill, review that skill before task closure and update it in the same change only when its guidance has actually changed. After meaningful research/design/implementation/audit, perform the lazy public-content capture check owned by `.agent/PUBLIC_CONTENT_IDEAS.md`; open a shard only when genuinely valuable README/docs/publication material was discovered. Route active tasks, unresolved decisions, current facts, future ideas, and verified debt to `TASKS.md`, `OPEN_DECISIONS.md`, `PROJECT_MEMORY.md`, `TODO.md`, and `TECH_DEBT.md` respectively. External evidence must be portable: stable documentation cannot depend on a machine-local checkout.

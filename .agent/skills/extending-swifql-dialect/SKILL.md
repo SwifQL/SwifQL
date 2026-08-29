@@ -1,16 +1,21 @@
-# Skill: Extending a SQL Dialect
+---
+name: extending-swifql-dialect
+description: Add or change a built-in SQL dialect inside the SwifQL repository using the research-first compatibility workflow. Use for contributor dialect implementation, not for ordinary downstream prepare calls or app-level query building.
+---
+
+# Extend a SQL Dialect
 
 Use this research-first procedure when adding or changing a SQL dialect.
 
-The cross-dialect architecture owner is [`DIALECT_RENDERING.md`](../architecture/DIALECT_RENDERING.md). Always pair it with exactly the relevant dialect owner:
+The cross-dialect architecture owner is [`DIALECT_RENDERING.md`](../../architecture/DIALECT_RENDERING.md). Always pair it with exactly the relevant dialect owner:
 
-- Duck: [`dialects/DUCK.md`](../architecture/dialects/DUCK.md)
-- PostgreSQL: [`dialects/POSTGRES.md`](../architecture/dialects/POSTGRES.md)
-- MySQL: [`dialects/MYSQL.md`](../architecture/dialects/MYSQL.md)
+- Duck: [`dialects/DUCK.md`](../../architecture/dialects/DUCK.md)
+- PostgreSQL: [`dialects/POSTGRES.md`](../../architecture/dialects/POSTGRES.md)
+- MySQL: [`dialects/MYSQL.md`](../../architecture/dialects/MYSQL.md)
 
 Treat that pair as one dialect architecture bundle for context-budget purposes.
 
-1. Load the base dialect owner plus only the target dialect owner. Load [`DSL_DESIGN_AND_UX.md`](../architecture/DSL_DESIGN_AND_UX.md) whenever public API/naming/UX is in scope. Load [`QUERY_PREPARATION.md`](../architecture/QUERY_PREPARATION.md) only when preparation/value mechanics change. Use [`TESTING_RULES.md`](../TESTING_RULES.md), [`STYLE_GUIDELINES.md`](../STYLE_GUIDELINES.md), and [`SOURCE_MAP.md`](../SOURCE_MAP.md) as needed.
+1. Load the base dialect owner plus only the target dialect owner. Load [`DSL_DESIGN_AND_UX.md`](../../architecture/DSL_DESIGN_AND_UX.md) whenever public API/naming/UX is in scope. Load [`QUERY_PREPARATION.md`](../../architecture/QUERY_PREPARATION.md) only when preparation/value mechanics change. Use [`TESTING_RULES.md`](../../TESTING_RULES.md), [`STYLE_GUIDELINES.md`](../../STYLE_GUIDELINES.md), and [`SOURCE_MAP.md`](../../SOURCE_MAP.md) as needed.
 2. Inspect live Git, source, tests, and the target dialect owner before proposing implementation.
 3. Use existing source as local style evidence, not semantic authority. PostgreSQL is historically the richest local implementation, but do not copy its public naming quirks or SQL semantics into another dialect.
 4. Before implementation, research current official database behavior and save/update a compatibility matrix in `.artifacts/**`.

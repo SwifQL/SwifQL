@@ -1,8 +1,13 @@
-# Skill: Adding or Extending a Builder
+---
+name: adding-swifql-builder
+description: Add or extend a built-in SwifQL builder inside the SwifQL repository. Use for contributor source work on builders and QueryParts, not for ordinary downstream query construction.
+---
 
-Use this procedure when adding or extending a SwifQL builder. Architecture authority remains [`BUILDERS_AND_QUERY_PARTS.md`](../architecture/BUILDERS_AND_QUERY_PARTS.md).
+# Add or Extend a SwifQL Builder
 
-1. Load [`BUILDERS_AND_QUERY_PARTS.md`](../architecture/BUILDERS_AND_QUERY_PARTS.md) as the primary owner and [`SOURCE_MAP.md`](../SOURCE_MAP.md) for navigation.
+Use this procedure when adding or extending a SwifQL builder. Architecture authority remains [`BUILDERS_AND_QUERY_PARTS.md`](../../architecture/BUILDERS_AND_QUERY_PARTS.md).
+
+1. Load [`BUILDERS_AND_QUERY_PARTS.md`](../../architecture/BUILDERS_AND_QUERY_PARTS.md) as the primary owner and [`SOURCE_MAP.md`](../../SOURCE_MAP.md) for navigation.
 2. Inspect the nearest relevant production builder and `QueryParts` only as needed to establish current patterns.
 3. Decide the exact state owner in the plan before mutation.
 4. Reuse `QueryParts` only for shared clause state it already owns; keep builder-specific state with the builder when that is the established boundary.
