@@ -4,7 +4,7 @@ The current SwifQL 2 pre-release is `2.0.0-beta.5.0.0`.
 
 ```swift
 .package(
-    url: "https://github.com/MihaelIsaev/SwifQL.git",
+    url: "https://github.com/SwifQL/SwifQL",
     exact: "2.0.0-beta.5.0.0"
 )
 ```

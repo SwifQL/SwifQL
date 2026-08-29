@@ -52,20 +52,20 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 ### Swift 5 / existing Vapor 4 projects
 
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from: "1.5.0")
+.package(url: "https://github.com/SwifQL/SwifQL", from: "1.5.0")
 ```
 
 ### Swift 6 / SwifQL 2
 
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", exact: "2.0.0-beta.5.0.0")
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.0.0")
 ```
 
 ### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + PostgreSQL
 ```swift
-.package(url: "https://github.com/vapor/vapor.git", from:"4.0.0-rc"),
-.package(url: "https://github.com/SwifQL/VaporBridges.git", from:"1.0.0-rc"),
-.package(url: "https://github.com/SwifQL/PostgresBridge.git", from:"1.0.0-rc"),
+.package(url: "https://github.com/vapor/vapor", from:"4.0.0-rc"),
+.package(url: "https://github.com/SwifQL/VaporBridges", from:"1.0.0-rc"),
+.package(url: "https://github.com/SwifQL/PostgresBridge", from:"1.0.0-rc"),
 .target(name: "App", dependencies: [
     .product(name: "Vapor", package: "vapor"),
     .product(name: "VaporBridges", package: "VaporBridges"),
@@ -75,9 +75,9 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 
 ### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + MySQL
 ```swift
-.package(url: "https://github.com/vapor/vapor.git", from:"4.0.0-rc"),
-.package(url: "https://github.com/SwifQL/VaporBridges.git", from:"1.0.0-rc"),
-.package(url: "https://github.com/SwifQL/MySQLBridge.git", from:"1.0.0-rc"),
+.package(url: "https://github.com/vapor/vapor", from:"4.0.0-rc"),
+.package(url: "https://github.com/SwifQL/VaporBridges", from:"1.0.0-rc"),
+.package(url: "https://github.com/SwifQL/MySQLBridge", from:"1.0.0-rc"),
 .target(name: "App", dependencies: [
     .product(name: "Vapor", package: "vapor"),
     .product(name: "VaporBridges", package: "VaporBridges"),
@@ -87,7 +87,7 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 
 ### Pure
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", exact: "2.0.0-beta.5.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.0.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
 ]),
@@ -95,8 +95,8 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 
 ### Pure on NIO2
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", exact: "2.0.0-beta.5.0.0"),
-.package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"2.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQLNIO", from:"2.0.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
     .product(name: "SwifQLNIO", package: "SwifQLNIO"),
@@ -105,15 +105,15 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 
 #### Pure on NIO1 (deprecated)
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
-.package(url: "https://github.com/MihaelIsaev/SwifQLNIO.git", from:"1.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", from:"1.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQLNIO", from:"1.0.0"),
 .target(name: "App", dependencies: ["SwifQL", "SwifQLNIO"]),
 ```
 
 #### With Vapor 3 + Fluent (deprecated)
 ```swift
-.package(url: "https://github.com/MihaelIsaev/SwifQL.git", from:"1.0.0"),
-.package(url: "https://github.com/MihaelIsaev/SwifQLVapor.git", from:"1.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", from:"1.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQLVapor", from:"1.0.0"),
 .target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
 ```
 
