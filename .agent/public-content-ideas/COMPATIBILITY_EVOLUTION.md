@@ -102,7 +102,7 @@ This illustrates a useful maintainer habit: inspect whether an apparently low-le
 
 Compatibility discipline does not mean keeping every mistake forever.
 
-Duck support is still unreleased, so incorrect pre-release names or API shapes can be corrected directly before users depend on them.
+The first Duck surface is now published in `2.0.0-beta.5.0.0`, so its public pre-release API requires explicit compatibility judgment; only later unreleased mistakes or API shapes can be corrected directly before users depend on them.
 
 This creates a clear line:
 

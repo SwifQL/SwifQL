@@ -213,7 +213,7 @@ Architecture decision in `DIALECT_RENDERING.md` DIALECT-008 and Duck-specific qu
 
 ### Publication caveat
 
-The nested-path behavior is implemented and covered by the current 2.0.0 Duck validation. Public examples may describe it as 2.0.0 behavior, while the release itself should not be described as already published until that later gate completes.
+The nested-path behavior is implemented, covered by the current 2.0.0 Duck validation, and published in `2.0.0-beta.5.0.0`. Public examples may describe it as current 2.0.0 pre-release behavior.
 
 ## Preserve `KeyPathLastPath` without faking a PIVOT-only overload
 
