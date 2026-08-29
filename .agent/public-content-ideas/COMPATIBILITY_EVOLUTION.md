@@ -241,7 +241,7 @@ Relevant architecture commits:
 
 ### Publication caveat
 
-The compatibility philosophy is stable architecture. Generic semantic render scopes and the clean structural Duck PIVOT implementation are now present on the 2.0.0 release-candidate mainline. Public material should still distinguish the already-released 1.5.x line from the implemented-but-not-yet-published 2.0.0 line and from later deferred Duck families.
+The compatibility philosophy is stable architecture. Generic semantic render scopes and the clean structural Duck PIVOT implementation are published in the `2.0.0-beta.5.0.0` pre-release. Public material should distinguish the Swift-5-era 1.5.x line, the current SwifQL 2 pre-release line, and later deferred Duck families without describing shipped beta behavior as merely planned or unpublished.
 
 ## Migration story: Structural `parts` Without Rewriting Query Source
 
@@ -282,10 +282,8 @@ This creates a strong explanation of why a breaking internal/public representati
 
 - `.agent/architecture/DSL_COMPOSITION.md` `DSL-008`
 - `.agent/architecture/DSL_DESIGN_AND_UX.md` DESIGN-015/017/018
-- `.artifacts/planning/duck-sql-surface-redesign/CLAUSE_OWNERSHIP_ROOT_AUDIT.md`
-- `.artifacts/planning/duck-sql-surface-redesign/CLAUSE_OWNERSHIP_EVIDENCE_REPORT.md`
-- `.artifacts/planning/duck-sql-surface-redesign/CLAUSE_OWNERSHIP_EVIDENCE_REVIEW.md`
+- current committed structural-composition source/tests and Git history
 
 ### Publication caveat
 
-The structural SQL-region frames, `SwifQLClauseOwner` / `SwifQLClauseKind`, owner-sensitive clauses, and `structurallyAppending(_:)` are now implemented and validated on the 2.0.0 release-candidate mainline. Public material may present them as 2.0.0 behavior, while still avoiding a false claim that 2.0.0 has already been tagged/published before the release gate actually happens.
+The structural SQL-region frames, `SwifQLClauseOwner` / `SwifQLClauseKind`, owner-sensitive clauses, and `structurallyAppending(_:)` are implemented, validated, and published in `2.0.0-beta.5.0.0`. Public material may present them as current SwifQL 2 pre-release behavior while still distinguishing the pre-release from a future final stable `2.0.0` declaration.

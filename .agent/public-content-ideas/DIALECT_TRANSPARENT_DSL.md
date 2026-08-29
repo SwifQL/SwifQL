@@ -6,7 +6,7 @@ Do not load this shard during ordinary source work. Read/update it only when a p
 
 ## Same clean query, dialect-specific rendering under the hood
 
-Status: implemented on 2.0.0 release-candidate mainline
+Status: published in 2.0.0-beta.5.0.0 pre-release
 Good for: README | website docs | article | short post
 
 ### Why users should care
@@ -65,11 +65,11 @@ Architecture checkpoint:
 
 ### Publication caveat
 
-The generic semantic render-scope mechanism and the clean structural Duck PIVOT API are implemented and native-/compatibility-validated on the 2.0.0 release-candidate mainline. Public material may present them as 2.0.0 behavior, while still avoiding a false claim that 2.0.0 has already been tagged/published before the release gate happens.
+The generic semantic render-scope mechanism and the clean structural Duck PIVOT API are implemented, native-/compatibility-validated, and published in `2.0.0-beta.5.0.0`. Public material may present them as current SwifQL 2 pre-release behavior while still distinguishing that pre-release from a future final stable `2.0.0`.
 
 ## Semantic render scopes: context travels with the expression
 
-Status: implemented on 2.0.0 release-candidate mainline
+Status: published in 2.0.0-beta.5.0.0 pre-release
 Good for: website docs | article | technical deep dive | short post
 
 ### Why users should care
@@ -161,15 +161,15 @@ is only a valid PIVOT query when the parent PIVOT construct is actually present.
 - `.agent/architecture/DIALECT_RENDERING.md` DIALECT-008
 - `.agent/TESTING_RULES.md`, contextual rendering/composition equivalence contract
 - architecture commit `65879f7248af6488222655aa33d1316a516a594f`
-- current 2.0.0 release-candidate source: `SwifQLRenderScope`, `SwifQLRenderContext`, `SwifQLable.scoped(_:)`, structural clause ownership, and recursive scoped preparation.
+- current SwifQL 2 source, published in `2.0.0-beta.5.0.0`: `SwifQLRenderScope`, `SwifQLRenderContext`, `SwifQLable.scoped(_:)`, structural clause ownership, and recursive scoped preparation.
 
 ### Publication caveat
 
-The generic render-scope mechanism and Duck PIVOT APIs are implemented on the current 2.0.0 release-candidate mainline. Present them as 2.0.0 behavior, not as already-published stable behavior until the release gate actually publishes 2.0.0.
+The generic render-scope mechanism and Duck PIVOT APIs are implemented and published in `2.0.0-beta.5.0.0`. Present them as current SwifQL 2 pre-release behavior, not as final stable `2.0.0` until a separate stable release is actually published.
 
 ## Nested expressions keep their grammar context
 
-Status: implemented on 2.0.0 release-candidate mainline
+Status: published in 2.0.0-beta.5.0.0 pre-release
 Good for: website docs | article | technical diagram
 
 ### Why users should care
@@ -244,7 +244,7 @@ and a misleading global overload that would look stricter than it actually is.
 
 ### Evidence / provenance
 
-Live source confirms `KeyPathLastPath` is public and already participates in existing public query/path APIs. The independent plan audit exposed the erased-receiver overload contradiction; the reconciled decision is recorded in `architecture/dialects/DUCK.md`, DESIGN-015/016, and `.artifacts/planning/duck-sql-surface-redesign/PIVOT_GROUP_BY_CONSTRAINT_RECONCILIATION.md`.
+Live source confirms `KeyPathLastPath` is public and already participates in existing public query/path APIs. The erased-receiver overload contradiction and reconciled decision are durably owned by `architecture/dialects/DUCK.md` together with DESIGN-015/016; transient planning artifacts are not required to recover this rule.
 
 ### Publication caveat
 
@@ -252,7 +252,7 @@ Do not describe `KeyPathLastPath` as an internal detail or as removed. It remain
 
 ## Public extension point for semantic scopes
 
-Status: implemented on 2.0.0 release-candidate mainline
+Status: published in 2.0.0-beta.5.0.0 pre-release
 Good for: advanced website docs | article | extension-author docs
 
 ### Why users should care
@@ -310,7 +310,7 @@ External-consumer validation established that `SQLDialect.init()` is public, a d
 
 ### Publication caveat
 
-The scope/extensibility architecture is implemented on the current 2.0.0 release-candidate mainline together with the approved first-closure Duck statement APIs. Public material should still distinguish these 2.0.0 APIs from later deferred Duck families and from already-published 1.5.x behavior.
+The scope/extensibility architecture is implemented and published in `2.0.0-beta.5.0.0` together with the approved first-closure Duck statement APIs. Public material should distinguish the current SwifQL 2 pre-release APIs from later deferred Duck families and from the Swift-5-era 1.5.x line.
 
 ## Scopes first, focused semantic statement representation only when grammar truly needs more
 
@@ -400,4 +400,4 @@ Stable Duck facts are owned by `.agent/architecture/dialects/DUCK.md`. Current t
 
 ### Publication caveat
 
-The native engine facts and the redesigned SwifQL PIVOT API are both implemented/validated for the 2.0.0 release-candidate line. Public content should distinguish that current 2.0.0 feature availability from later deferred Duck work and from the already-published 1.5.x line until 2.0.0 is actually released.
+The native engine facts and the redesigned SwifQL PIVOT API are both implemented, validated, and published in the `2.0.0-beta.5.0.0` pre-release line. Public content should distinguish that current SwifQL 2 pre-release feature availability from later deferred Duck work and from the Swift-5-era 1.5.x line.

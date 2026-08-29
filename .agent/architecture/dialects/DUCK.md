@@ -9,7 +9,7 @@ This file intentionally distinguishes:
 - stable Duck API/rendering contracts;
 - verified DuckDB v1.5.5 engine behavior;
 - current implementation state;
-- current release-candidate state, known limitations, and deferred families that remain outside the first closure.
+- current published SwifQL 2 pre-release state, known limitations, and deferred families that remain outside the first closure.
 
 Do not duplicate these details in the cross-dialect base owner.
 
@@ -889,15 +889,15 @@ with dialect-aware rendering/support determining where catalog qualification is 
 
 If an internal Duck-specific helper remains necessary, use `duck...` naming.
 
-## Pre-release cleanup gate
+## Pre-release evolution gate
 
-### DUCK-022 - Unreleased Duck API may be corrected directly
+### DUCK-022 - Published beta API changes require explicit compatibility judgment
 
-Duck support is implemented and validated on the current 2.0.0 release-candidate mainline, but the 2.0.0 release has not yet been published from this working tree.
+The first validated Duck surface is published in the `2.0.0-beta.5.0.0` pre-release. It is therefore real public pre-release API and must not be described as unreleased merely because final `2.0.0` has not been declared stable.
 
-Therefore incorrect 2.0.0-only Duck API names/shapes may still be corrected directly before the release tag, without compatibility aliases whose only purpose would be preserving an unreleased mistake.
+A later 2.0 beta may still correct a genuinely mistaken beta-only API when the major version has not reached stable release, but the change must explicitly account for the already-published pre-release surface instead of assuming that no users can depend on it. Do not add compatibility aliases mechanically; add them only when the compatibility value justifies the permanent API cost.
 
-The canonical 2.0.0 spelling is `.duck`; no compatibility alias for `.duckdb` is required because that spelling has not shipped in a stable release. Future Duck API additions still require the full API review described by DUCK-023.
+The canonical published Duck dialect spelling is `.duck`. No `.duckdb` compatibility alias is currently required because `.duckdb` was not the canonical spelling of the released Duck surface. Future Duck API additions still require the full API review described by DUCK-023.
 
 This rule does not authorize changing established pre-Duck SwifQL APIs used by existing users.
 

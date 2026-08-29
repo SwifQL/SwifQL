@@ -21,6 +21,10 @@ Therefore:
 - if artifacts disappear, reconstruct only what is still supported by current Git/source/stable docs; never invent lost historical evidence;
 - keep exactly one clearly active research/plan/task lineage for the current substantial objective. When a maintainer-authorized course correction invalidates an old lineage, remove or consolidate the obsolete artifacts instead of leaving multiple plausible executor entry points side by side;
 - historical evidence worth preserving after such cleanup should be summarized into the smallest audit/rationale artifact that explains the invalidated path and durable facts. Do not keep obsolete task packages merely because they once passed their own audits.
+- build products, dependency checkouts, package clones, disposable compiler workspaces, native build trees, index stores, caches, and other reproducible machine output are temporary execution material, not archival evidence. Keep them only while the active task actually needs them.
+- before closing a substantial research/implementation/correction/validation lineage, capture the smallest textual result/manifests needed to preserve its conclusions, then remove reproducible `.build` trees, disposable workspaces, duplicated source/package snapshots, caches, and superseded raw-command directories.
+- do not copy an existing `.artifacts` tree into another artifact workspace. If a disposable package/workspace needs source context, copy only the exact source/configuration inputs required for that probe.
+- after a major release/closure, consolidate the few historical artifacts still worth retaining into one clearly named compact archive and refresh `NEW_CHAT.md`; completed handoff, retry, correction, planning, and executor packages must not remain as competing active lineages.
 
 ## Mandatory Use for Non-Trivial Iterative Work
 
