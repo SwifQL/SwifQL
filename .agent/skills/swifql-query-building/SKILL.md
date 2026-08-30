@@ -1,6 +1,7 @@
 ---
 name: swifql-query-building
 description: Build, translate, review, or prepare SQL in downstream Swift code that imports SwifQL. Use for application or package query construction and preparation, not for changing SwifQL's own builders, functions, dialect implementation, renderer, or core source.
+license: LICENSE.txt
 ---
 
 # Build Queries with SwifQL

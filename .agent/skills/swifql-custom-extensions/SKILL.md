@@ -1,6 +1,7 @@
 ---
 name: swifql-custom-extensions
 description: Create downstream custom SwifQL functions, fluent helpers, structural continuations, custom clause ownership, or reusable extension libraries. Use in consuming apps or packages, not for modifying SwifQL's built-in source, functions, builders, dialects, or renderer.
+license: LICENSE.txt
 ---
 
 # Extend SwifQL Downstream
