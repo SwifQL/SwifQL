@@ -8,7 +8,8 @@ This is a navigation aid, not an architecture contract. Use it to locate the sma
 
 ## Core composition, preparation, and output
 
-- `Sources/SwifQL/SwifQLable.swift` — public `SwifQLable`/`SwifQLPart`, structural-frame-aware `SwifQLableParts`, recursive preparation.
+- `Sources/SwifQL/SwifQLable.swift` — public `SwifQLable`/`SwifQLPart`, structural-frame-aware `SwifQLableParts`, ordinary and observed preparation entrypoints.
+- `Sources/SwifQL/PreparationObservation.swift` — single shared recursive preparation renderer/collector plus unsafe-value provenance model, complete/unavailable trace state, and zero-SQL observation-marker handling.
 - `Sources/SwifQL/StructuralComposition.swift` — public structural SQL-region/frame model, open clause owner/kind identities, `structurallyAppending(_:)`.
 - `Sources/SwifQL/Parts/GroupByPart.swift` — owner-sensitive GROUP BY part.
 - `Sources/SwifQL/Parts/OrderByPart.swift` — owner-sensitive ORDER BY part.
@@ -113,6 +114,7 @@ The query/bind graph itself remains intentionally non-Sendable where its semanti
 - `Tests/SwifQLTests/StructuralBuilderCompatibilityTests.swift` - structural composition and static-raw compatibility coverage.
 - `Tests/SwifQLTests/FnTests.swift` - function/date migration coverage.
 - `Tests/SwifQLTests/EstablishedOperatorCompatibilityTests.swift` - established compatibility guard.
+- `Tests/SwifQLTests/PreparationObservationTests.swift` - same-render unsafe-value provenance, one-evaluation, fail-closed custom-hook, Duck consumed-value, and built-in compatibility coverage.
 - `Tests/SwifQLTests/**` - established focused feature and query tests.
 
 Editor settings, generated output, local user state, backup branches, and transient `.artifacts/**` are not product architecture authority.

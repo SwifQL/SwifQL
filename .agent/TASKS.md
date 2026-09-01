@@ -4,7 +4,11 @@ This file contains only approved current work. Ideas, unresolved choices, verifi
 
 ## Current state
 
-There is currently **no active approved implementation task** from the completed Duck SQL Surface Redesign / Swift 6 / 2.0 release wave.
+The current approved implementation objective is **Unsafe-Value Render Provenance**, an owning SwifQL prerequisite required by a downstream consumer. Its purpose is to provide generic same-render unsafe-value provenance while preserving existing SwifQL preparation, SQL rendering, binding-order, and custom-dialect compatibility.
+
+Exact implementation mechanics, dangerous-case coverage, mutation scope, STOP conditions, validation, and publication sequencing are owned by the accepted current planning lineage under `.artifacts/planning/unsafe-value-render-provenance-2026-09-01/`. Tracked source/test/stable mutation is bounded to that accepted task sequence and exact allowlist; unrelated work is not authorized by this active task.
+
+The prerequisite remains **active and is not yet delivered**. Local production implementation is complete in the current candidate; focused provenance validation and full local validation are passing; generic stable architecture synchronization is complete; coordinator final candidate audit has completed without blockers. Fresh independent root/diff audit is now the active local gate, while maintainer-authorized local commit, separately authorized push/release, immutable remote publication, and exact remote-artifact verification remain pending. This task must remain active until the accepted implementation is published as a new immutable remotely consumable artifact; local implementation, tests, audit, or a local commit alone do not complete it.
 
 The first Duck SQL-surface redesign closure is implemented, native-/compatibility-validated, independently audited, committed, and published in the `2.0.0-beta.5.0.0` pre-release. Tasks 01-27 are complete, including the final `.duck` expansion into `SQLDialect.all` and the native/compatibility closure required for that expansion.
 
@@ -14,4 +18,4 @@ Task 29 stable documentation, migration guidance, release notes, final audit, re
 
 The approved first Duck closure covers ordinary application/analytics/schema SQL including views and the validated catalog/file-function surface. Administration/runtime families such as INSTALL/LOAD, secrets, broad PRAGMA/configuration, checkpoint/vacuum/analyze administration, variables, export/import, SHOW/DESCRIBE/SUMMARIZE convenience, extension-specific SQL universes, and the generic SQL `name := expression` abstraction remain deferred.
 
-New work should begin only from a new explicit maintainer objective. Do not revive historical `.artifacts` task/correction lineages as active work; reconstruct fresh artifacts from current Git/source/stable authority when needed.
+New work outside the active Unsafe-Value Render Provenance prerequisite should begin only from a new explicit maintainer objective. Do not revive historical `.artifacts` task/correction lineages as active work; reconstruct fresh artifacts from current Git/source/stable authority when needed.

@@ -14,11 +14,14 @@ Load this base owner plus only the dialect-specific owner needed by the task. Cr
 
 `SQLDialect` is an open class. Equality compares dialect identity through `id`.
 
-The dialect is selected at preparation time:
+The dialect is selected at preparation time for both ordinary and observed preparation:
 
 ```swift
 query.prepare(dialect)
+query.prepareObservingUnsafeValues(dialect)
 ```
+
+Both entrypoints use the same preparation renderer; observation does not authorize a dialect-specific or provenance-specific parallel SQL pipeline.
 
 The public DSL should normally stay SQL-shaped and dialect-transparent. Differences in identifier spelling, key-path rendering, values, dates, bind markers, collection syntax, and other exact syntax belong behind dialect-aware preparation rather than database-prefixed wrappers scattered through ordinary query code.
 
@@ -273,3 +276,13 @@ Generic terminal names for structural SQL objects use the value-semantic `Path.I
 The base `SQLDialect.identifier(_:)` implementation returns the supplied name unchanged so legacy downstream subclasses that do not override the new hook remain source-compatible. PostgreSQL and Duck double-quote and double embedded double quotes for this category. MySQL backtick-quotes and doubles embedded backticks. Existing catalog, schema, table, column, alias hooks, and their old output are separate compatibility contracts and must not be reinterpreted through this hook.
 
 This shared dimension is for generic structural names such as VIEW, TYPE, and INDEX names, plus local declaration names such as Duck macro parameters. A MacroParameter uses the same terminal identifier part and therefore the same generic hook; it does not require a macro-specific dialect hook. This does not authorize fixed-phrase builders, reuse of table/column/alias semantics, or a second renderer. Direct SQL atoms remain the composition mechanism for the surrounding grammar.
+
+### DIALECT-016 - Observation-aware semantic hooks preserve old custom dialects
+
+When a semantic hook can consume, inline, or otherwise hide unsafe values from the ordinary central binding path, unsafe-value observation uses an additive overload rather than replacing the established hook. Current semantic observation overloads cover sampling, lambda rendering, and star replacement.
+
+The established old hook remains authoritative for ordinary `prepare(_:)`. The base observation-aware overload must invoke that old virtual hook exactly once and preserve its returned parts/output, but the provenance result is incomplete unless the implementation can account for the unsafe occurrences hidden behind that semantic boundary. This keeps old external subclasses source/behavior compatible while preventing a false-complete trace.
+
+A built-in or downstream dialect may opt into complete provenance by overriding the additive observation-aware hook and returning `SwifQLObservedParts.complete(...)`. Any unsafe value consumed by that hook rather than returned for ordinary recursive binding must be represented in order with the public stateless `SwifQLUnsafeValueObservation.notBound(_:)` marker. Unsafe values left in returned parts continue through the one shared renderer/collector and receive their normal bound indices there.
+
+Observation-aware hooks must not receive mutable renderer internals, mutate the collector directly, replay caller graphs, or create a second rendering pass. Complete provenance is a claim about the exact selected render, not about an independently reconstructed semantic graph.
