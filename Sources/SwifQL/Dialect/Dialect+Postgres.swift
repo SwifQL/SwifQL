@@ -9,6 +9,27 @@ import Foundation
 
 class PostgreSQLDialect: SQLDialect {
     override var id: String? { "psql" }
+
+    override func sampling(
+        _ sample: SwifQLPartSampling,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .complete(defaultSamplingParts(sample))
+    }
+
+    override func lambda(
+        _ lambda: SwifQLPartLambda,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .complete(defaultLambdaParts(lambda))
+    }
+
+    override func starReplaceParts(
+        _ part: SwifQLStarReplacePart,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .complete(defaultStarReplaceParts(part))
+    }
     
     override func schemaName(_ value: String) -> String { value.doubleQuotted }
 

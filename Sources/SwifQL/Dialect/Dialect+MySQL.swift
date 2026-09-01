@@ -10,6 +10,27 @@ import Foundation
 class MySQLDialect: SQLDialect {
     override var id: String? { "mysql" }
 
+    override func sampling(
+        _ sample: SwifQLPartSampling,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .complete(defaultSamplingParts(sample))
+    }
+
+    override func lambda(
+        _ lambda: SwifQLPartLambda,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .complete(defaultLambdaParts(lambda))
+    }
+
+    override func starReplaceParts(
+        _ part: SwifQLStarReplacePart,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .complete(defaultStarReplaceParts(part))
+    }
+
     override func identifier(_ value: String) -> String {
         "`\(value.replacingOccurrences(of: "`", with: "``"))`"
     }

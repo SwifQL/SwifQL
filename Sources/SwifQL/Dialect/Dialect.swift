@@ -89,10 +89,7 @@ open class SQLDialect {
     /// textual spelling, including raw and nested `Type` compatibility.
     open func type(_ type: Type) -> String { type.name }
 
-    /// Renders a structured sampling clause through the normal recursive
-    /// parts pipeline. The default keeps sampling arguments as ordinary
-    /// values, so custom dialects inherit normal bind collection.
-    open func sampling(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
+    func defaultSamplingParts(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
         sample.renderedParts(
             argumentParts: sample.arguments.map { $0.parts },
             seedParts: sample.seed?.parts,
@@ -100,10 +97,21 @@ open class SQLDialect {
         )
     }
 
-    /// Renders a structured SQL lambda through the normal recursive parts
-    /// pipeline. The default preserves the historical `lambda ... : ...`
-    /// spelling and ordinary body-value binding.
-    open func lambda(_ lambda: SwifQLPartLambda) -> [SwifQLPart] {
+    /// Renders a structured sampling clause through the normal recursive
+    /// parts pipeline. The default keeps sampling arguments as ordinary
+    /// values, so custom dialects inherit normal bind collection.
+    open func sampling(_ sample: SwifQLPartSampling) -> [SwifQLPart] {
+        defaultSamplingParts(sample)
+    }
+
+    open func sampling(
+        _ sample: SwifQLPartSampling,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .incomplete(sampling(sample))
+    }
+
+    func defaultLambdaParts(_ lambda: SwifQLPartLambda) -> [SwifQLPart] {
         var parts: [SwifQLPart] = [
             SwifQLPartOperator.custom("lambda"),
             SwifQLPartOperator.space
@@ -117,6 +125,20 @@ open class SQLDialect {
         parts.append(o: .space, .custom(":"), .space)
         parts.append(contentsOf: lambda.body)
         return parts
+    }
+
+    /// Renders a structured SQL lambda through the normal recursive parts
+    /// pipeline. The default preserves the historical `lambda ... : ...`
+    /// spelling and ordinary body-value binding.
+    open func lambda(_ lambda: SwifQLPartLambda) -> [SwifQLPart] {
+        defaultLambdaParts(lambda)
+    }
+
+    open func lambda(
+        _ lambda: SwifQLPartLambda,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .incomplete(self.lambda(lambda))
     }
 
     open func hybridOperator(_ hybrid: SwifQLHybridOperator) -> SwifQLPartOperator {
@@ -192,7 +214,7 @@ open class SQLDialect {
         return parts
     }
 
-    open func starReplaceParts(_ part: SwifQLStarReplacePart) -> [SwifQLPart] {
+    func defaultStarReplaceParts(_ part: SwifQLStarReplacePart) -> [SwifQLPart] {
         var parts: [SwifQLPart] = [
             SwifQLPartOperator("REPLACE"),
             SwifQLPartOperator.space,
@@ -208,6 +230,17 @@ open class SQLDialect {
         }
         parts.append(o: .closeBracket)
         return parts
+    }
+
+    open func starReplaceParts(_ part: SwifQLStarReplacePart) -> [SwifQLPart] {
+        defaultStarReplaceParts(part)
+    }
+
+    open func starReplaceParts(
+        _ part: SwifQLStarReplacePart,
+        observingUnsafeValues observation: SwifQLUnsafeValueObservation
+    ) -> SwifQLObservedParts {
+        .incomplete(starReplaceParts(part))
     }
 
     open func starRenameParts(_ part: SwifQLStarRenamePart) -> [SwifQLPart] {
