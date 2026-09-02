@@ -4,11 +4,11 @@ This file contains only approved current work. Ideas, unresolved choices, verifi
 
 ## Current state
 
-The current approved implementation objective is **Unsafe-Value Render Provenance**, an owning SwifQL prerequisite required by a downstream consumer. Its purpose is to provide generic same-render unsafe-value provenance while preserving existing SwifQL preparation, SQL rendering, binding-order, and custom-dialect compatibility.
+There is currently **no active approved SwifQL implementation task**.
 
-Exact implementation mechanics, dangerous-case coverage, mutation scope, STOP conditions, validation, and publication sequencing are owned by the accepted current planning lineage under `.artifacts/planning/unsafe-value-render-provenance-2026-09-01/`. Tracked source/test/stable mutation is bounded to that accepted task sequence and exact allowlist; unrelated work is not authorized by this active task.
+Unsafe-Value Render Provenance is completed, independently audited, and published as the immutable pre-release `2.0.0-beta.5.1.0`. The published API provides generic same-render unsafe-value provenance while preserving established SwifQL preparation, SQL rendering, binding-order, and custom-dialect compatibility. The published artifact is remotely consumable through SwiftPM and resolves to the accepted release revision.
 
-The prerequisite remains **active and is not yet delivered**. Local production implementation is complete in the current candidate; focused provenance validation and full local validation are passing; generic stable architecture synchronization is complete; coordinator final candidate audit has completed without blockers. Fresh independent root/diff audit is now the active local gate, while maintainer-authorized local commit, separately authorized push/release, immutable remote publication, and exact remote-artifact verification remain pending. This task must remain active until the accepted implementation is published as a new immutable remotely consumable artifact; local implementation, tests, audit, or a local commit alone do not complete it.
+This completed prerequisite does not authorize additional SwifQL source work. Any new SwifQL implementation objective requires a new explicit maintainer decision and fresh current-state planning.
 
 The first Duck SQL-surface redesign closure is implemented, native-/compatibility-validated, independently audited, committed, and published in the `2.0.0-beta.5.0.0` pre-release. Tasks 01-27 are complete, including the final `.duck` expansion into `SQLDialect.all` and the native/compatibility closure required for that expansion.
 
