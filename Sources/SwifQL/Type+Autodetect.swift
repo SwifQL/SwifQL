@@ -103,6 +103,12 @@ extension Type {
         
         case is Optional<[Int64]>.Type: fallthrough
         case is [Int64].Type: return .bigintArray
+
+        case is Optional<PureDate>.Type: fallthrough
+        case is PureDate.Type: return .date
+
+        case is Optional<PureTime>.Type: fallthrough
+        case is PureTime.Type: return .time
         
         case is Optional<Date>.Type: fallthrough
         case is Date.Type: return .timestamptz

@@ -65,6 +65,18 @@ extension Int64: SwifQLable {
 extension Date: SwifQLable {
     public var parts: [SwifQLPart] { [SwifQLPartDate(self)] }
 }
+extension PureDate: SwifQLable {
+    public var parts: [SwifQLPart] { [SwifQLPartUnsafeValue(self)] }
+}
+extension PureTime: SwifQLable {
+    public var parts: [SwifQLPart] { [SwifQLPartUnsafeValue(self)] }
+}
+extension DateTime: SwifQLable {
+    public var parts: [SwifQLPart] { [SwifQLPartUnsafeValue(self)] }
+}
+extension Interval: SwifQLable {
+    public var parts: [SwifQLPart] { [SwifQLPartUnsafeValue(self)] }
+}
 extension Data: SwifQLable {
     public var parts: [SwifQLPart] {
         return [

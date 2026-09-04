@@ -62,6 +62,27 @@ open class SQLDialect {
     open func stringValue(_ value: String) -> String { value.singleQuotted }
     
     open func uuidValue(_ value: UUID) -> String { stringValue(value.uuidString) }
+
+    open func pureDateValue(_ value: PureDate) -> String {
+        stringValue(value.description)
+    }
+
+    open func pureTimeValue(_ value: PureTime) -> String {
+        stringValue(value.description)
+    }
+
+    open func dateTimeValue(_ value: DateTime) -> String {
+        stringValue(value.description)
+    }
+
+    open func intervalValue(_ value: Interval) -> String {
+        guard let months = value.months,
+              let days = value.days,
+              let microseconds = value.microseconds else {
+            return stringValue(value == .positiveInfinity ? "infinity" : "-infinity")
+        }
+        return stringValue("\(months) months \(days) days \(microseconds) microseconds")
+    }
     
     open func jsonField(_ value: String) -> String { value }
     
@@ -173,6 +194,10 @@ open class SQLDialect {
         switch value {
         case let v as String: return stringValue(v)
         case let v as UUID: return uuidValue(v)
+        case let v as PureDate: return pureDateValue(v)
+        case let v as PureTime: return pureTimeValue(v)
+        case let v as DateTime: return dateTimeValue(v)
+        case let v as Interval: return intervalValue(v)
         case let v as Bool: return boolValue(v)
         case let v as UInt: return String(describing: v)
         case let v as UInt8: return String(describing: v)

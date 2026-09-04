@@ -132,6 +132,40 @@ private func duckObservedSamplingLiteralParts(
     }
 }
 
+private func duckDateParts(_ value: PureDate) -> (date: String, isBC: Bool) {
+    guard let year = value.year,
+          let month = value.month,
+          let day = value.day else {
+        return (value.description, false)
+    }
+
+    guard year <= 0 else {
+        return (value.description, false)
+    }
+
+    let bcYear = year.magnitude.addingReportingOverflow(1).partialValue
+    let yearDigits = String(bcYear)
+    let yearText = String(repeating: "0", count: max(0, 4 - yearDigits.count)) + yearDigits
+    func padded(_ component: Int) -> String {
+        let digits = String(component)
+        return String(repeating: "0", count: max(0, 2 - digits.count)) + digits
+    }
+    return ("\(yearText)-\(padded(month))-\(padded(day))", true)
+}
+
+private func duckDateInput(_ value: PureDate) -> String {
+    let parts = duckDateParts(value)
+    return parts.date + (parts.isBC ? " (BC)" : "")
+}
+
+private func duckDateTimeInput(_ value: DateTime) -> String {
+    guard let date = value.date, let time = value.time else {
+        return value.description
+    }
+    let parts = duckDateParts(date)
+    return "\(parts.date)" + (parts.isBC ? " (BC)" : "") + " \(time.description)"
+}
+
 class DuckDialect: SQLDialect {
     private static let unqualifiedKeyPathScopes: Set<SwifQLRenderScope> = [
         .simplifiedPivotOn,
@@ -310,6 +344,27 @@ class DuckDialect: SQLDialect {
         }
 
         return "TIMESTAMPTZ '\(padded(components.year!, to: 4))-\(padded(components.month!, to: 2))-\(padded(components.day!, to: 2)) \(padded(components.hour!, to: 2)):\(padded(components.minute!, to: 2)):\(padded(components.second!, to: 2)).\(padded(microseconds, to: 6))+00:00'"
+    }
+
+    override func pureDateValue(_ value: PureDate) -> String {
+        "DATE \(stringValue(duckDateInput(value)))"
+    }
+
+    override func pureTimeValue(_ value: PureTime) -> String {
+        "CAST(\(stringValue(value.description)) AS TIME_NS)"
+    }
+
+    override func dateTimeValue(_ value: DateTime) -> String {
+        "CAST(\(stringValue(duckDateTimeInput(value))) AS TIMESTAMP_NS)"
+    }
+
+    override func intervalValue(_ value: Interval) -> String {
+        guard value.isFinite else {
+            // DuckDB has no native shared Interval infinity state; preserve
+            // the explicit special value as a rejected, non-finite fallback.
+            return super.intervalValue(value)
+        }
+        return "INTERVAL \(super.intervalValue(value))"
     }
 
     override func bindKey(_ i: Int) -> String { "$\(i)" }

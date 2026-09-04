@@ -7,6 +7,40 @@
 
 import Foundation
 
+private func postgresDateParts(_ value: PureDate) -> (date: String, isBC: Bool) {
+    guard let year = value.year,
+          let month = value.month,
+          let day = value.day else {
+        return (value.description, false)
+    }
+
+    guard year <= 0 else {
+        return (value.description, false)
+    }
+
+    let bcYear = year.magnitude.addingReportingOverflow(1).partialValue
+    let yearDigits = String(bcYear)
+    let yearText = String(repeating: "0", count: max(0, 4 - yearDigits.count)) + yearDigits
+    func padded(_ component: Int) -> String {
+        let digits = String(component)
+        return String(repeating: "0", count: max(0, 2 - digits.count)) + digits
+    }
+    return ("\(yearText)-\(padded(month))-\(padded(day))", true)
+}
+
+private func postgresDateInput(_ value: PureDate) -> String {
+    let parts = postgresDateParts(value)
+    return parts.date + (parts.isBC ? " BC" : "")
+}
+
+private func postgresDateTimeInput(_ value: DateTime) -> String {
+    guard let date = value.date, let time = value.time else {
+        return value.description
+    }
+    let parts = postgresDateParts(date)
+    return "\(parts.date) \(time.description)" + (parts.isBC ? " BC" : "")
+}
+
 class PostgreSQLDialect: SQLDialect {
     override var id: String? { "psql" }
 
@@ -87,6 +121,22 @@ class PostgreSQLDialect: SQLDialect {
         let date = _dateFormatter.string(from: value) => .timestamptz
         let result = |date|
         return result.prepare(self).plain
+    }
+
+    override func pureDateValue(_ value: PureDate) -> String {
+        "DATE \(stringValue(postgresDateInput(value)))"
+    }
+
+    override func pureTimeValue(_ value: PureTime) -> String {
+        "TIME \(stringValue(value.description))"
+    }
+
+    override func dateTimeValue(_ value: DateTime) -> String {
+        "TIMESTAMP \(stringValue(postgresDateTimeInput(value)))"
+    }
+
+    override func intervalValue(_ value: Interval) -> String {
+        "INTERVAL \(super.intervalValue(value))"
     }
     
     // returns $1 $2 $3 binding keys for PostgreSQL

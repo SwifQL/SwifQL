@@ -114,6 +114,12 @@ extension Column {
         
         case is Optional<[Int64]>.Type: isOptional = true; fallthrough
         case is [Int64].Type: return .init(.bigintArray, isOptional)
+
+        case is Optional<PureDate>.Type: isOptional = true; fallthrough
+        case is PureDate.Type: return .init(.date, isOptional)
+
+        case is Optional<PureTime>.Type: isOptional = true; fallthrough
+        case is PureTime.Type: return .init(.time, isOptional)
         
         case is Optional<Date>.Type: isOptional = true; fallthrough
         case is Date.Type: return .init(.timestamptz, isOptional)
