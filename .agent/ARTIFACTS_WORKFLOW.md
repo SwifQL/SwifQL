@@ -26,6 +26,32 @@ Therefore:
 - do not copy an existing `.artifacts` tree into another artifact workspace. If a disposable package/workspace needs source context, copy only the exact source/configuration inputs required for that probe.
 - after a major release/closure, consolidate the few historical artifacts still worth retaining into one clearly named compact archive and refresh `NEW_CHAT.md`; completed handoff, retry, correction, planning, and executor packages must not remain as competing active lineages.
 
+## Mandatory End-of-Prompt Cleanup
+
+Every local execution agent must clean up its own disposable machine output before declaring a prompt complete, whether the prompt ended in PASS, BLOCKED, or another terminal result.
+
+This cleanup is part of prompt completion, not an optional later maintenance task.
+
+At minimum, before the final response the local agent must inspect the locations it used for temporary work and remove reproducible build/runtime residue that it created under:
+
+- task/review/probe subdirectories inside `.artifacts/**`;
+- `/tmp` and platform-equivalent temporary directories when the prompt created work there;
+- disposable external workspaces, package clones, compiler/build trees, index stores, caches, temporary virtual environments, fixture repositories, generated dependency checkouts, and similar prompt-local machine output.
+
+Preserve only the smallest textual evidence/manifests/logs intentionally required by the active artifact contract. Do not preserve large build products merely because they were generated during validation.
+
+The default rule is:
+
+```text
+prompt-local + reproducible + disposable => delete before final response
+```
+
+The main exception is a build/cache directory intentionally created in the repository as reusable project state for later work, for example a root SwiftPM `.build/` that the project normally reuses. Do not delete such project-local reusable build state merely to satisfy cleanup. Conversely, a `.build/` nested inside `.artifacts/**`, `/tmp`, a disposable clone, or another prompt-local workspace is disposable and must be removed unless the maintainer explicitly asked to preserve it.
+
+Cleanup must never use broad destructive commands against unknown paths. The agent must remove only paths it created or paths whose disposable ownership it has independently established. It must not delete user-authored evidence, unrelated temp data, reusable project caches, or untracked source merely because they are large.
+
+Each executor/auditor prompt that can create substantial local build/temp output should restate this rule in its completion requirements so cleanup happens in the same local-agent run that created the data.
+
 ## Mandatory Use for Non-Trivial Iterative Work
 
 For non-trivial development, especially multi-file, cross-cutting, public-API, dialect, preparation/binding, concurrency, package/toolchain, or compatibility work, use `.artifacts/**` to externalize context before implementation.
