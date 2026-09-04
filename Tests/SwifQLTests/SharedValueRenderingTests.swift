@@ -78,6 +78,29 @@ struct SharedValueRenderingTests {
         #expect(interval.prepare(.mysql).plain == "'2 months -3 days 4 microseconds'")
     }
 
+    @Test("Duck removes only the positive extended-year input sign")
+    func duckExtendedPositiveYearsRenderWithoutCanonicalSign() throws {
+        let ordinary = try #require(PureDate(year: 9999, month: 12, day: 31))
+        let extended = try #require(PureDate(year: 10_000, month: 1, day: 1))
+        let extendedDateTime = try #require(DateTime(
+            year: 10_000,
+            month: 1,
+            day: 1,
+            hour: 12,
+            minute: 34,
+            second: 56
+        ))
+
+        #expect(ordinary.prepare(.duck).plain == "DATE '9999-12-31'")
+        #expect(extended.description == "+10000-01-01")
+        #expect(extended.prepare(.duck).plain == "DATE '10000-01-01'")
+        #expect(extendedDateTime.description == "+10000-01-01T12:34:56")
+        #expect(
+            extendedDateTime.prepare(.duck).plain
+                == "CAST('10000-01-01 12:34:56' AS TIMESTAMP_NS)"
+        )
+    }
+
     @Test("Astronomical years preserve year zero and year minus one")
     func astronomicalYearsRenderWithoutOffByOne() throws {
         let yearZeroDate = try #require(PureDate(year: 0, month: 1, day: 1))

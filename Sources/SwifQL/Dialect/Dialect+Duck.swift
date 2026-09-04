@@ -140,7 +140,14 @@ private func duckDateParts(_ value: PureDate) -> (date: String, isBC: Bool) {
     }
 
     guard year <= 0 else {
-        return (value.description, false)
+        if year <= 9999 {
+            return (value.description, false)
+        }
+        func padded(_ component: Int) -> String {
+            let digits = String(component)
+            return String(repeating: "0", count: max(0, 2 - digits.count)) + digits
+        }
+        return ("\(year)-\(padded(month))-\(padded(day))", false)
     }
 
     let bcYear = year.magnitude.addingReportingOverflow(1).partialValue

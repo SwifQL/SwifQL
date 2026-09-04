@@ -179,12 +179,30 @@ public struct Interval: Sendable, Hashable, Codable {
         }
     }
 
-    /// Subtracts two intervals using checked negation and the addition rules.
+    /// Subtracts two intervals with checked finite arithmetic and explicit infinity rules.
     public func subtracting(_ other: Interval) -> Interval? {
-        guard let negated = other.negated() else {
+        switch (storage, other.storage) {
+        case (.positiveInfinity, .positiveInfinity),
+             (.negativeInfinity, .negativeInfinity):
             return nil
+        case (.positiveInfinity, .negativeInfinity),
+             (.positiveInfinity, .finite):
+            return .positiveInfinity
+        case (.negativeInfinity, .positiveInfinity),
+             (.negativeInfinity, .finite):
+            return .negativeInfinity
+        case (.finite, .positiveInfinity):
+            return .negativeInfinity
+        case (.finite, .negativeInfinity):
+            return .positiveInfinity
+        case let (.finite(lhsMonths, lhsDays, lhsMicroseconds), .finite(rhsMonths, rhsDays, rhsMicroseconds)):
+            guard let months = Self.subtracting(lhsMonths, rhsMonths),
+                  let days = Self.subtracting(lhsDays, rhsDays),
+                  let microseconds = Self.subtracting(lhsMicroseconds, rhsMicroseconds) else {
+                return nil
+            }
+            return Self(months: months, days: days, microseconds: microseconds)
         }
-        return adding(negated)
     }
 
     /// Converts a finite fixed-only interval to an exact Swift `Duration`.
@@ -279,6 +297,11 @@ public struct Interval: Sendable, Hashable, Codable {
 
     private static func adding(_ lhs: Int64, _ rhs: Int64) -> Int64? {
         let result = lhs.addingReportingOverflow(rhs)
+        return result.overflow ? nil : result.partialValue
+    }
+
+    private static func subtracting(_ lhs: Int64, _ rhs: Int64) -> Int64? {
+        let result = lhs.subtractingReportingOverflow(rhs)
         return result.overflow ? nil : result.partialValue
     }
 }

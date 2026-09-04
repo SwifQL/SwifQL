@@ -61,6 +61,18 @@ struct IntervalTests {
         #expect(Interval(days: Int64.min).negated() == nil)
         #expect(Interval(microseconds: Int64.min).negated() == nil)
         #expect(Interval(months: Int64.min).subtracting(Interval(months: 1)) == nil)
+
+        let bases: [(make: (Int64) -> Interval, component: (Interval) -> Int64?)] = [
+            ({ Interval(months: $0) }, { $0.months }),
+            ({ Interval(days: $0) }, { $0.days }),
+            ({ Interval(microseconds: $0) }, { $0.microseconds })
+        ]
+        for base in bases {
+            #expect(base.make(Int64.min).subtracting(base.make(Int64.min)) == .zero)
+            #expect(base.component(base.make(-1).subtracting(base.make(Int64.min)) ?? .zero) == Int64.max)
+            #expect(base.make(Int64.min).subtracting(base.make(1)) == nil)
+            #expect(base.make(Int64.max).subtracting(base.make(-1)) == nil)
+        }
     }
 
     @Test("Interval infinity arithmetic follows defined and undefined combinations")
@@ -80,10 +92,14 @@ struct IntervalTests {
         #expect(Interval.positiveInfinity.adding(.negativeInfinity) == nil)
         #expect(Interval.negativeInfinity.adding(.positiveInfinity) == nil)
 
-        #expect(Interval.zero.subtracting(.negativeInfinity) == .positiveInfinity)
         #expect(Interval.zero.subtracting(.positiveInfinity) == .negativeInfinity)
+        #expect(Interval.zero.subtracting(.negativeInfinity) == .positiveInfinity)
+        #expect(Interval.positiveInfinity.subtracting(Interval.zero) == .positiveInfinity)
+        #expect(Interval.negativeInfinity.subtracting(Interval.zero) == .negativeInfinity)
         #expect(Interval.positiveInfinity.subtracting(.positiveInfinity) == nil)
         #expect(Interval.positiveInfinity.subtracting(.negativeInfinity) == .positiveInfinity)
+        #expect(Interval.negativeInfinity.subtracting(.negativeInfinity) == nil)
+        #expect(Interval.negativeInfinity.subtracting(.positiveInfinity) == .negativeInfinity)
     }
 
     @Test("Interval fixed-only Duration conversion is exact")
