@@ -2,13 +2,86 @@
 
 This file contains only approved current work. Ideas, unresolved choices, verified debt, and completed history belong in their separate owners.
 
-## Current state
+## Current active capability
 
-There is currently **no active approved SwifQL implementation task**.
+**Value & Result Type Expansion — Wave A1: Shared Semantic Value Types** is now the active approved SwifQL capability.
+
+The maintainer accepted SwiftDuckDB Research 01, Plan Correction 01, P00 temporal executable evidence, and the fresh independent Plan Re-audit 01 CLEAN result. SwifQL is the accepted shared owner for:
+
+```text
+PureDate
+PureTime
+DateTime
+Interval
+```
+
+This activation authorizes only the numbered A1 tasks generated from the accepted cross-repository plan. It does not authorize unrelated SwifQL refactors, publication, push/tag/release, Bridges/PostgresBridge modernization, macros, migrations, Table decoding, or hidden cross-dialect portability facades.
+
+### Active A1 sequencing
+
+```text
+A1.1 — shared type core semantics, validation, Codable, initial conveniences, special values
+A1.2 — SwifQL binding/rendering/inference integration across both public inference APIs
+A1.3 — external consumer + cross-platform compile probes
+R1   — fresh independent SwifQL Shared Value Types Root Audit
+A1.4 — docs/publication package after R1 CLEAN + coordinator acceptance
+A1.5 — final immutable SwifQL validation/root audit
+Publish gate — explicit maintainer authorization only
+```
+
+No source mutation may occur outside the exact allowlist of the active numbered task.
+
+The accepted temporal/value invariants include:
+
+```text
+PureDate
+- proleptic Gregorian
+- astronomical Int64 year
+- finite + positiveInfinity + negativeInfinity
+- explicit isFinite
+
+PureTime
+- time-of-day only
+- 0...86_400_000_000_000 ns inclusive
+- exact standalone 24:00 distinct from midnight
+- second 0...59
+
+DateTime
+- canonical civil date+time, not an instant
+- own positiveInfinity + negativeInfinity
+- finite state contains finite PureDate only
+- date + exact 24:00 canonicalizes to next-day midnight
+
+Interval
+- exact months/days/microseconds basis
+- shared positiveInfinity + negativeInfinity
+- not Comparable
+```
+
+All Research-accepted conveniences are mandatory capability work: every accepted item is assigned to either an initial implementation slice or the mandatory follow-up convenience slice in the accepted plan. Do not silently drop a convenience.
+
+Automatic SQL type inference in A1 is intentionally limited to semantically honest cross-dialect cases. Both `Column.autoType` and `Type.auto(from:isPrimary:)` must remain consistent. `DateTime` and `Interval` do **not** receive generic automatic SQL type mappings in A1; callers use explicit schema `Type` where dialect semantics differ.
+
+Foundation `Date -> .timestamptz` compatibility remains unchanged.
+
+Macros remain explicitly out of scope and are not recommended.
+
+Authoritative planning evidence lives under the SwiftDuckDB artifact lineage:
+
+```text
+/Users/imike/Development/SwiftDuckDB/.artifacts/planning/value-result-type-expansion-2026-09-04/IMPLEMENTATION_PLAN.md
+/Users/imike/Development/SwiftDuckDB/.artifacts/corrections/value-result-type-expansion-plan-correction-01-2026-09-04/PLAN_CORRECTION_01.md
+/Users/imike/Development/SwiftDuckDB/.artifacts/validation/value-result-type-expansion-p00-temporal-2026-09-04/P00_TEMPORAL_SEMANTICS_REPORT.md
+/Users/imike/Development/SwiftDuckDB/.artifacts/reviews/value-result-type-expansion-plan-reaudit-01-2026-09-04/PLAN_REAUDIT_01_REPORT.md
+```
+
+This file records only durable active-work truth; transient executor details remain in `.artifacts/**`.
+
+## Completed state retained for context
 
 Unsafe-Value Render Provenance is completed, independently audited, and published as the immutable pre-release `2.0.0-beta.5.1.0`. The published API provides generic same-render unsafe-value provenance while preserving established SwifQL preparation, SQL rendering, binding-order, and custom-dialect compatibility. The published artifact is remotely consumable through SwiftPM and resolves to the accepted release revision.
 
-This completed prerequisite does not authorize additional SwifQL source work. Any new SwifQL implementation objective requires a new explicit maintainer decision and fresh current-state planning.
+The completed Unsafe-Value Render Provenance prerequisite remains immutable and must not be widened or regressed by A1.
 
 The first Duck SQL-surface redesign closure is implemented, native-/compatibility-validated, independently audited, committed, and published in the `2.0.0-beta.5.0.0` pre-release. Tasks 01-27 are complete, including the final `.duck` expansion into `SQLDialect.all` and the native/compatibility closure required for that expansion.
 
@@ -18,4 +91,4 @@ Task 29 stable documentation, migration guidance, release notes, final audit, re
 
 The approved first Duck closure covers ordinary application/analytics/schema SQL including views and the validated catalog/file-function surface. Administration/runtime families such as INSTALL/LOAD, secrets, broad PRAGMA/configuration, checkpoint/vacuum/analyze administration, variables, export/import, SHOW/DESCRIBE/SUMMARIZE convenience, extension-specific SQL universes, and the generic SQL `name := expression` abstraction remain deferred.
 
-New work outside the active Unsafe-Value Render Provenance prerequisite should begin only from a new explicit maintainer objective. Do not revive historical `.artifacts` task/correction lineages as active work; reconstruct fresh artifacts from current Git/source/stable authority when needed.
+Work outside the active A1 capability still requires a new explicit maintainer objective. Do not revive historical `.artifacts` task/correction lineages as active work; reconstruct fresh artifacts from current Git/source/stable authority when needed.
