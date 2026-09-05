@@ -22,6 +22,7 @@ Rules:
 - Do not repeat the current repository or project name in the subject when Git context already makes it obvious. Name it only when needed to distinguish an external project, dependency, artifact, or explicitly named API/domain concept.
 - Wrap concrete type, function, property, protocol, and API symbol names in Markdown backticks when named in the subject.
 - Do not add coding-agent attribution to commit messages.
+- Do not put internal planning/execution identifiers or task names in commit subjects (`A1`, `A1.5`, `R1`, `Task 06`, `Correction 01`, audit/gate names, artifact lineage labels, and similar coordinator-only terminology). Describe the durable repository change instead. Use such an identifier only when it is itself a real public API/domain name or externally meaningful standard.
 - Do not mix unrelated source, tests, governance, package changes, or cleanup in one commit merely because they were implemented in the same session.
 - A documentation/governance closure commit may contain only the approved documentation/governance surface and directly related `.gitignore` changes.
 - `.artifacts/**` is transient and must never be committed.
