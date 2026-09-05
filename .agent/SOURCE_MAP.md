@@ -4,7 +4,7 @@ This is a navigation aid, not an architecture contract. Use it to locate the sma
 
 ## Package
 
-- `Package.swift` — SwiftPM tools 6.0 manifest, one `SwifQL` library target, one `SwifQLTests` test target, Swift 6 language mode.
+- `Package.swift` — SwiftPM tools 6.3 manifest, one `SwifQL` library target, one `SwifQLTests` test target, Swift 6 language mode.
 
 ## Core composition, preparation, and output
 

@@ -2,9 +2,9 @@
 
 This file contains only approved current work. Ideas, unresolved choices, verified debt, and completed history belong in their separate owners.
 
-## Current active capability
+## Current capability state
 
-**Value & Result Type Expansion — Wave A1: Shared Semantic Value Types** is now the active approved SwifQL capability.
+Shared Semantic Values are complete and were first published in SwifQL `2.0.0-beta.6.0.0`. The current release candidate/current prerelease is `2.0.0-beta.6.0.1`, a Swift 6.3 tools/CI compatibility hotfix with no SQL/API behavior change. No follow-up SwifQL implementation task is active for this capability.
 
 The maintainer accepted SwiftDuckDB Research 01, Plan Correction 01, P00 temporal executable evidence, and the fresh independent Plan Re-audit 01 CLEAN result. SwifQL is the accepted shared owner for:
 
@@ -15,23 +15,9 @@ DateTime
 Interval
 ```
 
-This activation authorizes only the numbered A1 tasks generated from the accepted cross-repository plan. It does not authorize unrelated SwifQL refactors, publication, push/tag/release, Bridges/PostgresBridge modernization, macros, migrations, Table decoding, or hidden cross-dialect portability facades.
+The shared-value capability passed its source, binding/rendering, external-consumer, cross-platform, documentation, immutable-validation, and independent root-audit gates before publication. It remains available from `2.0.0-beta.6.0.0`; the current release candidate is `2.0.0-beta.6.0.1`.
 
-### Active A1 sequencing
-
-```text
-A1.1 — accepted: shared type core semantics, validation, Codable, conveniences, special values
-A1.2 — accepted: SwifQL binding/rendering/inference integration across both public inference APIs
-A1.3 — accepted: external consumer + cross-platform compile probes
-R1   — accepted CLEAN: fresh independent SwifQL Shared Value Types Root Audit
-A1.4 — accepted: version-neutral docs/publication package after R1 CLEAN + coordinator acceptance
-A1.5 — accepted CLEAN: final immutable validation and fresh independent final root audit
-Publish gate — active next gate; explicit maintainer authorization required
-```
-
-A1 source, integration, version-neutral A1.4 documentation, and the A1.5 final root audit are accepted locally and the implementation/docs commit closure is complete, but A1 remains unreleased. The current published prerelease is `2.0.0-beta.5.1.0`; Gate A1-Publish is the next explicit maintainer-controlled gate, and no version/tag/release or dependency handoff has occurred.
-
-No source mutation may occur outside the exact allowlist of the active numbered task.
+Publication closes the SwifQL work for this capability. Any future SwifQL mutation requires a new explicit maintainer objective and exact task scope; the completed shared-value lineage does not authorize unrelated refactors, Bridges/PostgresBridge modernization, macros, migrations, Table decoding, or wider cross-dialect abstractions.
 
 The accepted temporal/value invariants include:
 
@@ -87,7 +73,7 @@ The completed Unsafe-Value Render Provenance prerequisite remains immutable and 
 
 The first Duck SQL-surface redesign closure is implemented, native-/compatibility-validated, independently audited, committed, and published in the `2.0.0-beta.5.0.0` pre-release. Tasks 01-27 are complete, including the final `.duck` expansion into `SQLDialect.all` and the native/compatibility closure required for that expansion.
 
-The Swift 6.3 strict-concurrency migration is implemented, independently audited, committed, and included in `2.0.0-beta.5.0.0`. `Package.swift` uses SwiftPM tools 6.0 and Swift 6 language mode; final validation used Apple Swift 6.3.3 with complete strict-concurrency checking. The migration intentionally preserves non-Sendable query/bind graphs where their semantics are not truthfully Sendable.
+The Swift 6.3 strict-concurrency migration is implemented, independently audited, committed, and included in `2.0.0-beta.5.0.0`. `Package.swift` uses SwiftPM tools 6.3 and Swift 6 language mode; final validation used Apple Swift 6.3.3 with complete strict-concurrency checking. The migration intentionally preserves non-Sendable query/bind graphs where their semantics are not truthfully Sendable.
 
 Task 29 stable documentation, migration guidance, release notes, final audit, release-doc polish, and the follow-up GitHub repository-URL correction are complete. The final URL correction is commit `b0976b2c86f089b66e342ab9ec8851deb6aba24c` (`📖 Fix repository URLs`).
 

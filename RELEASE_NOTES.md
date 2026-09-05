@@ -1,6 +1,21 @@
-# Unreleased / Next SwifQL 2 prerelease — Shared Semantic Values
+# SwifQL 2.0.0-beta.6.0.1 — Swift 6.3 Toolchain Floor
 
-The next SwifQL 2 prerelease will add shared civil-date, time-of-day, civil-date-time, and structural-interval values. The exact version and tag are not published yet; these APIs are not part of the published `2.0.0-beta.5.1.0` tag.
+This is a compatibility and release-pipeline hotfix. The minimum Swift tools version is 6.3, and release CI validates with Swift 6.3.3. SQL/API behavior is unchanged from `2.0.0-beta.6.0.0`.
+
+Install it with:
+
+```swift
+.package(
+    url: "https://github.com/SwifQL/SwifQL",
+    exact: "2.0.0-beta.6.0.1"
+)
+```
+
+---
+
+# SwifQL 2.0.0-beta.6.0.0 — Shared Semantic Values
+
+SwifQL `2.0.0-beta.6.0.0` adds shared civil-date, time-of-day, civil-date-time, and structural-interval values: `PureDate`, `PureTime`, `DateTime`, and `Interval`.
 
 ```swift
 let date = PureDate(year: 2026, month: 9, day: 4)!
@@ -29,7 +44,7 @@ SELECT DATE '2026-09-04', CAST('12:34:56.123456789' AS TIME_NS), CAST('2026-09-0
 
 All four types use the ordinary value/binding path. Automatic inference remains intentionally limited: `PureDate` maps to `.date`, `PureTime` to `.time`, and `Foundation.Date` keeps `.timestamptz`; `DateTime` and `Interval` retain `.text` fallback and should use explicit `.timestamp` or `.interval` schema types when required. Check the selected dialect's range and precision before assuming portability: MySQL uses exact-or-hard-fail rendering, Duck `TIMESTAMP_NS` has a finite physical range, and shared interval infinity is not native Duck interval infinity.
 
-The exact next version/tag remains a separate maintainer publication decision.
+Install this prerelease with `exact: "2.0.0-beta.6.0.0"`.
 
 ---
 

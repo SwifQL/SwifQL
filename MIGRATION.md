@@ -1,15 +1,15 @@
 # Migrating to SwifQL 2
 
-The current published SwifQL 2 pre-release is `2.0.0-beta.5.1.0`.
+The current published SwifQL 2 pre-release is `2.0.0-beta.6.0.1`.
 
 ```swift
 .package(
     url: "https://github.com/SwifQL/SwifQL",
-    exact: "2.0.0-beta.5.1.0"
+    exact: "2.0.0-beta.6.0.1"
 )
 ```
 
-If you are moving from SwifQL 1.5.x or from an earlier 2.0 beta, this guide shows the changes that may require something from your code. The shared semantic values described as unreleased in the public notes are not in this published tag.
+If you are moving from SwifQL 1.5.x or from an earlier 2.0 beta, this guide shows the changes that may require something from your code. Shared semantic values are available starting with `2.0.0-beta.6.0.0`; the current `2.0.0-beta.6.0.1` release is a Swift toolchain compatibility hotfix.
 
 The good news is that normal SQL-shaped SwifQL queries mostly stay normal SQL-shaped SwifQL queries.
 
@@ -44,10 +44,10 @@ A SwifQL 1.5 project could stay on a Swift 5 language mode package.
 
 ### Now
 
-SwifQL itself is built with:
+The current SwifQL 2 prerelease requires Swift 6.3 or newer and is built with:
 
 ```swift
-// swift-tools-version:6.0
+// swift-tools-version:6.3
 ```
 
 and:
@@ -56,7 +56,7 @@ and:
 swiftLanguageModes: [.v6]
 ```
 
-The final SwifQL 2 validation was done with Apple Swift 6.3.3.
+Release validation uses Apple Swift 6.3.3.
 
 The macOS deployment target is still 10.15, so the Swift 6 migration does not raise that runtime platform floor by itself.
 
@@ -366,8 +366,8 @@ No migration is needed unless your code depended on internal formatter identity 
 
 ## Quick migration checklist
 
-- Move the consuming project to Swift 6 when adopting SwifQL 2.
-- Pin the current pre-release with `exact: "2.0.0-beta.5.1.0"`.
+- Move the consuming project to Swift 6.3 or newer when adopting the current SwifQL 2 prerelease.
+- Pin the current pre-release with `exact: "2.0.0-beta.6.0.1"`.
 - Check local/package extensions that manually append or pattern-match `SwifQLable.parts`.
 - Use `structurallyAppending(_:)` when a helper means “continue this framed query”.
 - Replace mutations of predefined `Fn.Name` values with `Fn.Name.custom(_:)` / `Fn.build(_:)`.

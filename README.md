@@ -45,7 +45,7 @@ Still on a Vapor 4 / Swift 5 project? **1.5.0 is the last stable Swift 5 release
 
 Starting a new project? Use **SwifQL 2** 🚀 It runs in Swift 6 language mode and contains the latest query-composition, API, and dialect improvements.
 
-The current published SwifQL 2 pre-release is **2.0.0-beta.5.1.0**. If you're upgrading from 1.5.x or an earlier 2.0 beta, check [MIGRATION.md](MIGRATION.md). For examples of what's new see [RELEASE_NOTES.md](RELEASE_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
+The current published SwifQL 2 pre-release is **2.0.0-beta.6.0.1**. This release line requires **Swift 6.3 or newer** and is validated in CI with **Swift 6.3.3**. If you're upgrading from 1.5.x or an earlier 2.0 beta, check [MIGRATION.md](MIGRATION.md). For examples of what's new see [RELEASE_NOTES.md](RELEASE_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Installation
 
@@ -55,10 +55,10 @@ The current published SwifQL 2 pre-release is **2.0.0-beta.5.1.0**. If you're up
 .package(url: "https://github.com/SwifQL/SwifQL", from: "1.5.0")
 ```
 
-### Swift 6 / SwifQL 2
+### Swift 6.3+ / SwifQL 2
 
 ```swift
-.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.1.0")
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.6.0.1")
 ```
 
 ### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + PostgreSQL
@@ -87,7 +87,7 @@ The current published SwifQL 2 pre-release is **2.0.0-beta.5.1.0**. If you're up
 
 ### Pure
 ```swift
-.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.1.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.6.0.1"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
 ]),
@@ -95,7 +95,7 @@ The current published SwifQL 2 pre-release is **2.0.0-beta.5.1.0**. If you're up
 
 ### Pure on NIO2
 ```swift
-.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.1.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.6.0.1"),
 .package(url: "https://github.com/SwifQL/SwifQLNIO", from:"2.0.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
@@ -117,9 +117,9 @@ The current published SwifQL 2 pre-release is **2.0.0-beta.5.1.0**. If you're up
 .target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
 ```
 
-## Shared Semantic Values (Unreleased)
+## Shared Semantic Values
 
-The current source branch adds four shared value types for database-facing civil and interval semantics. This section describes the next SwifQL 2 prerelease; these APIs are **not** in the published `2.0.0-beta.5.1.0` tag yet.
+SwifQL `2.0.0-beta.6.0.0` first published four shared value types for database-facing civil and interval semantics: `PureDate`, `PureTime`, `DateTime`, and `Interval`. The `2.0.0-beta.6.0.1` hotfix keeps the same SQL/API behavior and aligns the Swift tools floor with the validated Swift 6.3 line.
 
 ```swift
 let date = PureDate(year: 2026, month: 9, day: 4)!

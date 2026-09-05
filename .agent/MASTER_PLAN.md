@@ -61,7 +61,7 @@ The approved first `.duck` closure covers ordinary application/analytics/schema 
 
 The first Duck closure is implemented, native-/compatibility-validated, independently audited, and committed. Gate A bounded semantic render scopes and Gate B structural clause ownership are now production architecture rather than planning-only evidence. The structural SQL-region/set-result frame model, owner-sensitive GROUP BY/ORDER BY parts, PIVOT/UNPIVOT/MERGE support, first-closure DML/DDL/catalog/file-function surface, and `.duck` membership in `SQLDialect.all` are current source truth.
 
-The package also now uses SwiftPM tools 6.0 with Swift 6 language mode. The committed Task-28 migration passed final Apple Swift 6.3.3 complete strict-concurrency validation while intentionally preserving non-Sendable query/bind graphs where their semantics are not truthfully Sendable. Consumer actor boundaries normalize on caller isolation and move only consumer-owned checked-Sendable snapshots across actors; this is guidance for consumers, not a new parallel SwifQL preparation architecture.
+The package now uses SwiftPM tools 6.3 with Swift 6 language mode. Release CI validates this line with Apple Swift 6.3.3 while intentionally preserving non-Sendable query/bind graphs where their semantics are not truthfully Sendable. Consumer actor boundaries normalize on caller isolation and move only consumer-owned checked-Sendable snapshots across actors; this is guidance for consumers, not a new parallel SwifQL preparation architecture.
 
 Future Duck administration/runtime waves and the deferred generic SQL `name := expression` abstraction remain separate work. Any new shared rendering/preparation/composition primitive still requires the normal architecture/research/audit gates; completed first-closure evidence is not blanket permission to widen Duck claims or redesign established PostgreSQL/MySQL behavior.
 
@@ -69,7 +69,7 @@ Current live source and stable architecture owners define the implementation bas
 
 ## Current Shared Semantic Value state
 
-The accepted A1 shared semantic value source and integration are complete, with cross-platform consumer evidence and the fresh independent audits accepted CLEAN. `PureDate`, `PureTime`, `DateTime`, and `Interval` are current local source truth. A1.4 documentation/publication preparation and A1.5 final immutable validation/root audit are accepted, and the local A1 implementation/docs commit closure is complete. The values are not in the published `2.0.0-beta.5.1.0` tag; Gate A1-Publish is the next explicit maintainer-controlled A1 gate, and no version/tag/release or dependency handoff has occurred.
+The accepted shared semantic value source and integration are complete, with cross-platform consumer evidence and fresh independent audits accepted CLEAN. `PureDate`, `PureTime`, `DateTime`, and `Interval` were first published in prerelease `2.0.0-beta.6.0.0` and remain current source truth. The current release candidate/current prerelease is `2.0.0-beta.6.0.1`, a Swift 6.3 tools/CI compatibility hotfix with no SQL/API redesign. Downstream dependency handoff remains a separate consumer-repository step.
 
 ## Future validation gates
 

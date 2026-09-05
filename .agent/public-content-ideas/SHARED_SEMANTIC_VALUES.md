@@ -44,6 +44,6 @@ All four values use the ordinary SwifQL value path, so preparation keeps one ord
 
 Validated source owners are `PureDate.swift`, `PureTime.swift`, `DateTime.swift`, and `Interval.swift`, with focused binding, rendering, inference, and per-type tests. The current source branch includes the shared value layer and its cross-dialect evidence.
 
-### Publication caveat
+### Publication state
 
-The shared value layer is not in the published `2.0.0-beta.5.1.0` tag. Future public material must remain **Unreleased / Next SwifQL 2 prerelease** until a maintainer explicitly chooses and publishes a later version.
+The shared value layer is published in `2.0.0-beta.6.0.0`. Future public material may describe these APIs as available from that prerelease while preserving the documented dialect range, precision, and special-state boundaries. The current release line requires Swift 6.3+ and is validated with Swift 6.3.3.

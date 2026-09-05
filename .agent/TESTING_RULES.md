@@ -11,6 +11,15 @@ This file defines SwifQL testing policy. Architecture-specific assertions remain
 - Throwing operations whose failure should fail the test normally use a throwing test function with direct `try`.
 - Do not reintroduce XCTest imports or assertions without a separately justified compatibility reason.
 
+## Release validation and tag safety
+
+- `swift-tools-version` declares the package's minimum Swift tools compatibility floor; it is an executable package contract, not documentation-only metadata.
+- The repository CI compiler/image must be compatible with and at least as new as that declared floor.
+- Before creating a release tag, push the exact release-candidate commit and require the required GitHub Actions workflow to complete successfully for that exact commit SHA.
+- A red, pending, missing, stale, or different-SHA run does not authorize tag creation.
+- After pushing a release tag, require the tag-triggered required workflow to complete successfully before treating the release artifact as validated.
+- Never move, delete, or force-update a published tag to repair a failed release; prepare a later patch tag instead.
+
 ## Tests follow design, never justify it
 
 Architecture, SQL semantics, public DSL shape, and user experience are reviewed and accepted before tests are treated as evidence for an implementation.

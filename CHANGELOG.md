@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 2.0.0-beta.6.0.1
 
-Shared Semantic Values are prepared for the next SwifQL 2 prerelease: `PureDate`, `PureTime`, `DateTime`, and structural `Interval` use the ordinary value path and render according to the selected dialect. The exact version/tag is not published yet; see [RELEASE_NOTES.md](RELEASE_NOTES.md).
+This patch aligns the package minimum Swift tools floor with the validated Swift 6.3 line and runs CI on Swift 6.3.3. It introduces no SQL/API behavior changes from `2.0.0-beta.6.0.0`.
+
+## 2.0.0-beta.6.0.0
+
+Shared Semantic Values are now published: `PureDate`, `PureTime`, `DateTime`, and structural `Interval` use the ordinary value path and render according to the selected dialect. See [RELEASE_NOTES.md](RELEASE_NOTES.md) for examples and dialect boundaries.
 
 ## 2.0.0-beta.5.1.0
 
