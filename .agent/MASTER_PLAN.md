@@ -69,7 +69,7 @@ Current live source and stable architecture owners define the implementation bas
 
 ## Current Shared Semantic Value state
 
-The accepted A1 shared semantic value source and integration are complete, with cross-platform consumer evidence and the fresh independent root re-audit accepted CLEAN. `PureDate`, `PureTime`, `DateTime`, and `Interval` are current local source truth. A1.4 documentation/publication preparation is coordinator-accepted, and A1.5 final executable validation has passed; the fresh independent A1.5 final root audit is the active gate. The values are not in the published `2.0.0-beta.5.1.0` tag, and publication remains an explicit maintainer gate after that audit.
+The accepted A1 shared semantic value source and integration are complete, with cross-platform consumer evidence and the fresh independent audits accepted CLEAN. `PureDate`, `PureTime`, `DateTime`, and `Interval` are current local source truth. A1.4 documentation/publication preparation and A1.5 final immutable validation/root audit are accepted, and the local A1 implementation/docs commit closure is complete. The values are not in the published `2.0.0-beta.5.1.0` tag; Gate A1-Publish is the next explicit maintainer-controlled A1 gate, and no version/tag/release or dependency handoff has occurred.
 
 ## Future validation gates
 

@@ -25,11 +25,11 @@ A1.2 — accepted: SwifQL binding/rendering/inference integration across both pu
 A1.3 — accepted: external consumer + cross-platform compile probes
 R1   — accepted CLEAN: fresh independent SwifQL Shared Value Types Root Audit
 A1.4 — accepted: version-neutral docs/publication package after R1 CLEAN + coordinator acceptance
-A1.5 — active: executable validation PASS; fresh independent final root audit is the next gate
-Publish gate — explicit maintainer authorization only
+A1.5 — accepted CLEAN: final immutable validation and fresh independent final root audit
+Publish gate — active next gate; explicit maintainer authorization required
 ```
 
-A1 source, integration, and the version-neutral A1.4 documentation package are accepted locally but remain unreleased. The current published prerelease is `2.0.0-beta.5.1.0`; A1.5 final root audit still precedes any publication decision.
+A1 source, integration, version-neutral A1.4 documentation, and the A1.5 final root audit are accepted locally and the implementation/docs commit closure is complete, but A1 remains unreleased. The current published prerelease is `2.0.0-beta.5.1.0`; Gate A1-Publish is the next explicit maintainer-controlled gate, and no version/tag/release or dependency handoff has occurred.
 
 No source mutation may occur outside the exact allowlist of the active numbered task.
 
