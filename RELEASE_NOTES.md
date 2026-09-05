@@ -1,3 +1,38 @@
+# Unreleased / Next SwifQL 2 prerelease — Shared Semantic Values
+
+The next SwifQL 2 prerelease will add shared civil-date, time-of-day, civil-date-time, and structural-interval values. The exact version and tag are not published yet; these APIs are not part of the published `2.0.0-beta.5.1.0` tag.
+
+```swift
+let date = PureDate(year: 2026, month: 9, day: 4)!
+let time = PureTime(hour: 12, minute: 34, second: 56, nanosecond: 123_456_789)!
+let dateTime = DateTime(
+    year: 2026,
+    month: 9,
+    day: 4,
+    hour: 12,
+    minute: 34,
+    second: 56,
+    nanosecond: 123_456_789
+)!
+let interval = Interval(months: 2, days: -3, microseconds: 4)
+
+SwifQL.select(date, time, dateTime, interval).prepare(.duck).plain
+```
+
+will give:
+
+```sql
+SELECT DATE '2026-09-04', CAST('12:34:56.123456789' AS TIME_NS), CAST('2026-09-04 12:34:56.123456789' AS TIMESTAMP_NS), INTERVAL '2 months -3 days 4 microseconds'
+```
+
+`PureDate` and `PureTime` model timezone-free civil values; `PureDate` supports astronomical years and explicit temporal infinity states. `DateTime` is a timezone-free civil combination with finite and explicit infinity states, not an instant or `Foundation.Date`; exact `24:00:00` canonicalizes to the next day's midnight. `Interval` preserves independent signed months, days, and microseconds plus explicit infinity states, so it is not a fixed duration or `Comparable`. `Foundation.Date` interop for `PureDate` and `DateTime` requires an explicit Gregorian `Calendar` and `TimeZone` and can fail.
+
+All four types use the ordinary value/binding path. Automatic inference remains intentionally limited: `PureDate` maps to `.date`, `PureTime` to `.time`, and `Foundation.Date` keeps `.timestamptz`; `DateTime` and `Interval` retain `.text` fallback and should use explicit `.timestamp` or `.interval` schema types when required. Check the selected dialect's range and precision before assuming portability: MySQL uses exact-or-hard-fail rendering, Duck `TIMESTAMP_NS` has a finite physical range, and shared interval infinity is not native Duck interval infinity.
+
+The exact next version/tag remains a separate maintainer publication decision.
+
+---
+
 # SwifQL 2.0.0-beta.5.0.0 🚀
 
 SwifQL 2 now runs in Swift 6 language mode, with a much broader SQL surface and safer query composition.

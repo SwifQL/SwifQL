@@ -67,6 +67,10 @@ Future Duck administration/runtime waves and the deferred generic SQL `name := e
 
 Current live source and stable architecture owners define the implementation baseline. Disposable artifacts may record execution evidence, but they do not override those authorities.
 
+## Current Shared Semantic Value state
+
+The accepted A1 shared semantic value source and integration are complete, with cross-platform consumer evidence and the fresh independent root re-audit accepted CLEAN. `PureDate`, `PureTime`, `DateTime`, and `Interval` are current local source truth. A1.4 documentation/publication preparation is coordinator-accepted, and A1.5 final executable validation has passed; the fresh independent A1.5 final root audit is the active gate. The values are not in the published `2.0.0-beta.5.1.0` tag, and publication remains an explicit maintainer gate after that audit.
+
 ## Future validation gates
 
 Substantial waves require design/UX review before implementation, source/diff review afterward, PostgreSQL/MySQL exact regression checks, bind-order checks where relevant, DESIGN-015 composition checks, downstream consumer fixtures when extension compatibility is at risk, native DuckDB validation where renderer tests are insufficient, `git diff --check`, and exact changed-path review.

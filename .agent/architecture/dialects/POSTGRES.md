@@ -24,6 +24,19 @@ The current internal dialect id is:
 
 These are long-standing compatibility surface.
 
+## Shared temporal and interval values
+
+The PostgreSQL dialect renders the shared civil values through the ordinary preparation path:
+
+```sql
+DATE '2026-09-04'
+TIME '12:34:56.123456789'
+TIMESTAMP '2026-09-04 12:34:56.123456789'
+INTERVAL '2 months -3 days 4 microseconds'
+```
+
+`PureDate` keeps astronomical-year/BCE spelling and temporal infinity states; `DateTime` is timezone-free civil data rather than an instant; `Interval` preserves independent signed months, days, and microseconds. The PostgreSQL-specific `DATE`, `TIME`, `TIMESTAMP`, and `INTERVAL` output is current source/test truth, not a universal mapping for other dialects.
+
 ## Rendering
 
 ### POSTGRES-002 - Identifiers

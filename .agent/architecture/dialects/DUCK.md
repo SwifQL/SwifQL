@@ -118,6 +118,19 @@ TIMESTAMPTZ 'YYYY-MM-DD HH:MM:SS.ffffff+00:00'
 
 Do not use local time zone behavior for Duck Date rendering.
 
+### DUCK-006A - Shared temporal and interval values
+
+The shared civil values use the ordinary Duck preparation path:
+
+```sql
+DATE '2026-09-04'
+CAST('12:34:56.123456789' AS TIME_NS)
+CAST('2026-09-04 12:34:56.123456789' AS TIMESTAMP_NS)
+INTERVAL '2 months -3 days 4 microseconds'
+```
+
+`PureDate` keeps its canonical shared identity; positive extended years lose only the input `+` for Duck parser spelling, for example `+10000-01-01` becomes `DATE '10000-01-01'`. `TIMESTAMP_NS` has a finite physical nanosecond epoch range, so deterministic formatting outside that range is not a promise that Duck can execute every value. Shared `Interval.positiveInfinity` and `.negativeInfinity` remain explicit special states; they do not become native Duck `INTERVAL` infinity and must not be described as such.
+
 ### DUCK-007 - Foundation Data and exact base64 SQL stay transparent
 
 Historical direct `Data.parts` is protected compatibility surface and remains PostgreSQL-shaped. Duck support must not globally reinterpret that existing expression and must not introduce a semantic `binary(...)` facade that chooses different named SQL functions by dialect.

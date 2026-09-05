@@ -25,6 +25,8 @@ Both entrypoints use the same preparation renderer; observation does not authori
 
 The public DSL should normally stay SQL-shaped and dialect-transparent. Differences in identifier spelling, key-path rendering, values, dates, bind markers, collection syntax, and other exact syntax belong behind dialect-aware preparation rather than database-prefixed wrappers scattered through ordinary query code.
 
+The shared semantic values `PureDate`, `PureTime`, `DateTime`, and `Interval` are additive value hooks in this same preparation pipeline. Existing custom `SQLDialect` subclasses remain source-compatible through default hook implementations; built-in dialects own the exact supported rendering and boundary behavior. Per-dialect range, precision, and special-state facts remain in the dialect owners below.
+
 `.any` is a base `SQLDialect` intended only for short truly universal SQL. It is not a substitute for a concrete dialect when parts require database-specific rendering.
 
 `SQLDialect` is public/open compatibility surface. New contextual hooks must preserve existing external subclasses where technically possible, normally by adding forwarding overloads rather than replacing established signatures.

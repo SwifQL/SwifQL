@@ -45,7 +45,7 @@ Still on a Vapor 4 / Swift 5 project? **1.5.0 is the last stable Swift 5 release
 
 Starting a new project? Use **SwifQL 2** 🚀 It runs in Swift 6 language mode and contains the latest query-composition, API, and dialect improvements.
 
-The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading from 1.5.x or an earlier 2.0 beta, check [MIGRATION.md](MIGRATION.md). For examples of what's new see [RELEASE_NOTES.md](RELEASE_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
+The current published SwifQL 2 pre-release is **2.0.0-beta.5.1.0**. If you're upgrading from 1.5.x or an earlier 2.0 beta, check [MIGRATION.md](MIGRATION.md). For examples of what's new see [RELEASE_NOTES.md](RELEASE_NOTES.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Installation
 
@@ -58,7 +58,7 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 ### Swift 6 / SwifQL 2
 
 ```swift
-.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.0.0")
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.1.0")
 ```
 
 ### With Vapor 4 + [Bridges](https://github.com/SwifQL/Bridges) + PostgreSQL
@@ -87,7 +87,7 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 
 ### Pure
 ```swift
-.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.1.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
 ]),
@@ -95,7 +95,7 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 
 ### Pure on NIO2
 ```swift
-.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.0.0"),
+.package(url: "https://github.com/SwifQL/SwifQL", exact: "2.0.0-beta.5.1.0"),
 .package(url: "https://github.com/SwifQL/SwifQLNIO", from:"2.0.0"),
 .target(name: "App", dependencies: [
     .product(name: "SwifQL", package: "SwifQL"),
@@ -116,6 +116,42 @@ The current SwifQL 2 pre-release is **2.0.0-beta.5.0.0**. If you're upgrading fr
 .package(url: "https://github.com/SwifQL/SwifQLVapor", from:"1.0.0"),
 .target(name: "App", dependencies: ["Vapor", "SwifQL", "SwifQLVapor"]),
 ```
+
+## Shared Semantic Values (Unreleased)
+
+The current source branch adds four shared value types for database-facing civil and interval semantics. This section describes the next SwifQL 2 prerelease; these APIs are **not** in the published `2.0.0-beta.5.1.0` tag yet.
+
+```swift
+let date = PureDate(year: 2026, month: 9, day: 4)!
+let time = PureTime(hour: 12, minute: 34, second: 56, nanosecond: 123_456_789)!
+let timestamp = DateTime(
+    year: 2026,
+    month: 9,
+    day: 4,
+    hour: 12,
+    minute: 34,
+    second: 56,
+    nanosecond: 123_456_789
+)!
+let interval = Interval(months: 2, days: -3, microseconds: 4)
+
+SwifQL.select(date, time, timestamp, interval).prepare(.psql).plain
+```
+
+will give:
+
+```sql
+SELECT DATE '2026-09-04', TIME '12:34:56.123456789', TIMESTAMP '2026-09-04 12:34:56.123456789', INTERVAL '2 months -3 days 4 microseconds'
+```
+
+- `PureDate` is a proleptic-Gregorian civil date with astronomical `Int64` years, including canonical year zero/BCE and extended-year spellings such as `+10000-01-01`. It has finite and explicit positive/negative infinity states, no time zone, and is not an instant; its explicit `Foundation.Date` conversion requires a Gregorian `Calendar` and `TimeZone` and can fail.
+- `PureTime` is nanosecond-capable time of day, not a duration. Its domain is `00:00:00` through the distinct `24:00:00` endpoint; leap second `60` is rejected.
+- `DateTime` combines a timezone-free `PureDate` and `PureTime`. It has finite and explicit positive/negative infinity states, is not `Foundation.Date`, and exact `24:00:00` input becomes the following date's midnight. Foundation conversion requires an explicit Gregorian calendar and time zone.
+- `Interval` keeps independent months, days, and microseconds, including explicit positive/negative infinity states. Mixed signs are allowed, it is not `Comparable` or a fixed `TimeInterval`, and exact `Duration` conversion is available only when months and days are zero.
+
+The four values use the ordinary SwifQL value/binding path, so `.splitted.values` preserves the original Swift values and their traversal order. `PureDate` and `PureTime` infer `.date` and `.time`; `Foundation.Date` remains `.timestamptz`. `DateTime` and `Interval` retain the historical `.text` fallback, so use explicit `.timestamp` or `.interval` schema types when that contract is intended.
+
+Dialect output is intentionally exact rather than universal. PostgreSQL and Duck preserve nanosecond lexical values in their supported forms; MySQL emits only finite values and precisions it can represent exactly, and fails closed for unsupported years, special states, or non-microsecond nanoseconds. Duck's `TIMESTAMP_NS` still has a finite physical range, and shared interval infinity values are not native Duck interval infinity.
 
 ## Philosophy
 

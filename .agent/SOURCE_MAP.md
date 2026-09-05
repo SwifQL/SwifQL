@@ -81,6 +81,10 @@ This is the validated first-closure surface, not a claim that every DuckDB admin
 
 ## Types, casts, predicates, and adjacent values
 
+- `Sources/SwifQL/PureDate.swift` — proleptic-Gregorian civil date value.
+- `Sources/SwifQL/PureTime.swift` — nanosecond-capable civil time-of-day value.
+- `Sources/SwifQL/DateTime.swift` — timezone-free civil date-time value.
+- `Sources/SwifQL/Interval.swift` — structural months/days/microseconds interval value.
 - `Sources/SwifQL/Type.swift`
 - `Sources/SwifQL/Type+SwifQLable.swift`
 - `Sources/SwifQL/Type+Autodetect.swift`
@@ -115,6 +119,13 @@ The query/bind graph itself remains intentionally non-Sendable where its semanti
 - `Tests/SwifQLTests/FnTests.swift` - function/date migration coverage.
 - `Tests/SwifQLTests/EstablishedOperatorCompatibilityTests.swift` - established compatibility guard.
 - `Tests/SwifQLTests/PreparationObservationTests.swift` - same-render unsafe-value provenance, one-evaluation, fail-closed custom-hook, Duck consumed-value, and built-in compatibility coverage.
+- `Tests/SwifQLTests/PureDateTests.swift` - PureDate semantics and Foundation interop.
+- `Tests/SwifQLTests/PureTimeTests.swift` - PureTime domain and canonical formatting.
+- `Tests/SwifQLTests/DateTimeTests.swift` - civil composition and Foundation interop.
+- `Tests/SwifQLTests/IntervalTests.swift` - structural interval semantics and arithmetic.
+- `Tests/SwifQLTests/SharedValueBindingTests.swift` - ordinary unsafe-value binding and ordered collector behavior.
+- `Tests/SwifQLTests/SharedValueRenderingTests.swift` - exact cross-dialect shared-value output and boundaries.
+- `Tests/SwifQLTests/SharedValueInferenceTests.swift` - automatic and explicit schema inference boundaries.
 - `Tests/SwifQLTests/**` - established focused feature and query tests.
 
 Editor settings, generated output, local user state, backup branches, and transient `.artifacts/**` are not product architecture authority.

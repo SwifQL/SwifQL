@@ -26,10 +26,10 @@ public struct Interval: Sendable, Hashable, Codable {
         storage = .finite(months: months, days: days, microseconds: microseconds)
     }
 
-    /// An interval value greater than no finite value in arithmetic contexts.
+    /// An explicit positive-infinity database/arithmetic special state.
     public static let positiveInfinity = Self(storage: .positiveInfinity)
 
-    /// An interval value less than no finite value in arithmetic contexts.
+    /// An explicit negative-infinity database/arithmetic special state.
     public static let negativeInfinity = Self(storage: .negativeInfinity)
 
     /// The finite all-zero interval.

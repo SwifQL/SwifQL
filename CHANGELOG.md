@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+Shared Semantic Values are prepared for the next SwifQL 2 prerelease: `PureDate`, `PureTime`, `DateTime`, and structural `Interval` use the ordinary value path and render according to the selected dialect. The exact version/tag is not published yet; see [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
+## 2.0.0-beta.5.1.0
+
+Published prerelease with unsafe-value render provenance while preserving the established preparation and binding pipeline.
+
 ## 2.0.0-beta.5.0.0
 
 SwifQL 2 moves the package to Swift 6, expands the SQL surface, and strengthens query composition.

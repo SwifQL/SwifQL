@@ -17,6 +17,15 @@ Use this workflow for downstream code that consumes SwifQL.
 7. Use `.plain` to inspect rendered SQL with values formatted inline. Use `.splitted` for driver-facing SQL plus the ordered bind values.
 8. Stop after construction and preparation. SwifQL builds SQL; database execution belongs to a driver or an integration layer such as Bridges.
 
+For civil and interval data, choose the semantic type that matches the value:
+
+- `PureDate` for a timezone-free civil date;
+- `PureTime` for nanosecond-capable time of day, not an elapsed duration;
+- `DateTime` for a timezone-free civil date and time;
+- `Interval` for structural months/days/microseconds, not a flattened `TimeInterval`.
+
+Keep `Foundation.Date` for instant / `TIMESTAMPTZ` semantics. Before using these APIs, check the consumer's resolved SwifQL version: the current published `2.0.0-beta.5.1.0` tag does not contain the A1 shared values, which remain unreleased on the current source branch. `DateTime` and `Interval` retain `.text` automatic inference, so use explicit schema types when `.timestamp` or `.interval` is the intended contract. Verify the target dialect's supported range and precision before assuming portability; MySQL is exact-or-hard-fail and Duck `TIMESTAMP_NS` and interval special states have important boundaries.
+
 A representative downstream query follows the same shape as its SQL:
 
 ```swift

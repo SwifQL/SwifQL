@@ -20,14 +20,16 @@ This activation authorizes only the numbered A1 tasks generated from the accepte
 ### Active A1 sequencing
 
 ```text
-A1.1 — shared type core semantics, validation, Codable, initial conveniences, special values
-A1.2 — SwifQL binding/rendering/inference integration across both public inference APIs
-A1.3 — external consumer + cross-platform compile probes
-R1   — fresh independent SwifQL Shared Value Types Root Audit
-A1.4 — docs/publication package after R1 CLEAN + coordinator acceptance
-A1.5 — final immutable SwifQL validation/root audit
+A1.1 — accepted: shared type core semantics, validation, Codable, conveniences, special values
+A1.2 — accepted: SwifQL binding/rendering/inference integration across both public inference APIs
+A1.3 — accepted: external consumer + cross-platform compile probes
+R1   — accepted CLEAN: fresh independent SwifQL Shared Value Types Root Audit
+A1.4 — accepted: version-neutral docs/publication package after R1 CLEAN + coordinator acceptance
+A1.5 — active: executable validation PASS; fresh independent final root audit is the next gate
 Publish gate — explicit maintainer authorization only
 ```
+
+A1 source, integration, and the version-neutral A1.4 documentation package are accepted locally but remain unreleased. The current published prerelease is `2.0.0-beta.5.1.0`; A1.5 final root audit still precedes any publication decision.
 
 No source mutation may occur outside the exact allowlist of the active numbered task.
 

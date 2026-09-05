@@ -24,6 +24,24 @@ The current internal dialect id is:
 
 These are long-standing compatibility surface.
 
+## Shared temporal and interval values
+
+MySQL rendering is exact-or-hard-fail for the shared civil values:
+
+- finite `PureDate` years `1000...9999` use `CAST('YYYY-MM-DD' AS DATE)`;
+- `PureTime` with no fraction uses `TIME`, and microsecond-exact fractions use `TIME(6)`; non-microsecond nanoseconds are unsupported without rounding, while exact `24:00:00` remains supported;
+- finite `DateTime` years `1000...9999` use `DATETIME` or exact `DATETIME(6)`;
+- unsupported years, precisions, and special states fail closed rather than silently coercing;
+- `Interval` has no false first-class generic MySQL interval value/schema claim.
+
+Representative supported output is:
+
+```sql
+CAST('2026-09-04' AS DATE)
+CAST('12:34:56.123456' AS TIME(6))
+CAST('2026-09-04 12:34:56.123456' AS DATETIME(6))
+```
+
 ## Rendering
 
 ### MYSQL-002 - Current key-path behavior
